@@ -1,0 +1,282 @@
+/* Body styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+}
+
+/* Sidebar styles */
+.sidebar {
+  background-color: #1e1e1e;
+  color: #fff;
+  padding: 20px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: block;
+  width: 250px; /* Default width */
+  transition: left 0.3s ease;
+}
+
+.sidebar .profile {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.sidebar .profile img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.sidebar h3,
+.sidebar h2 {
+  margin: 5px 0;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar nav ul li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.sidebar nav ul li.active,
+.sidebar nav ul li:hover {
+  background: #ff7f50;
+}
+
+.nav-btn {
+  width: 100%;
+  padding: 2px;
+  background-color: #1e1e1e;
+  color: #fff;
+  border: none;
+  text-align: left;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  text-transform: capitalize;
+  transition: background-color 0.3s;
+}
+
+.nav-btn:hover {
+  background-color: #ff7f50;
+}
+
+/* Main content */
+.main-content {
+  margin-left: 250px; /* Default space for sidebar */
+  padding: 20px;
+  background-color: #121212;
+  color: white;
+}
+
+.chart-container {
+  position: relative;
+  left:15px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  color: black;
+}
+
+.chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 200px;
+  margin-top: 20px;
+}
+
+.chart .bar {
+  width: 15px;
+  background: red;
+  border-radius: 5px;
+  position: relative;
+  bottom: -160px;
+}
+
+.stats, .summary {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding: 10px;
+  background: #333;
+  border-radius: 10px;
+}
+
+.stats div, .summary div {
+  padding: 10px;
+  border-radius: 5px;
+  background: #444;
+}
+
+.year-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.year-selector button {
+  padding: 5px 10px;
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.year-selector span {
+  font-size: 18px;
+  font-weight: bold;
+  color: rgb(218, 24, 24);
+}
+
+.year-selector button:hover {
+  background-color: #666;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  /* Sidebar on mobile */
+  .sidebar {
+    position: absolute;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.sidebar-show {
+    left: 0;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  /* Chart container and stats adjust for mobile */
+  .chart-container {
+    padding: 10px;
+    position: relative;
+    top: 20px;
+  }
+
+  .stats, .summary {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stats div, .summary div {
+    width: 80%;
+    margin: 10px 0;
+  }
+
+  .year-selector {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .year-selector button {
+    margin-bottom: 10px;
+  }
+
+  /* Hamburger Menu */
+  .menu-btn {
+    display: block;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 1100;
+  }
+
+  .menu-btn:focus {
+    outline: none;
+  }
+
+  .navbar-toggler-icon {
+    background-color: white;
+    width: 30px;
+    height: 3px;
+    position: relative;
+  }
+
+  .navbar-toggler-icon:before,
+  .navbar-toggler-icon:after {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 3px;
+    background-color: white;
+    left: 0;
+  }
+
+  .navbar-toggler-icon:before {
+    top: -8px;
+  }
+
+  .navbar-toggler-icon:after {
+    top: 8px;
+  }
+}
+
+/* Tablet Responsiveness (Medium screens) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .main-content {
+    margin-left: 200px;
+  }
+
+  .menu-btn {
+    display: none; /* Hide hamburger menu on tablet */
+  }
+}
+
+/* Large screens (Desktop) */
+@media (min-width: 1024px) {
+  .sidebar {
+    width: 250px;
+  }
+
+  .main-content {
+    margin-left: 250px;
+  }
+
+  .menu-btn {
+    display: none; /* Hide hamburger menu on desktop */
+  }
+}
+@media (max-width: 900px) {
+  .month {
+      display: none; 
+ 
+  }
+  /* Sidebar toggle for mobile */
+.sidebar-show {
+  left: 0 !important; /* Ensure the sidebar slides in */
+}
+.menu-btn {
+  z-index: 2000; /* Ensure the button is above other elements */
+  position: fixed;
+  top: 20px;
+  left: 15px;
+}
+
+}

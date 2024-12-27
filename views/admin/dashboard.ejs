@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/styles/admin-dashboard.css" />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar col-12 col-md-3 col-lg-2">
+          <div class="profile text-center mb-4">
+            <img
+              src="/images/download.jpeg"
+              alt="Profile Image"
+              width="60"
+              height="60"
+              style="border-radius: 50%"
+            />
+            <h3>PRODUCT MANAGER</h3>
+            <h2>Jeff Bezos</h2>
+          </div>
+          <nav>
+            <ul>
+              <li>
+                <button
+                  class="nav-btn active"
+                  onclick="navigateTo('/admin/dashboard')"
+                >
+                  Dashboard
+                </button>
+              </li>
+              <li>
+                <button
+                  class="nav-btn"
+                  onclick="navigateTo('/admin/usermanage')"
+                >
+                  Users Management
+                </button>
+              </li>
+              <li>
+                <button
+                  class="nav-btn"
+                  onclick="navigateTo('/admin/productmanage')"
+                >
+                  Products Management
+                </button>
+              </li>
+              <li>
+                <button class="nav-btn" onclick="navigateTo('orders')">
+                  Orders Management
+                </button>
+              </li>
+              <li>
+                <button class="nav-btn" onclick="navigateTo('categories')">
+                  Category Management
+                </button>
+              </li>
+              <li>
+                <button class="nav-btn" onclick="navigateTo('coupons')">
+                  Coupon Management
+                </button>
+              </li>
+              <hr class="text-white-50" />
+              <li>
+                <button class="nav-btn" onclick="navigateTo('coupons')">
+                  Settings
+                </button>
+              </li>
+              <li>
+                <button class="nav-btn" onclick="navigateTo('coupons')">
+                  Help
+                </button>
+              </li>
+              <li>
+                <button class="nav-btn" onclick="navigateTo('coupons')">
+                  Logout Account
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content col-12 col-md-9 col-lg-10">
+          <!-- Menu Button for Mobile -->
+          <button class="menu-btn" id="menuBtn">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <!-- Total Sale Section -->
+          <div class="chart-container">
+            <h3>Total Sale</h3>
+            <h1>$980,243.00</h1>
+
+            <div class="year-selector">
+              <button id="prevYear">◄</button>
+              <span id="yearDisplay">2024</span>
+              <button id="nextYear">►</button>
+            </div>
+
+            <!-- Chart -->
+            <div class="chart">
+              <div class="bar" style="height: 30%"></div>
+              <div class="bar" style="height: 50%"></div>
+              <div class="bar" style="height: 60%"></div>
+              <div class="bar" style="height: 55%"></div>
+              <div class="bar" style="height: 70%"></div>
+              <div class="bar" style="height: 80%"></div>
+              <div class="bar" style="height: 90%"></div>
+              <div class="bar" style="height: 75%"></div>
+              <div class="bar" style="height: 70%"></div>
+              <div class="bar" style="height: 60%"></div>
+              <div class="bar" style="height: 50%"></div>
+              <div class="bar" style="height: 40%"></div>
+            </div>
+            <div class="chart">
+              <span class="month">JAN</span>
+              <span class="month">FEB</span>
+              <span class="month">MAR</span>
+              <span class="month">APR</span>
+              <span class="month">MAY</span>
+              <span class="month">JUN</span>
+              <span class="month">JUL</span>
+              <span class="month">AUG</span>
+              <span class="month">SEP</span>
+              <span class="month">OCT</span>
+              <span class="month">NOV</span>
+              <span class="month">DEC</span>
+            </div>
+          </div>
+
+          <!-- Stats Section -->
+          <div class="stats row">
+            <div class="col-6 col-md-3">Total Users: 6000</div>
+            <div class="col-6 col-md-3">Total Products: 1000</div>
+            <div class="col-6 col-md-3">Total Orders: 500</div>
+            <div class="col-6 col-md-3">Monthly Sales: 2500</div>
+          </div>
+
+          <!-- Summary Section -->
+          <div class="summary row">
+            <div class="col-4">Revenue: $100</div>
+            <div class="col-4">Sales: $150</div>
+            <div class="col-4">Purchase: $100</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentYear = 2024;
+
+      document.getElementById("prevYear").addEventListener("click", () => {
+        currentYear--;
+        document.getElementById("yearDisplay").textContent = currentYear;
+      });
+
+      document.getElementById("nextYear").addEventListener("click", () => {
+        currentYear++;
+        document.getElementById("yearDisplay").textContent = currentYear;
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        var menuBtn = document.getElementById("menuBtn");
+        var sidebar = document.getElementById("sidebar");
+
+        menuBtn.addEventListener("click", function () {
+          sidebar.classList.toggle("sidebar-show");
+        });
+      });
+
+      function navigateTo(url) {
+        window.location.href = url;
+      }
+    </script>
+  </body>
+</html>
