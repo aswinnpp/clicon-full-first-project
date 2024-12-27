@@ -33,25 +33,25 @@
             <!-- Navbar Content -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <!-- Search Bar -->
-                <form class="d-flex mx-auto my-2 my-lg-0">
-                    <input class="form-control me-2" type="search" placeholder="Search for anything..." aria-label="Search">
-                    <button class="btn btn-outline-light" type="submit">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </button>
-                </form>
+                <div class="container"> 
+                    <div class="search-container"> 
+                    <form class="search-bar"> 
+                        <input type="text" class="form-control" placeholder="Search....">
+                         
+                        <button class="btn btn-primary" type="submit"> <i class="bi bi-search"></i> </button>
+                     </form> 
+                </div> 
+            </div>
                 <!-- Navigation Links -->
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#"><i class="bi bi-heart"></i> Wishlist</a>
+                        <a class="nav-link text-white" href="./signin"><i class="bi bi-heart ms-3"></i> Wishlist</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#"><i class="bi bi-cart"></i> Cart</a>
+                        <a class="nav-link text-white" href="./signin"><i class="bi bi-cart ms-3"></i > Carts</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#"><i class="bi bi-person"></i> Account</a>
+                        <a class="nav-link text-white" href="./signin"><i class="bi bi-person ms-3"></i> Account</a>
                     </li>
                 </ul>
             </div>
@@ -74,3 +74,35 @@
 <a href="#about-us">About Us</a>
 <span>📞 +1-202-555-0144</span>
 </nav>
+</section>
+</header>
+ <!-- Categories Section -->
+ <section class=" catgory mb-5 mt-2 bg-light">
+    <h3 class="mb-4">Shop by Category</h3>
+    <div class="row g-4 text-center">
+        <div class="col-6 col-md-3">
+            <div class="category-icon">
+                <i class="bi bi-laptop"></i>
+            </div>
+            <h5>Computers</h5>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="category-icon">
+                <i class="bi bi-phone"></i>
+            </div>
+            <h5>Phones</h5>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="category-icon">
+                <i class="bi bi-headphones"></i>
+            </div>
+            <h5>Audio</h5>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="category-icon">
+                <i class="bi bi-controller"></i>
+            </div>
+            <h5>Gaming</h5>
+        </div>
+    </div>
+</section>

@@ -6,7 +6,12 @@ const userauth = require("../middleware/userauth");
 
 
 
-router.get('/home',userauth.isLogin,userController.loadHome)
+router.get('/home',userController.loadHome)
+router.get('/signup',userController.loadSignUp)
+router.get('/signin',userController.loadSignIn)
+router.get('/forgot',userController.loadForgot)
+router.get('/otp',userController.loadOtp)
+router.get('/reset',userController.loadReset)
 
 
 

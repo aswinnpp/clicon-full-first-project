@@ -1,0 +1,50 @@
+<%- include('../partials/user/header') %>
+
+<div class="container3 mt-5">
+    <div class="auth-wrapper" style="height: 350px;">
+      
+      <div class="tab-content" id="auth-tabContent">
+        <!-- OTP Verification Form -->
+        <div
+          class="tab-pane fade show active"
+          id="otp-verification"
+          role="tabpanel"
+          aria-labelledby="otp-verification-tab"
+        >
+          <h5 style="margin-left: 90px; color: blue;">OTP Verification</h5>
+          
+          <div class="container forgomsg">      
+            <p style="font-size: small; margin-left: 30px;">
+              We have sent a 6-digit OTP to your registered email address or mobile phone number.
+            </p>
+            <p style="font-size: small; margin-left: 30px;">Enter the OTP below to verify your account.</p>
+          </div>
+          
+          <form id="otpForm">
+            <!-- OTP Input -->
+            <div class="mb-3">
+              <label for="otp" class="form-label">Enter OTP</label>
+              <input
+                type="text"
+                class="form-control"
+                id="otp"
+                placeholder="Enter 6-digit OTP"
+                maxlength="6"
+              />
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary mt-2 "">Verify OTP</button>
+  
+            <!-- Resend OTP Link -->
+            <div style="display:flex; justify-content: space-between; margin-top: 10px;">
+              <a href="#" id="resendOtp" style="text-decoration: none;">Resend OTP</a>
+              <a href="./signin" style="text-decoration: none;">Back</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<%- include('../partials/user/footer') %>
