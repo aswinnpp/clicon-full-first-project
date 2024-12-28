@@ -51,7 +51,7 @@ const signUp = async (req, res) => {
     req.session.details={email,password,name,phone}
 
     sendOtpEmail(email, otp);
-
+    console.log('sign up otp creation',req.session)
     console.log('OTP:', otp);
 
     res.redirect('/otp')
@@ -181,6 +181,7 @@ const transporter = nodemailer.createTransport({
 
 
 const resendOtp = async (req, res) => {
+
   try {
     const  email  = req.session.details.email
    console.log(email)
@@ -191,8 +192,10 @@ const resendOtp = async (req, res) => {
     } while (newOtp === req.session.otp); // Ensure it's not the same as the previous one
 
     // Update OTP and timestamp in session
-    req.session.newOtp = newOtp;
-    req.session.newtimestamp = Date.now(); // Update timestamp
+    req.session.otp = newOtp;
+    req.session.timestamp = Date.now(); // Update timestamp
+   
+    console.log('resend session creation',req.session)
 
     // Send the new OTP via email
     await transporter.sendMail({
@@ -212,18 +215,20 @@ const resendOtp = async (req, res) => {
   const verifyOTP = async (req, res) => {
     const { otp } = req.body;
 
-    console.log(otp)
+    console.log(req.session)
     const currentTime = Date.now();
   
     
     if (req.session.otp && req.session.timestamp||req.session.newotp&& req.session.newtimestamp) {
       const otpAge = currentTime - req.session.timestamp;
-      const newotpAge=currentTime - req.session.newtimestamp;
-      const isExpired = otpAge > 50000;  
+      // const newotpAge=currentTime - req.session.newtimestamp;
+      const isExpired = otpAge == 50000;  
   
       if (isExpired) {
         req.flash('OTP', 'OTP Expired');
+        delete req.session.otp
         return res.redirect('/otp')
+      
       }
      const data=req.session.details
       

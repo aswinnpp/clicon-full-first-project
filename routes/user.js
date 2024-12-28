@@ -16,7 +16,7 @@ router.get('/signin',userController.loadSignIn)
 router.post('/signin',userController.signIn)
 
 router.get('/otp',userController.loadOtp)
-router.post('/otp',userController. verifyOTP)
+router.post('/otp',userController.verifyOTP)
 router.post('/resend',userController.resendOtp)
 
 router.get('/forgot',userController.loadForgot)
