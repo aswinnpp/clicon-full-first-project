@@ -23,13 +23,13 @@ const login = async (req, res) => {
 
     console.log(admin);
     if (!admin || admin.role !== "admin") {
-      return res.render("admin/login", { message: "Invalid credential" });
+      return res.render("admin/login", { message: "Invalid credential"||"" });
     }
 
     const isMatch = await bcrypt.compare(password, admin.password);
 
     if (!isMatch) {
-      return res.render("admin/login", { message: "Invalid credential" });
+      return res.render("admin/login", { message: "Invalid credential"||"" });
       console.log(massage);
     }
 
@@ -39,7 +39,7 @@ const login = async (req, res) => {
     res.redirect("/admin/dashboard");
   } catch (error) {
     console.log(error);
-    res.render("admin/login", { message: "Login failed" });
+    res.render("admin/login", { message: "Login failed"||"" });
   }
 };
 

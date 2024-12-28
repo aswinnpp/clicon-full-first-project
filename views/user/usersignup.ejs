@@ -46,11 +46,13 @@
             role="tabpanel"
             aria-labelledby="sign-up-tab"
           >
-            <form>
+          <p style="color: red;"><%= typeof message !== 'undefined' ? message : '' %></p>
+            <form action="/signup" method="post">
               <div class="mb-3">
                 <label for="sign-up-name" class="form-label">Name</label>
                 <input
-                  type="text"
+                  type="text",
+                  name="name"
                   class="form-control"
                   id="sign-up-name"
                   placeholder="Enter your name"
@@ -61,10 +63,26 @@
                   >Email address</label
                 >
                 <input
-                  type="email"
+                  type="email",
+                  name="email"
                   class="form-control"
                   id="sign-up-email"
                   placeholder="Enter your email"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="sign-up-email" class="form-label"
+                  >Phone no</label
+                >
+                <input
+                  style="appearance: none;" 
+                  maxlength="10" 
+                  pattern="[0-9]{10}" 
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                  name="phone"
+                  class="form-control"
+                  id="sign-up-num"
+                  placeholder="Enter your mobile no."
                 />
               </div>
               <div class="mb-3">
@@ -72,7 +90,8 @@
                   >Password</label
                 >
                 <input
-                  type="password"
+                  type="password",
+                  name="password"
                   class="form-control"
                   id="sign-up-password"
                   placeholder="Enter your password"
@@ -82,8 +101,10 @@
                 <label for="sign-up-confirm-password" class="form-label"
                   >Confirm Password</label
                 >
+
                 <input
-                  type="password"
+                  type="password",
+                  name="Confirm-password"
                   class="form-control"
                   id="sign-up-confirm-password"
                   placeholder="Confirm your password"
@@ -107,5 +128,66 @@
         </div>
       </div>
     </div>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const signUpForm = document.querySelector("#sign-up form");
+
+  signUpForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+
+    const name = document.getElementById("sign-up-name").value.trim();
+    const email = document.getElementById("sign-up-email").value.trim();
+    const password = document.getElementById("sign-up-password").value.trim();
+    const confirmPassword = document.getElementById("sign-up-confirm-password").value.trim();
+    const termsChecked = document.getElementById("sign-up-terms").checked;
+
+    let errors = [];
+
+    if (name === "") {
+      errors.push("Name is required.");
+    }
+
+    if (email === "") {
+      errors.push("Email is required.");
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.push("Invalid email address.");
+    }
+
+    if (password === "") {
+      errors.push("Password is required.");
+    } else if (password.length < 6) {
+      errors.push("Password must be at least 6 characters long.");
+    }
+
+    if (confirmPassword === "") {
+      errors.push("Confirm password is required.");
+    } else if (password !== confirmPassword) {
+      errors.push("Passwords do not match.");
+    }
+
+ 
+
+    // Display errors or submit form
+    if (errors.length > 0) {
+      alert(errors.join("\n"));
+    } else {
+     
+      signUpForm.submit(); 
+    }
+  });
+});
+// number validation
+
+   const phoneInput = document.getElementById('sign-up-num');
+    const errorMsg = document.getElementById('phone-error');
+    const phone = phoneInput.value;
+
+    if (phone.length !== 10) {
+      errorMsg.textContent = 'Enter a valid 10-digit phone number.';
+    }
+
+    </script>
     <%- include('../partials/user/footer') %>
  

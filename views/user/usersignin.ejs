@@ -11,8 +11,6 @@
             data-bs-toggle="tab"
             type="submit"
             role="tab"
-            aria-controls="sign-up"
-            aria-selected="true"
           >
             Sign in
           </button>
@@ -25,8 +23,6 @@
             id="sign-in-tab"
             type="submit"
             role="tab"
-            aria-controls="sign-in"
-            aria-selected="false"
           >
             Sign up
           </button>
@@ -41,7 +37,11 @@
         role="tabpanel"
         aria-labelledby="sign-up-tab"
       >
-        <form>
+      
+      <p style="color: red;"><%= typeof error !== 'undefined' ? error : '' %></p>
+      
+     
+        <form action="/signin"  method="post">
           <div class="mb-3">
             <label for="sign-up-name" class="form-label">Name</label>
             <input
@@ -49,6 +49,7 @@
               class="form-control"
               id="sign-up-name"
               placeholder="Enter your name"
+              name="name"
             />
           </div>
           <div class="mb-3">
@@ -58,6 +59,7 @@
               class="form-control"
               id="sign-up-email"
               placeholder="Enter your email"
+              name="email"
             />
           </div>
           <div class="mb-3">
@@ -67,6 +69,7 @@
               class="form-control"
               id="sign-up-password"
               placeholder="Enter your password"
+              name="password"
             />
           </div>
            <a href="./forgot" style="text-decoration: none;   display: flex; justify-content: flex-end;" > Forgot Password</a>

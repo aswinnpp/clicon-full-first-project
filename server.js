@@ -7,17 +7,18 @@ const connectDB = require("./database/connectDB");
 const session = require("express-session");
 const nocache = require("nocache");
 const env =require("dotenv").config()
+const flash = require('connect-flash');
+app.use(flash());
+
 
 connectDB();
-app.use(nocache());
-app.use(
-  session({
-    secret: "mysecretkey",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 },
-  })
-);
+app.use(session({
+  secret: 'secretKey',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+
+}));
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -27,8 +28,12 @@ app.use(express.json());
 
 
 app.use('/admin',adminRoute)
-app.use('/user',userRoute)
-
+app.use('/',userRoute)
+// app.use((req, res, next) => {
+//   res.locals.message = req.flash('error');
+//   res.locals.success = req.flash('success');
+//   next();
+// });
 
 app.listen(process.env.PORT,()=>{
   console.log('PORT connected')

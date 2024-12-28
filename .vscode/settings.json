@@ -2,7 +2,11 @@
     "cSpell.words": [
         "admindashboard",
         "forgotpassword",
+        "newotp",
+        "nulll",
+        "otpresent",
         "otpverify",
+        "saltround",
         "usermanage",
         "usermodel",
         "usersignin",
