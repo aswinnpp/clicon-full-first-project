@@ -19,8 +19,8 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["user", "admin"],  // Only 'user' and 'admin' roles are allowed
-    default: "user",         // Default role is 'user'
+    enum: ["user", "admin"],  
+    default: "user",         
   },
   createdAt: {
     type: String,
@@ -34,7 +34,13 @@ const userSchema = new mongoose.Schema({
   phone:{
     type:Number,
     require:true
+  },
+  isBan:{
+    type:Boolean,
+    require:true,
+    default:false
   }
+
 });
 
 module.exports = mongoose.model("User", userSchema);

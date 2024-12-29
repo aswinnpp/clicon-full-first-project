@@ -17,7 +17,7 @@
         </form>
       </li>
       <li class="nav-item" role="presentation">
-        <form action="./signup" method="get">
+        <form action="/signup" method="get">
           <button
             class="nav-link"
             id="sign-in-tab"
@@ -41,7 +41,7 @@
       <p style="color: red;"><%= typeof error !== 'undefined' ? error : '' %></p>
       
      
-        
+         <form action="/signin"  method="post">
           <div class="mb-3">
             <label for="sign-up-name" class="form-label">Name</label>
             <input
@@ -73,8 +73,7 @@
             />
           </div>
         
-           <a href="./forgot" style="text-decoration: none;   display: flex; justify-content: flex-end;" > Forgot Password</a>
-           <form action="/signin"  method="post"></form>
+           <a href="/forgot" style="text-decoration: none;   display: flex; justify-content: flex-end;" > Forgot Password</a> 
           <button type="submit" class="btn btn-primary mt-2">Sign Up</button>
         </form>
         <div class="container ">

@@ -312,15 +312,24 @@ const loadSignIn = async (req, res) => {
         req.flash('error', 'All fields are required!');
         return res.redirect("/signin");
       }
+
+
+      
   
-      // Check if user exists
-      const user = await userSchema.findOne({ email, name });
+    
+      const user = await userSchema.findOne({ email});
+
+      
       if (!user) {
         req.flash('error', 'User not found!');
         return res.redirect("/signin");
       }
-  
-      // Compare password
+      
+      if(user.isBan === true){
+        req.flash('error', 'User Banned By admin!');
+        return res.redirect("/signin");
+      }
+      
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         req.flash('error', 'Incorrect Password!');

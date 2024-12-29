@@ -10,9 +10,22 @@ router.post("/login", adminController.login);
 
 
 router.get('/dashboard',adminauth.checkSession,adminController.loadDashboard)
+
+
+
 router.get('/usermanage',adminauth.checkSession,adminController.loadUserManage)
-router.get('/userupdate',adminauth.checkSession,adminController.loadUserUpdate)
+
+router.get('/userupdate/:id',adminauth.checkSession,adminController.loadUserUpdate)
+
+router.post('/userupdate',adminController.updateUser)
+
+router.post("/banuser",adminController.banUser)
+
+
+
 router.get('/productmanage',adminauth.checkSession,adminController.loadProductManage)
+
+router.get('/productupdate',adminauth.checkSession,adminController.loadProductUpdate)
 
 
 module.exports=router;
