@@ -27,5 +27,13 @@ router.get('/productmanage',adminauth.checkSession,adminController.loadProductMa
 
 router.get('/productupdate',adminauth.checkSession,adminController.loadProductUpdate)
 
+router.get('/productcreate',adminauth.checkSession,adminController.loadProductcreate)
+
+router.get('/productview',adminauth.checkSession,adminController.loadProductview)
+
+
+
+router.get('/categorymanage',adminauth.checkSession,adminController.loadCategoryManage)
+
 
 module.exports=router;

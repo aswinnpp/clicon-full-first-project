@@ -1,12 +1,15 @@
 {
     "cSpell.words": [
+        "adminauth",
         "admindashboard",
         "banuser",
+        "categorymanage",
         "forgotpassword",
         "newotp",
         "nulll",
         "otpresent",
         "otpverify",
+        "productcreate",
         "productupdate",
         "saltround",
         "Swal",

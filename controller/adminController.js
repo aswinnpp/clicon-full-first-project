@@ -52,6 +52,8 @@ const loadDashboard = async (req, res) => {
     res.status(500).send("server error");
   }
 };
+
+
 // --------------------------------------------
 // ----------- User Management-----------------
 // --------------------------------------------
@@ -69,7 +71,7 @@ const loadUserManage = async (req, res) => {
     res.status(500).send("server error");
   }
 };
-
+//------------ User Update Page ----------------
 const loadUserUpdate = async (req, res) => {
   try {
 
@@ -89,7 +91,7 @@ const loadUserUpdate = async (req, res) => {
     res.status(500).send("server error");
   }
 };
-
+//----------- Updating User -------------------
  const updateUser = async (req, res) => {
   try {
     const { id, name, email, password, phone } = req.body;
@@ -130,8 +132,7 @@ const loadUserUpdate = async (req, res) => {
     res.status(500).json({ message: "An error occurred while updating the user." });
   }
 };
-
-
+//----------- Ban user ------------------------
 const banUser=  async (req, res) => {
   const { userId } = req.body;
 
@@ -165,7 +166,7 @@ const banUser=  async (req, res) => {
 
 
 // --------------------------------------------
-// ---------Product Update --------------------
+// ---------Product Manage --------------------
 // --------------------------------------------
 
 const loadProductManage = async (req, res) => {
@@ -191,10 +192,50 @@ try {
 
 }
 
+const loadProductcreate =async (req, res)=>{
+
+  try {
+
+    res.render('admin/productcreate')
+    
+  } catch (error) {
+    console.log("productcreate page not found");
+    res.status(500).send("server error");
+  }
+}
+
+const loadProductview = async (req ,res)=>{
+
+
+  try {
+    
+    res.render('admin/productview')
+
+  } catch (error) {
+    console.log("productview page not found");
+    res.status(500).send("server error");
+  }
+}
 
 
 
 
+
+
+
+
+const loadCategoryManage = async (req, res)=>{
+
+
+  try {
+
+    res.render('admin/categorymanage')
+    
+  } catch (error) {
+    console.log("categorymanage page not found");
+    res.status(500).send("server error");
+  }
+}
 
 module.exports = {
   loadLogin,
@@ -206,4 +247,7 @@ module.exports = {
   updateUser,
   banUser,
   loadProductUpdate,
+  loadProductcreate,
+  loadProductview,
+  loadCategoryManage,
 };

@@ -6,8 +6,9 @@ const saltround =10
 dotenv.config();
 
 
-
-// -------------- home page --------------------
+// ==============================================
+// ================== home page =================
+// ==============================================
 const loadHome= async (req,res)=>{
   try {
     return res.render('user/userhome')
@@ -16,10 +17,10 @@ const loadHome= async (req,res)=>{
   }
     
    
-  }
-//  ---------------------------------------------
-//  -------------- user register ----------------
-//  ---------------------------------------------
+}
+//===============================================
+//================ user register ================
+//===============================================
   const loadSignUp = async (req, res) => {
     try {
       const message = req.flash('success');
@@ -27,9 +28,9 @@ const loadHome= async (req,res)=>{
     } catch (error) {
       console.log('user signup error:', error);
     }
-  };
+};
 
-  // -------------------User sign up---------------
+// ------------------ User sign up---------------
 const signUp = async (req, res) => {
   console.log(req.body); 
 
@@ -62,7 +63,7 @@ const signUp = async (req, res) => {
   }
 };
 
-
+//------------------- OTP Page ------------------
 const loadOtp = async (req, res) => {
   try {
     const OTP =req.flash('OTP')
@@ -72,13 +73,12 @@ const loadOtp = async (req, res) => {
   }
 };
 
-// -----------Generate OTP ----------------------
+//------------------- Generate OTP ---------------
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000); 
 };
 
-
-// ------------send OTP to email-----------------
+//------------------ send OTP to email ------------
 const sendOtpEmail = (email, otp) => {
   const mailOptions = {
     from: process.env.GMAIL_USER, // Sender address
@@ -170,7 +170,7 @@ const sendOtpEmail = (email, otp) => {
   });
 };
 
-// --------------Nodemail  transporter------------
+//--------------- Nodemailer  transporter----------
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -179,7 +179,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-
+//--------------- Resend OTP ----------------------
 const resendOtp = async (req, res) => {
 
   try {
@@ -211,7 +211,8 @@ const resendOtp = async (req, res) => {
     res.status(500).json({ error: 'Failed to resend OTP. Try again.' });
   }
 };
-  // ----------------verifyOTP--------------------
+
+//----------------- verify OTP---------------------
   const verifyOTP = async (req, res) => {
     const { otp } = req.body;
 
@@ -271,19 +272,19 @@ const resendOtp = async (req, res) => {
       req.flash('OTP', 'OTP Generation Failed')
       return res.redirect('/otp')
     }
-  };
+};
 
-
-// -----------------------------------------------
-// -----------------------------------------------
-// -----------------------------------------------
-
+// ===============================================
+// ===============================================
+// ===============================================
 
 
 
 
 
-// -------------- user login--------------------
+//==============================================
+//=============== user login ====================
+//==============================================
 const loadSignIn = async (req, res) => {
     try {
       
@@ -296,8 +297,6 @@ const loadSignIn = async (req, res) => {
       console.log('user signin error:', error);
     }
   };
-
-
 
   const signIn = async (req, res) => {
     try {
@@ -349,7 +348,9 @@ const loadSignIn = async (req, res) => {
     }
   };
   
-// ----------------------------
+// =============================================
+// =============================================
+// =============================================
 
 
 

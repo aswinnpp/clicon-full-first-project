@@ -1,0 +1,72 @@
+<%- include('../partials/admin/header') %>
+
+<!-- Main Content -->
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 d-md-none">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Create Product</a>
+      <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation" id="menuBtn">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </nav>
+  
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Create Product</h1>
+  </div>
+
+  <form action="/admin/productcreate" method="POST">
+    <!-- No hidden input for ID since this is for creating a new product -->
+    
+    <div class="mb-3">
+      <label for="productName" class="form-label">Product Name</label>
+      <input type="text" class="form-control" id="productName" name="productname" value="" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <input type="text" class="form-control" id="description" name="description" value="" required>
+    </div>
+  
+    <div class="mb-3">
+      <label class="form-label">Category</label>
+      <input type="text" class="form-control" id="category" name="category" value="" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="brand" class="form-label">Brand</label>     
+      <input type="text" class="form-control" id="brand" name="brand" value="" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="offer" class="form-label">Offer</label>     
+      <input type="text" class="form-control" id="offer" name="offer" value="" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="stock" class="form-label">Stock</label>     
+      <input type="text" class="form-control" id="stock" name="stock" value="" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="warranty" class="form-label">Warranty</label>     
+      <input type="text" class="form-control" id="warranty" name="warranty" value="" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="returnpolicy" class="form-label">Return Policy</label>     
+      <input type="text" class="form-control" id="returnpolicy" name="returnpolicy" value="" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="color" class="form-label">Color</label>     
+      <input type="text" class="form-control" id="color" name="color" value="" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+  </form>
+</main>
+</div>
+</div>
+
+<%- include('../partials/admin/footer') %>
