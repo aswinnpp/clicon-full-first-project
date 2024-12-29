@@ -1,5 +1,6 @@
-const adminSchema = require("../models/usermodel");
+const User = require("../models/usermodel");
 const bcrypt = require("bcrypt");
+
 
 const loadLogin = async (req, res) => {
   try {
@@ -16,8 +17,8 @@ const login = async (req, res) => {
 
     console.log("dkmklm");
 
-    const admin = await adminSchema.findOne({
-      name: { $regex: new RegExp(`^${email}$`, "i") },
+    const admin = await User.findOne({
+      email: { $regex: new RegExp(`^${email}$`, "i") },
       role: "admin",
     });
 
@@ -54,7 +55,11 @@ const loadDashboard = async (req, res) => {
 
 const loadUserManage = async (req, res) => {
   try {
-    return res.render("admin/usermanage");
+    const users = await User.find({})
+    console.log(users);
+
+    return res.render("admin/usermanage",{ users });
+    
   } catch (error) {
     console.log("usermanage page not found");
     res.status(500).send("server error");

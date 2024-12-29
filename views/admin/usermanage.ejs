@@ -113,55 +113,26 @@
               <th>Email</th>
               <th>Role</th>
               <th>Join Date</th>
-              <th>Update</th>
-              <th>Ban</th>
+              <th>Phone no.</th>
+              <th>Actions</th>
+              
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Tony</td>
-              <td>tony@gmail.com</td>
-              <td>user</td>
-              <td>04-Oct-2022</td>
-             <td><form action="userupdate" method="GET">
-              <button type="submit" class="btn btn-sm btn-success">Update</button>
-             </form>
-               </td>  
-              <td><button class="btn btn-sm btn-danger">Ban</button></td>
-            </tr>
-            <tr>
-              <td>Gimmy</td>
-              <td>gimmy@gmail.com</td>
-              <td>user</td>
-              <td>08-Nov-2021</td>
-               <td><form action="userupdate" method="GET">
-              <button type="submit" class="btn btn-sm btn-success">Update</button>
-             </form>
-               </td>
-              <td><button class="btn btn-sm btn-danger">Ban</button></td>
-            </tr>
-            <tr>
-              <td>Tom</td>
-              <td>tom@gmail.com</td>
-              <td>user</td>
-              <td>10-Jan-2024</td>
-               <td><form action="userupdate" method="GET">
-              <button type="submit" class="btn btn-sm btn-success">Update</button>              
-             </form>
-               </td>
-              <td><button class="btn btn-sm btn-danger">Ban</button></td>
-            </tr>
-            <tr>
-              <td>Joy</td>
-              <td>joy@gmail.com</td>
-              <td>user</td>
-              <td>04-May-2023</td>
-              <td><form action="userupdate" method="GET">
-              <button type="submit" class="btn btn-sm btn-success">Update</button>
-             </form>
-               </td>  
-               <td><button class="btn btn-sm btn-danger">Ban</button></td>           
-            </tr>
+            <% users.forEach(user => { %>
+              <tr>
+                <td><%= user.name %></td>
+                <td><%= user.email %></td>
+                <td><%= user.role %></td>
+                <td><%= user.createdAt %></td>
+                <td><%= user.phone %></td>
+                <td>
+                  <form action=""></form>
+                  <a href="/admin/usermanage/update/<%= user._id %>" class="btn btn-warning btn-sm">Update</a>
+                  <button class="btn btn-danger btn-sm  ms-5">Ban</button>
+                </td>
+              </tr>
+            <% }) %>
           </tbody>
         </table>
       </div>

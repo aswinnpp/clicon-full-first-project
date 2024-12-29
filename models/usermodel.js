@@ -1,5 +1,11 @@
 
 const mongoose = require("mongoose");
+const formattedDate = new Date().toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric'
+});
+
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -17,8 +23,8 @@ const userSchema = new mongoose.Schema({
     default: "user",         // Default role is 'user'
   },
   createdAt: {
-    type: Date,
-    default: Date.now,
+    type: String,
+    default: formattedDate,
   },
   name:{
     type: String,
