@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+   
   },
   role: {
     type: String,
@@ -33,13 +33,19 @@ const userSchema = new mongoose.Schema({
   },
   phone:{
     type:Number,
-    require:true
+    default:""
   },
   isBan:{
     type:Boolean,
     require:true,
     default:false
+  },
+  authuser:{
+    type:Boolean,
+    default:false
   }
+
+
 
 });
 

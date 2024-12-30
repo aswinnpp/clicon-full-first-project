@@ -11,6 +11,11 @@ router.get('/',userController.loadHome);
 router.get('/signup',userController.loadSignUp)
 router.post('/signup',userController.signUp)
 
+router.post('/authsignup',userController.authsignup)
+router.post('/authsignin',userController.authsignin)
+
+
+
 
 router.get('/signin',userController.loadSignIn)
 router.post('/signin',userController.signIn)

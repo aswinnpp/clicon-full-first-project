@@ -9,6 +9,7 @@ router.get('/login',adminauth.isLogin,adminController.loadLogin)
 router.post("/login", adminController.login);
 
 
+
 router.get('/dashboard',adminauth.checkSession,adminController.loadDashboard)
 
 

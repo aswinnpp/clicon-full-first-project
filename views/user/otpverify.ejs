@@ -36,14 +36,56 @@
           <!-- Resend OTP Link -->
           <div style="display:flex; justify-content: space-between; margin-top: 10px;">
 
-            <a href="/signin" style="text-decoration: none;">Back</a>
+            <div id="timer" style="position: relative; left: 170px; color:blue ;">30</div>
           </div>
         </form>
         <form action="/resend" method="post">
-          <button type="submit" class="btn btn-link" id="resendOtpBtn" >Resend OTP</button>
+          <button type="submit" class="btn btn-link" id="resendOtpBtn" onsubmit="toggleButtonState()" disabled style="color: white; text-decoration: none;" >Resend OTP</button>
         </form>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  
+  const button = document.getElementById("resendOtpBtn");
+  const timerDisplay = document.getElementById("timer");
+
+  
+  function toggleButtonState() {
+      
+      button.disabled = true;
+      setTimeout(function() {
+          
+          button.disabled = false;
+      }, 32000); 
+  }
+
+
+  setTimeout(function() {
+      button.disabled = false;
+  }, 32000);
+  
+  function startTimer() {
+            let timeLeft = 30;
+
+            const interval = setInterval(function() {
+                timerDisplay.textContent = timeLeft; 
+                timeLeft--; 
+
+               
+                if (timeLeft < 0) {
+                    clearInterval(interval);
+                    timerDisplay.textContent = ""; 
+                }
+            }, 1000); 
+          }
+        
+        window.onload = function() {
+            startTimer(); 
+        };
+
+
+</script>
 <%- include('../partials/user/footer') %>

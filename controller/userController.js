@@ -6,9 +6,8 @@ const saltround =10
 dotenv.config();
 
 
-// ==============================================
+
 // ================== home page =================
-// ==============================================
 const loadHome= async (req,res)=>{
   try {
     return res.render('user/userhome')
@@ -18,13 +17,17 @@ const loadHome= async (req,res)=>{
     
    
 }
+
+
+
 //===============================================
 //================ user register ================
 //===============================================
   const loadSignUp = async (req, res) => {
     try {
       const message = req.flash('success');
-      res.render('user/usersignup',{message}); 
+      const cliend_id = process.env.GOOGLE_CLIENT_ID || ""
+      res.render('user/usersignup',{message ,cliend_id}); 
     } catch (error) {
       console.log('user signup error:', error);
     }
@@ -220,10 +223,10 @@ const resendOtp = async (req, res) => {
     const currentTime = Date.now();
   
     
-    if (req.session.otp && req.session.timestamp||req.session.newotp&& req.session.newtimestamp) {
+    if (req.session.otp && req.session.timestamp) {
       const otpAge = currentTime - req.session.timestamp;
-      // const newotpAge=currentTime - req.session.newtimestamp;
-      const isExpired = otpAge == 50000;  
+     
+      const isExpired = otpAge == 30000;  
   
       if (isExpired) {
         req.flash('OTP', 'OTP Expired');
@@ -290,9 +293,9 @@ const loadSignIn = async (req, res) => {
       
       const error = req.flash('error');
       
-
+      const cliend_id =process.env.GOOGLE_CLIENT_ID
       
-      res.render('user/usersignin',{ error }); 
+      res.render('user/usersignin',{ error,cliend_id }); 
     } catch (error) {
       console.log('user signin error:', error);
     }
@@ -300,13 +303,13 @@ const loadSignIn = async (req, res) => {
 
   const signIn = async (req, res) => {
     try {
-      // Debug incoming data
+     
       console.log(req.body);
   
-      // Extract form data
+    
       const { email, password, name } = req.body;
   
-      // Validation for empty fields
+      
       if (!email || !password || !name) {
         req.flash('error', 'All fields are required!');
         return res.redirect("/signin");
@@ -326,6 +329,11 @@ const loadSignIn = async (req, res) => {
       
       if(user.isBan === true){
         req.flash('error', 'User Banned By admin!');
+        return res.redirect("/signin");
+      }
+
+      if(user.authuser === true){
+        req.flash('error', 'You Are Only Allowed Google Auth Login');
         return res.redirect("/signin");
       }
       
@@ -365,10 +373,6 @@ const loadForgot = async (req, res) => {
     }
   };
 
-
-
-
-
 const loadReset = async (req, res) => {
     try {
       
@@ -380,7 +384,68 @@ const loadReset = async (req, res) => {
 
 
 
+
+//===============================================
+// ============ Google Auth Sign Up =============
+// ==============================================
+
+const authsignup=async(req,res)=>{
+ 
+
+  const data = req.body.data
+  const email=data.email
+  const user = await userSchema.findOne({email});
+  console.log(user);
+  
+  if(user){
+    return res.json({ status: 'not done' });
+  }else{
+    console.log(data)
+  const newUser = new userSchema({
+    email:data.email,
+    name:data.name
+  });
+
+  newUser.authuser = true;
+  await newUser.save();
+  
+  }
+
+  user.authuser = true
+  await user.save();
+  res.redirect(302, '/');
+}
+
+const authsignin = async (req,res)=>{
+
+  const data = req.body.data
+  const email=data.email
+  const user = await userSchema.findOne({email});
+  console.log(user);
+
+  
+  if(!user){
+    return res.json({ status: 'not done' });
+  }
+ 
+
+
+  res.redirect(302, '/');
+
+
+}
+
+// =================================================
+// =================================================
+// =================================================
+
+
+
+
+
   module.exports={
+    authsignup,
+    authsignin,
     loadHome,
     loadSignUp,
     loadSignIn,

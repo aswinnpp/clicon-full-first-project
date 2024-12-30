@@ -46,7 +46,7 @@
             role="tabpanel"
             aria-labelledby="sign-up-tab"
           >
-          <p style="color: red;"><%= typeof message !== 'undefined' ? message : '' %></p>
+          <p id="errr" style="color: red;"><%= typeof message !== 'undefined' ? message : '' %></p>
           <form action="/signup" method="post">
               <div class="mb-3">
                 <label for="sign-up-name" class="form-label">Name</label>
@@ -70,21 +70,7 @@
                   placeholder="Enter your email"
                 />
               </div>
-              <div class="mb-3">
-                <label for="sign-up-email" class="form-label"
-                  >Phone no</label
-                >
-                <input
-                  style="appearance: none;" 
-                  maxlength="10" 
-                  pattern="[0-9]{10}" 
-                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                  name="phone"
-                  class="form-control"
-                  id="sign-up-num"
-                  placeholder="Enter your mobile no."
-                />
-              </div>
+            
               <div class="mb-3">
                 <label for="sign-up-password" class="form-label"
                   >Password</label
@@ -117,7 +103,7 @@
             <div class="container ">
               <button class="google-btn d-flex align-items-center justify-content-center mt-3 ms-3">
                   <img src="/images/google icon.png" alt="Google logo">
-                  <span class="text-secondary">Sign in with Google</span>
+                  <span class="text-secondary" id="google-signup-button">Sign in with Google</span>
               </button>
           </div>
           </div>
@@ -127,6 +113,64 @@
     </div>
 
     <script>
+
+
+      let action ='signup'
+    
+
+    window.onload = function() {
+          if (action === 'signup') {
+             
+              google.accounts.id.initialize({
+                  client_id: "<%= typeof cliend_id !== 'undefined' ? cliend_id : '' %>",  
+                  callback: handleCredentialResponsesingup
+              });
+          } 
+  
+          google.accounts.id.renderButton(
+              document.getElementById("google-signup-button"), 
+              { theme: "outline", size: "large" } 
+          );
+          
+      }
+
+      function handleCredentialResponsesingup(response) {
+       console.log('ggggggggggggggg');
+       
+        const id_token = response.credential;
+
+       
+        console.log("ID Token: ", id_token);
+
+        
+        const decoded = jwt_decode(id_token);
+        console.log("User Profile: ", decoded);
+        const data = {name:decoded.name,email:decoded.email}
+
+
+        fetch('/authsignup',{method:'POST',body:JSON.stringify({data}),headers: {'Content-Type': 'application/json', 
+  }}).then(data => {
+
+    console.log(data);
+
+  if (data.redirected) {
+
+    console.log('hhhhhhhhhhh');
+    
+    window.location=data.url
+    
+  }else{
+    document.getElementById('errr').innerHTML='useralready exist'
+  }
+})
+.catch(error => {
+  console.error('Error:', error);
+});
+    }
+      
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
   const signUpForm = document.querySelector("#sign-up form");
 
@@ -186,10 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Terms validation
-
-
-    // Display errors or submit form
+    
     
     if (phone.length !== 10) {
       swal.fire( 'Enter a valid 10-digit phone number.')
