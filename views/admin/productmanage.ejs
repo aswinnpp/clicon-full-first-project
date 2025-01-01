@@ -1,6 +1,6 @@
 <%- include('../partials/admin/header') %>
 
-      <!-- Main Content -->
+<!-- Main Content -->
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
   <!-- Mobile Toggle Button -->
   <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 d-md-none">
@@ -24,16 +24,13 @@
   <!-- Product Management Table -->
   <div class="d-flex justify-content-between mb-3">
     <h2>Product Status</h2>
-    <form action="/admin/productcreate" method="get"> <button class="btn btn-warning mt-3  ">Create</button></form>
-   
+    <form action="/admin/productcreate" method="get">
+      <button class="btn btn-warning mt-3">Create</button>
+    </form>
   </div>
 
   <div class="input-group mb-3">
-    <input
-      type="text"
-      class="form-control"
-      placeholder="Search Products"
-    />
+    <input type="text" class="form-control" placeholder="Search Products" />
     <button class="btn btn-primary">Search</button>
   </div>
 
@@ -42,8 +39,9 @@
     <table class="table table-dark table-striped table-hover">
       <thead>
         <tr>
-          <th>Name</th>
+         
           <th>Category</th>
+          <th>Name</th>
           <th>Brand</th>
           <th>Price</th>
           <th>Offer</th>
@@ -52,55 +50,54 @@
           <th>Color</th>
           <th>Description</th>
           <th>Rating</th>
+          <th>Image</th> <!-- Added Image column -->
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Boat Airpodes</td>
-          <td>Speaker</td>
-          <td>Boat</td>
-          <td>2999</td>
-          <td>10%</td>
-          <td>150</td>
-          <td>1 Year</td>
-          <td>Black</td>
-          <td>Wireless Bluetooth</td>
-          <td>4.5</td>
-          <td>
-            <form action="/admin/productupdate" method="get" style="display: inline;">
-              <button class="btn btn-success btn-sm">Update</button>
-            </form>
-            <button class="btn btn-danger btn-sm" style="display: inline;">Delete</button>
-            <form action="/admin/productview" method="get" style="display: inline;">  <button class="btn btn-info btn-sm" >View</button>
+       <!-- Example Product Rows -->
+<% if (products && products.length > 0) { %>
+  <% for (let i = 0; i < products.length; i++) { %>
+    <tr>
+      <td><%= products[i].category %></td>
+      <td><%= products[i].productname %></td>
+      <td><%= products[i].brand %></td>
+      <td><%= products[i].price %></td>
+      <td><%= products[i].offer %></td>
+      <td><%= products[i].stock %></td>
+      <td><%= products[i].warranty %></td>
+      <td><%= products[i].color %></td>
+      <td><%= products[i].description %></td>
+      <td><%= products[i].rating %></td>
+      <td>
+        <% if (products[i].image) { %>
 
-          </td>
-        </tr>
-        <tr>
-          <td>Noise Icon</td>
-          <td>Smart Watch</td>
-          <td>Noise</td>
-          <td>1599</td>
-          <td>15%</td>
-          <td>200</td>
-          <td>2 Years</td>
-          <td>Silver</td>
-          <td>Fitness Tracking</td>
-          <td>4.7</td>
-          <td>
-            <form action="/admin/productupdate" method="get" style="display: inline;">
-              <button class="btn btn-success btn-sm">Update</button>
-            </form>
-            <button class="btn btn-danger btn-sm" style="display: inline;">Delete</button>
-           <form action="/admin/productview" method="get" style="display: inline;">  <button class="btn btn-info btn-sm" >View</button>
-           </td></form>
-        </tr>
+       
+          <img src="<%= products[i].image[0] %>" alt="<%= products[i].productname %>" width="100" height="100" />
+        <% } else { %>
+          <span>No image</span>
+        <% } %>
+      </td>
+      <td>
+        <form action="/admin/productupdate" method="get" style="display: inline;">
+          <button class="btn btn-success btn-sm">Update</button>
+        </form>
+        <button class="btn btn-danger btn-sm" style="display: inline;">Delete</button>
+        <form action="/admin/productview" method="get" style="display: inline;">
+          <button class="btn btn-info btn-sm">View</button>
+        </form>
+      </td>
+    </tr>
+  <% } %>
+<% } else { %>
+  <tr>
+    <td colspan="12">No products available.</td>
+  </tr>
+<% } %>
+
       </tbody>
     </table>
   </div>
 </main>
-</div>
-</div>
 
-
-    <%- include('../partials/admin/footer') %>
+<%- include('../partials/admin/footer') %>

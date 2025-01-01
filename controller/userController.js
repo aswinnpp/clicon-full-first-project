@@ -40,19 +40,25 @@ const signUp = async (req, res) => {
  
   
   try {
-    const { email, password, name,phone } = req.body;
+    const { email, password, name , Confirmpassword } = req.body;
 
     const user = await userSchema.findOne({ email });
     if (user) {
       req.flash('success', 'User already exist!');
       return res.redirect("/signup");
     }
+      if( password !== Confirmpassword){
+        req.flash('success', 'Password Not Match');
+        return res.redirect("/signup");
+
+      }
+
     const otp = generateOTP();
     const timestamp = Date.now();
 
     req.session.otp = otp;
     req.session.timestamp = timestamp;
-    req.session.details={email,password,name,phone}
+    req.session.details={email,password,name, Confirmpassword }
 
     sendOtpEmail(email, otp);
     console.log('sign up otp creation',req.session)
@@ -285,6 +291,65 @@ const resendOtp = async (req, res) => {
 
 
 
+
+//===============================================
+// ============ Google Auth Sign Up =============
+// ==============================================
+
+const authsignup=async(req,res)=>{
+ 
+
+  const data = req.body.data
+  const email=data.email
+  const user = await userSchema.findOne({email});
+  console.log(user);
+  
+  if(user){
+    return res.json({ status: 'not done' });
+  }else{
+    console.log(data)
+  const newUser = new userSchema({
+    email:data.email,
+    name:data.name
+  });
+
+  newUser.authuser = true;
+  await newUser.save();
+  
+  }
+
+  user.authuser = true
+  await user.save();
+  res.redirect(302, '/');
+}
+
+const authsignin = async (req,res)=>{
+
+  const data = req.body.data
+  const email=data.email
+  const user = await userSchema.findOne({email});
+  console.log(user);
+
+  
+  if(!user){
+    return res.json({ status: 'not done' });
+  }
+ 
+
+
+  res.redirect(302, '/');
+
+
+}
+
+// =================================================
+// =================================================
+// =================================================
+
+
+
+
+
 //==============================================
 //=============== user login ====================
 //==============================================
@@ -385,59 +450,6 @@ const loadReset = async (req, res) => {
 
 
 
-//===============================================
-// ============ Google Auth Sign Up =============
-// ==============================================
-
-const authsignup=async(req,res)=>{
- 
-
-  const data = req.body.data
-  const email=data.email
-  const user = await userSchema.findOne({email});
-  console.log(user);
-  
-  if(user){
-    return res.json({ status: 'not done' });
-  }else{
-    console.log(data)
-  const newUser = new userSchema({
-    email:data.email,
-    name:data.name
-  });
-
-  newUser.authuser = true;
-  await newUser.save();
-  
-  }
-
-  user.authuser = true
-  await user.save();
-  res.redirect(302, '/');
-}
-
-const authsignin = async (req,res)=>{
-
-  const data = req.body.data
-  const email=data.email
-  const user = await userSchema.findOne({email});
-  console.log(user);
-
-  
-  if(!user){
-    return res.json({ status: 'not done' });
-  }
- 
-
-
-  res.redirect(302, '/');
-
-
-}
-
-// =================================================
-// =================================================
-// =================================================
 
 
 

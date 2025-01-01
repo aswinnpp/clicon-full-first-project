@@ -15,58 +15,120 @@
     <h1 class="h2">Create Product</h1>
   </div>
 
-  <form action="/admin/productcreate" method="POST">
-    <!-- No hidden input for ID since this is for creating a new product -->
+  <form action="/admin/productcreate" method="POST" enctype="multipart/form-data">
     
+    <!-- Product Name -->
     <div class="mb-3">
       <label for="productName" class="form-label">Product Name</label>
-      <input type="text" class="form-control" id="productName" name="productname" value="" required>
+      <input type="text" class="form-control" id="productname" name="productname" value="" required>
     </div>
-  
+
+    <!-- Description -->
     <div class="mb-3">
       <label for="description" class="form-label">Description</label>
       <input type="text" class="form-control" id="description" name="description" value="" required>
     </div>
-  
+
+    <!-- Category -->
     <div class="mb-3">
       <label class="form-label">Category</label>
       <input type="text" class="form-control" id="category" name="category" value="" required>
     </div>
-  
+
+    <!-- Brand -->
     <div class="mb-3">
       <label for="brand" class="form-label">Brand</label>     
       <input type="text" class="form-control" id="brand" name="brand" value="" required>
     </div>
 
+    <!-- Offer -->
     <div class="mb-3">
       <label for="offer" class="form-label">Offer</label>     
       <input type="text" class="form-control" id="offer" name="offer" value="" required>
     </div>
 
+    <!-- Stock -->
     <div class="mb-3">
       <label for="stock" class="form-label">Stock</label>     
-      <input type="text" class="form-control" id="stock" name="stock" value="" required>
+      <input type="number" class="form-control" id="stock" name="stock" value="" required>
     </div>
 
+    <!-- Warranty -->
     <div class="mb-3">
       <label for="warranty" class="form-label">Warranty</label>     
       <input type="text" class="form-control" id="warranty" name="warranty" value="" required>
     </div>
 
+    <!-- Return Policy -->
     <div class="mb-3">
       <label for="returnpolicy" class="form-label">Return Policy</label>     
       <input type="text" class="form-control" id="returnpolicy" name="returnpolicy" value="" required>
     </div>
 
+    <!-- Color -->
     <div class="mb-3">
       <label for="color" class="form-label">Color</label>     
       <input type="text" class="form-control" id="color" name="color" value="" required>
     </div>
 
-    <button type="submit" class="btn btn-primary">Create</button>
+    <!-- Price -->
+    <div class="mb-3">
+      <label for="price" class="form-label">Price</label>
+      <input type="number" class="form-control" id="price" name="price" value="" required min="0">
+    </div>
+
+    <!-- Rating -->
+    <div class="mb-3">
+      <label for="rating" class="form-label">Rating</label>
+      <input type="number" class="form-control" id="rating" name="rating" value="" min="0" max="5" step="0.1">
+    </div>
+
+    <!-- Image Upload -->
+    <div class="mb-3">
+      <label for="image" class="form-label">Upload Product Image</label>
+      <input type="file" class="form-control" id="image" name="image" multiple>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary" >Create</button>
   </form>
 </main>
 </div>
 </div>
+
+<script>
+ 
+
+function previewImage(event) {
+  const reader = new FileReader();
+  reader.onload = function() {
+    const output = document.getElementById('imagePreview');
+    output.src = reader.result;
+    output.style.display = 'block';
+  };
+  reader.readAsDataURL(event.target.files[0]);
+}
+
+function validateForm() {
+  const price = document.getElementById('price').value;
+  const stock = document.getElementById('stock').value;
+  const rating = document.getElementById('rating').value;
+
+  if (price < 0) {
+    Swal.fire("Price cannot be negative.");
+    return false;
+  }
+  if (stock < 0) {
+    Swal.fire("Stock cannot be negative.");
+    return false;
+  }
+  if (rating < 0 || rating > 5) {
+    Swal.fire("Rating should be between 0 and 5.");
+    return false;
+  }
+  return true;
+}
+
+</script>
 
 <%- include('../partials/admin/footer') %>

@@ -47,11 +47,11 @@
             aria-labelledby="sign-up-tab"
           >
           <p id="errr" style="color: red;"><%= typeof message !== 'undefined' ? message : '' %></p>
-          <form action="/signup" method="post">
+          <form id="sign-up-form" action="/signup" method="post">
               <div class="mb-3">
                 <label for="sign-up-name" class="form-label">Name</label>
                 <input
-                  type="text",
+                  type="text"
                   name="name"
                   class="form-control"
                   id="sign-up-name"
@@ -63,7 +63,7 @@
                   >Email address</label
                 >
                 <input
-                  type="email",
+                  type="email"
                   name="email"
                   class="form-control"
                   id="sign-up-email"
@@ -76,7 +76,7 @@
                   >Password</label
                 >
                 <input
-                  type="password",
+                  type="password"
                   name="password"
                   class="form-control"
                   id="sign-up-password"
@@ -89,15 +89,15 @@
                 >
 
                 <input
-                  type="password",
-                  name="Confirm-password"
+                  type="password"
+                  name="Confirmpassword"
                   class="form-control"
                   id="sign-up-confirm-password"
                   placeholder="Confirm your password"
                 />
               </div>
               
-              
+             
               <button type="submit" class="btn btn-primary">Sign Up</button>
             </form>
             <div class="container ">
@@ -113,6 +113,71 @@
     </div>
 
     <script>
+
+document.addEventListener("DOMContentLoaded", () => {
+  const signUpForm = document.querySelector("#sign-up-form");  // Ensure this points to your form
+
+  signUpForm.addEventListener("submit", (event) => {
+    event.preventDefault(); // Prevent default form submission
+
+    // Get form values
+    const name = document.getElementById("sign-up-name").value.trim();
+    const email = document.getElementById("sign-up-email").value.trim();
+    const password = document.getElementById("sign-up-password").value.trim();
+    const confirmPassword = document.getElementById("sign-up-confirm-password").value.trim();
+  
+   
+    const errorMsg = document.getElementById('phone-error');
+
+
+    if (name === "") {
+      Swal.fire("Name is required.");
+      return;
+    }
+
+ 
+    if (email === "") {
+      Swal.fire("Email is required.");
+      return;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      Swal.fire("Invalid email address.");
+      return;
+    }
+
+  
+    if (password === "" ||
+      password.length < 6 ||
+      !/(?=.*[a-z])/.test(password) ||
+      !/(?=.*[A-Z])/.test(password) ||
+      !/(?=.*[0-9])/.test(password) ||
+      !/(?=.*[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>\/?])/.test(password)) {
+      Swal.fire(
+        "Password must:\n" +
+        "- Be at least 6 characters long\n" +
+        "- Contain one lowercase letter\n" +
+        "- Contain one uppercase letter\n" +
+        "- Contain one number\n" +
+        "- Contain one special character"
+      );
+      return;
+    }
+
+ 
+    if (confirmPassword === "") {
+      Swal.fire("Confirm password is required.");
+      return;
+    } else if (password !== confirmPassword) {
+      Swal.fire("Passwords do not match.");
+      return;
+    }
+
+
+   
+
+    
+    signUpForm.submit(); 
+  });
+});
 
 
       let action ='signup'
@@ -171,74 +236,7 @@
 
 
 
-document.addEventListener("DOMContentLoaded", () => {
-  const signUpForm = document.querySelector("#sign-up form");
-
-  signUpForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    const name = document.getElementById("sign-up-name").value.trim();
-    const email = document.getElementById("sign-up-email").value.trim();
-    const password = document.getElementById("sign-up-password").value.trim();
-    const confirmPassword = document.getElementById("sign-up-confirm-password").value.trim();
-  
-    const phoneInput = document.getElementById('sign-up-num');
-    const errorMsg = document.getElementById('phone-error');
-    const phone = phoneInput.value;
-
-  
-
-    
-    if (name === "") {
-      Swal.fire("Name is required.");
-      return;
-    }
-
-
-    if (email === "") {
-      Swal.fire("Email is required.");
-      return;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      Swal.fire("Invalid email address.");
-      return;
-    }
-
- 
-    if (password === "" ||
-        password.length < 6 ||
-        !/(?=.*[a-z])/.test(password) ||
-        !/(?=.*[A-Z])/.test(password) ||
-        !/(?=.*[0-9])/.test(password) ||
-        !/(?=.*[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>\/?])/.test(password)) {
-        Swal.fire(
-        "Password must:\n" +
-        "- Be at least 6 characters long\n" +
-        "- Contain one lowercase letter\n" +
-        "- Contain one uppercase letter\n" +
-        "- Contain one number\n" +
-        "- Contain one special character"
-      );
-      return;
-    }
-
    
-    if (confirmPassword === "") {
-      Swal.fire("Confirm password is required.");
-      return;
-    } else if (password !== confirmPassword) {
-      Swal.fire("Passwords do not match.");
-      return;
-    }
-
-    
-    
-    if (phone.length !== 10) {
-      swal.fire( 'Enter a valid 10-digit phone number.')
-    } else {
-      signUpForm.submit(); 
-    }
-  });
-});
 
  
 

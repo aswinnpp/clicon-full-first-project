@@ -1,5 +1,8 @@
 const User = require("../models/usermodel");
 const bcrypt = require("bcrypt");
+const Product= require("../models/productmodel")
+
+
 
 
 const loadLogin = async (req, res) => {
@@ -30,7 +33,7 @@ const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, admin.password);
 
     if (!isMatch) {
-      return res.render("admin/login", { message: "Invalid credential"||"" });
+      return res.render("admin/login", { message: "Invalid password"||"" });
       console.log(massage);
     }
 
@@ -61,6 +64,7 @@ const loadUserManage = async (req, res) => {
   try {
     
     const users = await User.find({})
+  
     console.log("consolling users:",users);
     
 
@@ -171,7 +175,12 @@ const banUser=  async (req, res) => {
 
 const loadProductManage = async (req, res) => {
   try {
-    return res.render("admin/productmanage");
+
+  const products = await  Product.find({})
+
+  
+
+    return res.render("admin/productmanage", { products });
   } catch (error) {
     console.log("productmanage page not found");
     res.status(500).send("server error");
@@ -190,6 +199,37 @@ try {
 }
 
 
+}
+
+const Productcreate= async (req,res)=>{
+
+  console.log(req.body)
+
+  const { productname, category, brand, price, offer, stock, warranty, color, description, rating } = req.body;
+
+  const image = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+
+  if (image.length < 3) {
+    return res.status(400).send('Minimum 3 images required');
+  }
+
+
+  const newProduct = new Product({
+    productname,
+    category,
+    brand,
+    price,
+    offer,
+    stock,
+    warranty,
+    color,
+    description,
+    rating,
+    image
+  });
+  await newProduct.save();
+
+ res.redirect("/admin/productmanage")
 }
 
 const loadProductcreate =async (req, res)=>{
@@ -250,4 +290,5 @@ module.exports = {
   loadProductcreate,
   loadProductview,
   loadCategoryManage,
+  Productcreate,
 };
