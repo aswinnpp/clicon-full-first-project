@@ -4,7 +4,7 @@
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 d-md-none">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Update Product</a>
+      <a class="navbar-brand" href="#">Create Product</a>
       <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation" id="menuBtn">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -15,59 +15,254 @@
     <h1 class="h2">Update Product</h1>
   </div>
 
-  <form action="/admin/productupdate" method="POST">
-    <!-- Hidden Input to store the Product's ID -->
-    <input type="hidden" name="id" value="">
+  <form onsubmit="return validateFiles()"  action="/admin/productupdate" method="POST" enctype="multipart/form-data">
+
+    <% if (products && products._id) { %>
+      <input type="hidden" name="id" value="<%= products._id %>">
+    <% } else { %>
+      <input type="hidden" name="id" value="">
+      <p style="color: red;">User ID is missing. Please try again later.</p>
+    <% } %>
+
     
+    <!-- Product Name -->
     <div class="mb-3">
       <label for="productName" class="form-label">Product Name</label>
-      <input type="text" class="form-control" id="productName" name="productname" value="" required>
+      <input type="text" class="form-control" id="productname" name="productname"  >
     </div>
-  
+
+    <!-- Description -->
     <div class="mb-3">
       <label for="description" class="form-label">Description</label>
-      <input type="text" class="form-control" id="description" name="description" value="" required>
+      <input type="text" class="form-control" id="description" name="description"   >
     </div>
-  
+
+    <!-- Category -->
     <div class="mb-3">
       <label class="form-label">Category</label>
-      <input type="text" class="form-control" id="category" name="category" value="" required>
+      <input type="text" class="form-control" id="category" name="category"  >
     </div>
-  
+
+    <!-- Brand -->
     <div class="mb-3">
       <label for="brand" class="form-label">Brand</label>     
-      <input type="text" class="form-control" id="brand" name="brand" value="" required>
+      <input type="text" class="form-control" id="brand" name="brand"  >
     </div>
 
+    <!-- Offer -->
     <div class="mb-3">
       <label for="offer" class="form-label">Offer</label>     
-      <input type="text" class="form-control" id="offer" name="offer" value="" required>
+      <input type="text" class="form-control" id="offer" name="offer"  >
     </div>
 
+    <!-- Stock -->
     <div class="mb-3">
       <label for="stock" class="form-label">Stock</label>     
-      <input type="text" class="form-control" id="stock" name="stock" value="" required>
+      <input type="number" class="form-control" id="stock" name="stock"  >
     </div>
 
+    <!-- Warranty -->
     <div class="mb-3">
       <label for="warranty" class="form-label">Warranty</label>     
-      <input type="text" class="form-control" id="warranty" name="warranty" value="" required>
+      <input type="text" class="form-control" id="warranty" name="warranty"  >
     </div>
 
+    <!-- Return Policy -->
     <div class="mb-3">
       <label for="returnpolicy" class="form-label">Return Policy</label>     
-      <input type="text" class="form-control" id="returnpolicy" name="returnpolicy" value="" required>
+      <input type="text" class="form-control" id="returnpolicy" name="returnpolicy"  >
     </div>
 
+    <!-- Color -->
     <div class="mb-3">
       <label for="color" class="form-label">Color</label>     
-      <input type="text" class="form-control" id="color" name="color" value="" required>
+      <input type="text" class="form-control" id="color" name="color" >
     </div>
 
-    <button type="submit" class="btn btn-primary">Update</button>
+    <!-- Price -->
+    <div class="mb-3">
+      <label for="price" class="form-label">Price</label>
+      <input type="number" class="form-control" id="price" name="price"   min="0">
+    </div>
+
+    <!-- Rating -->
+    <div class="mb-3">
+      <label for="rating" class="form-label">Rating</label>
+      <input type="number" class="form-control" id="rating" name="rating"  min="0" max="5" step="0.1">
+    </div>
+    
+
+<!-- Image Upload -->
+<div class="mb-3">
+  <label for="imageInput" class="form-label">Upload Product Images</label>
+  <input type="file" class="form-control" id="image" multiple accept="image/*">
+</div>
+
+<!-- Cropping Container (initially hidden) -->
+<div id="cropper-container" style="display: none;">
+  <div id="cropping-area" class="d-flex justify-content-center"></div>
+  <button type="button" id="saveCroppedImage" class="btn btn-primary mt-3">Save Cropped Image</button>
+  <button type="button" id="nextImage" class="btn btn-secondary mt-3">Next Image</button>
+</div>
+
+<!-- Hidden Input for Cropped Images Data -->
+<input type="hidden" id="croppedImages" name="croppedImages">
+
+
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary" >Create</button>
   </form>
 </main>
 </div>
 </div>
+
+<script>
+  
+    
+    function validateFiles() {
+      const fileInput = document.getElementById("image");
+      const fileCount = fileInput.files.length;
+      const minFiles = 3; 
+
+      if (fileCount < minFiles) {
+        alert(`You must upload at least ${minFiles} files.`);
+        return false; 
+      }
+
+      return true; 
+    }
+  
+ 
+
+function previewImage(event) {
+  const reader = new FileReader();
+  reader.onload = function() {
+    const output = document.getElementById('imagePreview');
+    output.src = reader.result;
+    output.style.display = 'block';
+  };
+  reader.readAsDataURL(event.target.files[0]);
+}
+
+function validateForm() {
+  const price = document.getElementById('price').value;
+  const stock = document.getElementById('stock').value;
+  const rating = document.getElementById('rating').value;
+
+  if (price < 0) {
+    Swal.fire("Price cannot be negative.");
+    return false;
+  }
+  if (stock < 0) {
+    Swal.fire("Stock cannot be negative.");
+    return false;
+  }
+  if (rating < 0 || rating > 5) {
+    Swal.fire("Rating should be between 0 and 5.");
+    return false;
+  }
+  return true;
+}
+
+
+
+const imageInput = document.getElementById("image");
+  const cropperContainer = document.getElementById("cropper-container");
+  const croppingArea = document.getElementById("cropping-area");
+  const saveCroppedImageButton = document.getElementById("saveCroppedImage");
+  const nextImageButton = document.getElementById("nextImage");
+  const croppedImagesInput = document.getElementById("croppedImages");
+
+  let cropper;  
+  let croppedImages = []; 
+  let currentImageIndex = 0;  
+  let imageFiles = [];  
+
+  
+  imageInput.addEventListener("change", function (e) {
+    const files = e.target.files;
+    imageFiles = Array.from(files);  
+    croppedImages = []; 
+    currentImageIndex = 0;  
+    loadNextImage(); 
+  });
+
+  
+  function loadNextImage() {
+    if (currentImageIndex < imageFiles.length) {
+      const file = imageFiles[currentImageIndex];
+      const reader = new FileReader();
+
+      reader.onload = function (event) {
+        const img = document.createElement("img");
+        img.src = event.target.result;
+        img.classList.add("crop-image");
+
+        
+        croppingArea.innerHTML = "";
+        croppingArea.appendChild(img);
+
+        
+        if (cropper) {
+          cropper.destroy();  
+        }
+        cropper = new Cropper(img, {
+          aspectRatio: NaN, 
+            viewMode: 2,      
+           autoCropArea: 1,  
+           responsive: true, 
+});
+
+
+        
+        cropperContainer.style.display = "block";
+      };
+
+      reader.readAsDataURL(file);
+    }
+  }
+
+  saveCroppedImageButton.addEventListener("click", function () {
+
+  if (!cropper) {
+    console.log("No cropper instance found.");
+    return;
+  }
+
+  const canvas = cropper.getCroppedCanvas();  
+  if (!canvas) {
+    console.log("Failed to get cropped canvas.");
+    return;
+  }
+
+  
+  const croppedImage = canvas.toDataURL("image/png");
+
+  if (!croppedImage) {
+    console.log("No cropped image generated.");
+    return;
+  }
+  
+  croppedImages.push(croppedImage);
+
+ 
+  croppedImagesInput.value = JSON.stringify(croppedImages);
+
+  console.log("Cropped Image Saved:", croppedImage);
+});
+
+  nextImageButton.addEventListener("click", function () {
+    if (currentImageIndex < imageFiles.length - 1) {
+      currentImageIndex++;  
+      loadNextImage();  
+      alert("All images have been cropped!");
+    }
+  });
+
+
+
+
+</script>
 
 <%- include('../partials/admin/footer') %>

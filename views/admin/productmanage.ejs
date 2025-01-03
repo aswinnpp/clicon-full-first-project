@@ -10,7 +10,6 @@
         class="navbar-toggler"
         type="button"
         data-bs-toggle="collapse"
-        data-bs-target="#sidebar"
         aria-controls="sidebar"
         aria-expanded="false"
         aria-label="Toggle navigation"
@@ -39,7 +38,6 @@
     <table class="table table-dark table-striped table-hover">
       <thead>
         <tr>
-         
           <th>Category</th>
           <th>Name</th>
           <th>Brand</th>
@@ -50,54 +48,67 @@
           <th>Color</th>
           <th>Description</th>
           <th>Rating</th>
-          <th>Image</th> <!-- Added Image column -->
+          <th>Images</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-       <!-- Example Product Rows -->
-<% if (products && products.length > 0) { %>
-  <% for (let i = 0; i < products.length; i++) { %>
-    <tr>
-      <td><%= products[i].category %></td>
-      <td><%= products[i].productname %></td>
-      <td><%= products[i].brand %></td>
-      <td><%= products[i].price %></td>
-      <td><%= products[i].offer %></td>
-      <td><%= products[i].stock %></td>
-      <td><%= products[i].warranty %></td>
-      <td><%= products[i].color %></td>
-      <td><%= products[i].description %></td>
-      <td><%= products[i].rating %></td>
-      <td>
-        <% if (products[i].image) { %>
-
-       
-          <img src="<%= products[i].image[0] %>" alt="<%= products[i].productname %>" width="100" height="100" />
+        <% if (products && products.length > 0) { %>
+          <% for (let i = 0; i < products.length; i++) { %>
+            <tr>
+              <td><%= products[i].category %></td>
+              <td><%= products[i].productname %></td>
+              <td><%= products[i].brand %></td>
+              <td><%= products[i].price %></td>
+              <td><%= products[i].offer %></td>
+              <td><%= products[i].stock %></td>
+              <td><%= products[i].warranty %></td>
+              <td><%= products[i].color %></td>
+              <td><%= products[i].description %></td>
+              <td><%= products[i].rating %></td>
+              <td>
+                <% if (products[i].image && products[i].image.length > 0) { %>
+                  <div class="d-flex flex-wrap gap-2">
+                    <% for (let j = 0; j < Math.min(products[i].image.length, 3); j++) { %>
+                      <img 
+                        src="<%= products[i].image[j] %>" 
+                        alt="<%= products[i].productname %> - Image <%= j + 1 %>" 
+                        width="50" 
+                        height="50" 
+                        class="img-thumbnail"
+                        loading="lazy"
+                      />
+                    <% } %>
+                    <% if (products[i].image.length > 3) { %>
+                      <span class="badge bg-secondary align-self-center">+<%= products[i].image.length - 3 %> more</span>
+                    <% } %>
+                  </div>
+                <% } else { %>
+                  <span>No images</span>
+                <% } %>
+              </td>
+              <td>
+                <div class="d-flex flex-column gap-2">
+                  <form action="/admin/productupdate/<%= products[i]._id %>" method="get">
+                    <button class="btn btn-success btn-sm w-100">Update</button>
+                  </form>
+                  <button class="btn btn-danger btn-sm w-100">Delete</button>
+                  <form action="/admin/productview/<%= products[i]._id %>" method="get">
+                    <button class="btn btn-info btn-sm w-100">View</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% } %>
         <% } else { %>
-          <span>No image</span>
+          <tr>
+            <td colspan="12">No products available.</td>
+          </tr>
         <% } %>
-      </td>
-      <td>
-        <form action="/admin/productupdate" method="get" style="display: inline;">
-          <button class="btn btn-success btn-sm">Update</button>
-        </form>
-        <button class="btn btn-danger btn-sm" style="display: inline;">Delete</button>
-        <form action="/admin/productview" method="get" style="display: inline;">
-          <button class="btn btn-info btn-sm">View</button>
-        </form>
-      </td>
-    </tr>
-  <% } %>
-<% } else { %>
-  <tr>
-    <td colspan="12">No products available.</td>
-  </tr>
-<% } %>
-
       </tbody>
     </table>
   </div>
 </main>
 
 <%- include('../partials/admin/footer') %>
+
