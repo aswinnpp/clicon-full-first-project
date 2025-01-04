@@ -73,7 +73,7 @@
       <label for="price" class="form-label">Price</label>
       <input type="number" class="form-control" id="price" name="price" value="" required min="0">
     </div>
-
+  
     
     <div class="mb-3">
       <label for="rating" class="form-label">Rating</label>
@@ -81,40 +81,47 @@
     </div>
 
 
-<div class="mb-3">
-  <label for="productImages" class="form-label">Upload Images</label>
-  <div class="row" id="imageUploadCards">
-      <div class="col-md-4 mb-3">
+    <div class="mb-3">
+      <label for="productImages" class="form-label">Upload Images</label>
+      <div class="row" id="imageUploadCards">
+        <div class="col-md-4 mb-3">
           <div class="image-card">
-              <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview1">
-              <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview1')">
+            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview1">
+            <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview1')">
           </div>
-      </div>
-      <div class="col-md-4 mb-3">
+        </div>
+        <div class="col-md-4 mb-3">
           <div class="image-card">
-              <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview2">
-              <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview2')">
+            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview2">
+            <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview2')">
           </div>
-      </div>
-      <div class="col-md-4 mb-3">
+        </div>
+        <div class="col-md-4 mb-3">
           <div class="image-card">
-              <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview3">
-              <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview3')">
-          </div>
+            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview3">
+            <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview3')">
+         </div>
+         </div>
       </div>
-  </div>
-</div>
-
-
-
-</div>
-<small class="form-text text-muted">You must upload exactly 3
-images.</small>
-<div class="text-danger" id="errorImages"></div>
-</div>
+    </div>
+    
+    <!-- Cropping Modal -->
+    <div id="cropModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Crop Image</h2>
+        <div class="crop-container">
+          <img id="imageToCrop" src="" alt="Image to crop">
+        </div>
+        <button class="crop-button" onclick="cropImage()">Crop</button>
+      </div>
+    </div>
+    
+    <small class="form-text text-muted">You must upload exactly 3 images.</small>
+    <div class="text-danger" id="errorImages"></div>
 
              
-
+<!-- 
                 <div id="cropModal" class="modal">
                   <div class="modal-content">
                       <span class="close">&times;</span>
@@ -124,7 +131,7 @@ images.</small>
                       </div>
                       <button class="crop-button" onclick="cropImage()">Crop</button>
                   </div>
-              </div>
+              </div> -->
 
 
                                   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> 
@@ -238,80 +245,58 @@ images.</small>
 }
 </style>
 
+
 <script>
+  let cropper;
+  let currentImageId = '';
+  
+  function handleImageUpload(event, imagePreviewId) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      document.getElementById(imagePreviewId).src = e.target.result;
+  
+      document.getElementById('cropModal').style.display = 'block';
+      currentImageId = imagePreviewId;
+  
+      const imageElement = document.getElementById('imageToCrop');
+      imageElement.src = e.target.result;
+  
+      if (cropper) {
+        cropper.destroy();
+      }
+      cropper = new Cropper(imageElement, {
+        aspectRatio: 1,
+        viewMode: 1,
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+  
+  function cropImage() {
+    const canvas = cropper.getCroppedCanvas();
+    const croppedImageUrl = canvas.toDataURL(); // base64 image
+  
+    document.getElementById(currentImageId).src = croppedImageUrl;
+    document.getElementById('cropModal').style.display = 'none';
+  
+    // Set the base64 image to the hidden input field to send it in the form
+    const inputField = document.createElement('input');
+    inputField.type = 'hidden';
+    inputField.name = 'images';
+    inputField.value = croppedImageUrl; // base64 image string
+  
+    document.querySelector('form').appendChild(inputField);  // Add the hidden input to the form
+  }
+  
+  // Modal close functionality
+  document.querySelector('.close').addEventListener('click', function() {
+    document.getElementById('cropModal').style.display = 'none';
+    if (cropper) {
+      cropper.destroy();
+    }
+  });
+  </script>
 
-function previewImage(event, previewId) {
-           const reader = new FileReader();
-             reader.onload = function () {
-        const output = document.getElementById(previewId);
-        output.src = reader.result;
-             }
-         reader.readAsDataURL(event.target.files[0]);
-        }
-
-
-        let cropper;
-        let currentImagePreviewId;
-    
-        function handleImageUpload(event, imagePreviewId) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    currentImagePreviewId = imagePreviewId;
-                    const imageToCrop = document.getElementById('imageToCrop');
-                    imageToCrop.src = e.target.result;
-                    showModal();
-                    initializeCropper();
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-    
-        function showModal() {
-            const modal = document.getElementById('cropModal');
-            modal.style.display = "block";
-        }
-    
-        function initializeCropper() {
-            const imageToCrop = document.getElementById('imageToCrop');
-            cropper = new Cropper(imageToCrop, {
-                aspectRatio: 1,
-                viewMode: 1
-            });
-        }
-    
-        function cropImage() {
-            const canvas = cropper.getCroppedCanvas();
-            const croppedImageURL = canvas.toDataURL('image/png');
-    
-          
-            const imagePreview = document.getElementById(currentImagePreviewId);
-            imagePreview.src = croppedImageURL;
-    
-            closeModal();
-        }
-    
-        function closeModal() {
-            const modal = document.getElementById('cropModal');
-            modal.style.display = "none";
-            cropper.destroy();
-        }
-    
-        
-        document.querySelector('.close').onclick = function() {
-            closeModal();
-        };
-    
-       
-        window.onclick = function(event) {
-            const modal = document.getElementById('cropModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        };
-
-
-</script>
-
-<%- include('../partials/admin/footer') %>
+ <%- include('../partials/admin/footer') %>

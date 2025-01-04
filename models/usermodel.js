@@ -22,10 +22,6 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "admin"],  
     default: "user",         
   },
-  createdAt: {
-    type: String,
-    default: formattedDate,
-  },
   name:{
     type: String,
     require:true
@@ -44,10 +40,11 @@ const userSchema = new mongoose.Schema({
     type:Boolean,
     default:false
   }
-
-
-
+}, {
+  timestamps: true, 
 });
+
+
 
 module.exports = mongoose.model("User", userSchema);
 

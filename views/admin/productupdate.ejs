@@ -15,7 +15,7 @@
     <h1 class="h2">Update Product</h1>
   </div>
 
-  <form onsubmit="return validateFiles()"  action="/admin/productupdate" method="POST" enctype="multipart/form-data">
+  <form onsubmit="return validateFiles()"  action="/admin/productupdate" method="POST" >
 
     <% if (products && products._id) { %>
       <input type="hidden" name="id" value="<%= products._id %>">

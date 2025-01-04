@@ -1,9 +1,9 @@
-<%- include('../partials/user/header') %> 
+<%- include('../partials/user/header') %>
 
 <div class="container3 mt-3">
-    <div class="auth-wrapper">
-      <ul class="nav nav-tabs mb-3" id="auth-tab" role="tablist">
-        <li class="nav-item" role="presentation">
+  <div class="auth-wrapper">
+    <ul class="nav nav-tabs mb-3" id="auth-tab" role="tablist">
+      <li class="nav-item" role="presentation">
         <form action="./signup">
           <button
             class="nav-link active"
@@ -18,230 +18,203 @@
             Sign up
           </button>
         </form>
-          
-     
-        </li>
-        <li class="nav-item" role="presentation">
-         <form action="./signin" method="get">
-  
+      </li>
+      <li class="nav-item" role="presentation">
+        <form action="./signin" method="get">
           <button
-          class="nav-link"
-          id="sign-in-tab"
-          type="submit"
-          role="tab"
-          aria-controls="sign-in"
-          aria-selected="false"
-        >
-          Sign in
-        </button>
-         </form>
-          
-        </li>
-      </ul>
-      <div class="tab-content" id="auth-tabContent">
-          <!-- Sign Up Form -->
-          <div
-            class="tab-pane fade show active"
-            id="sign-up"
-            role="tabpanel"
-            aria-labelledby="sign-up-tab"
+            class="nav-link"
+            id="sign-in-tab"
+            type="submit"
+            role="tab"
+            aria-controls="sign-in"
+            aria-selected="false"
           >
-          <p id="errr" style="color: red;"><%= typeof message !== 'undefined' ? message : '' %></p>
-          <form id="sign-up-form" action="/signup" method="post">
-              <div class="mb-3">
-                <label for="sign-up-name" class="form-label">Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  class="form-control"
-                  id="sign-up-name"
-                  placeholder="Enter your name"
-                />
-              </div>
-              <div class="mb-3">
-                <label for="sign-up-email" class="form-label"
-                  >Email address</label
-                >
-                <input
-                  type="email"
-                  name="email"
-                  class="form-control"
-                  id="sign-up-email"
-                  placeholder="Enter your email"
-                />
-              </div>
-            
-              <div class="mb-3">
-                <label for="sign-up-password" class="form-label"
-                  >Password</label
-                >
-                <input
-                  type="password"
-                  name="password"
-                  class="form-control"
-                  id="sign-up-password"
-                  placeholder="Enter your password"
-                />
-              </div>
-              <div class="mb-3">
-                <label for="sign-up-confirm-password" class="form-label"
-                  >Confirm Password</label
-                >
+            Sign in
+          </button>
+        </form>
+      </li>
+    </ul>
+    <div class="tab-content" id="auth-tabContent">
+      <!-- Sign Up Form -->
+      <div
+        class="tab-pane fade show active"
+        id="sign-up"
+        role="tabpanel"
+        aria-labelledby="sign-up-tab"
+      >
+        <p id="errr" style="color: red">
+          <%= typeof message !== 'undefined' ? message : '' %>
+        </p>
+        <form id="sign-up-form" action="/signup" method="post">
+          <div class="mb-3">
+            <label for="sign-up-name" class="form-label">Name</label>
+            <input
+              type="text"
+              name="name"
+              class="form-control"
+              id="sign-up-name"
+              placeholder="Enter your name"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="sign-up-email" class="form-label">Email address</label>
+            <input
+              type="email"
+              name="email"
+              class="form-control"
+              id="sign-up-email"
+              placeholder="Enter your email"
+            />
+          </div>
 
-                <input
-                  type="password"
-                  name="Confirmpassword"
-                  class="form-control"
-                  id="sign-up-confirm-password"
-                  placeholder="Confirm your password"
-                />
-              </div>
-              
-             
-              <button type="submit" class="btn btn-primary">Sign Up</button>
-            </form>
-            <div class="container ">
-              <button class="google-btn d-flex align-items-center justify-content-center mt-3 ms-3">
-                  <img src="/images/google icon.png" alt="Google logo">
-                  <span class="text-secondary" id="google-signup-button">Sign in with Google</span>
-              </button>
+          <div class="mb-3">
+            <label for="sign-up-password" class="form-label">Password</label>
+            <input
+              type="password"
+              name="password"
+              class="form-control"
+              id="sign-up-password"
+              placeholder="Enter your password"
+            />
           </div>
+          <div class="mb-3">
+            <label for="sign-up-confirm-password" class="form-label"
+              >Confirm Password</label
+            >
+
+            <input
+              type="password"
+              name="Confirmpassword"
+              class="form-control"
+              id="sign-up-confirm-password"
+              placeholder="Confirm your password"
+            />
           </div>
-        
+
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+        <div class="container">
+          <button
+            class="google-btn d-flex align-items-center justify-content-center mt-3 ms-3"
+          >
+            <img src="/images/google icon.png" alt="Google logo" />
+            <span class="text-secondary" id="google-signup-button"
+              >Sign in with Google</span
+            >
+          </button>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const signUpForm = document.querySelector("#sign-up-form"); // Ensure this points to your form
 
-document.addEventListener("DOMContentLoaded", () => {
-  const signUpForm = document.querySelector("#sign-up-form");  // Ensure this points to your form
+    signUpForm.addEventListener("submit", (event) => {
+      event.preventDefault(); // Prevent default form submission
 
-  signUpForm.addEventListener("submit", (event) => {
-    event.preventDefault(); // Prevent default form submission
+      // Get form values
+      const name = document.getElementById("sign-up-name").value.trim();
+      const email = document.getElementById("sign-up-email").value.trim();
+      const password = document.getElementById("sign-up-password").value.trim();
+      const confirmPassword = document
+        .getElementById("sign-up-confirm-password")
+        .value.trim();
 
-    // Get form values
-    const name = document.getElementById("sign-up-name").value.trim();
-    const email = document.getElementById("sign-up-email").value.trim();
-    const password = document.getElementById("sign-up-password").value.trim();
-    const confirmPassword = document.getElementById("sign-up-confirm-password").value.trim();
-  
-   
-    const errorMsg = document.getElementById('phone-error');
+      const errorMsg = document.getElementById("phone-error");
 
-
-    if (name === "") {
-      Swal.fire("Name is required.");
-      return;
-    }
-
- 
-    if (email === "") {
-      Swal.fire("Email is required.");
-      return;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      Swal.fire("Invalid email address.");
-      return;
-    }
-
-  
-    if (password === "" ||
-      password.length < 6 ||
-      !/(?=.*[a-z])/.test(password) ||
-      !/(?=.*[A-Z])/.test(password) ||
-      !/(?=.*[0-9])/.test(password) ||
-      !/(?=.*[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>\/?])/.test(password)) {
-      Swal.fire(
-        "Password must:\n" +
-        "- Be at least 6 characters long\n" +
-        "- Contain one lowercase letter\n" +
-        "- Contain one uppercase letter\n" +
-        "- Contain one number\n" +
-        "- Contain one special character"
-      );
-      return;
-    }
-
- 
-    if (confirmPassword === "") {
-      Swal.fire("Confirm password is required.");
-      return;
-    } else if (password !== confirmPassword) {
-      Swal.fire("Passwords do not match.");
-      return;
-    }
-
-
-   
-
-    
-    signUpForm.submit(); 
-  });
-});
-
-
-      let action ='signup'
-    
-
-    window.onload = function() {
-          if (action === 'signup') {
-             
-              google.accounts.id.initialize({
-                  client_id: "<%= typeof cliend_id !== 'undefined' ? cliend_id : '' %>",  
-                  callback: handleCredentialResponsesingup
-              });
-          } 
-  
-          google.accounts.id.renderButton(
-              document.getElementById("google-signup-button"), 
-              { theme: "outline", size: "large" } 
-          );
-          
+      if (name === "") {
+        Swal.fire("Name is required.");
+        return;
       }
 
-      function handleCredentialResponsesingup(response) {
-       console.log('ggggggggggggggg');
-       
-        const id_token = response.credential;
+      if (email === "") {
+        Swal.fire("Email is required.");
+        return;
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        Swal.fire("Invalid email address.");
+        return;
+      }
 
-       
-        console.log("ID Token: ", id_token);
+      if (
+        password === "" ||
+        password.length < 6 ||
+        !/(?=.*[a-z])/.test(password) ||
+        !/(?=.*[A-Z])/.test(password) ||
+        !/(?=.*[0-9])/.test(password) ||
+        !/(?=.*[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>\/?])/.test(password)
+      ) {
+        Swal.fire(
+          "Password must:\n" +
+            "- Be at least 6 characters long\n" +
+            "- Contain one lowercase letter\n" +
+            "- Contain one uppercase letter\n" +
+            "- Contain one number\n" +
+            "- Contain one special character"
+        );
+        return;
+      }
 
-        
-        const decoded = jwt_decode(id_token);
-        console.log("User Profile: ", decoded);
-        const data = {name:decoded.name,email:decoded.email}
+      if (confirmPassword === "") {
+        Swal.fire("Confirm password is required.");
+        return;
+      } else if (password !== confirmPassword) {
+        Swal.fire("Passwords do not match.");
+        return;
+      }
 
+      signUpForm.submit();
+    });
+  });
 
-        fetch('/authsignup',{method:'POST',body:JSON.stringify({data}),headers: {'Content-Type': 'application/json', 
-  }}).then(data => {
+  let action = "signup";
 
-    console.log(data);
-
-  if (data.redirected) {
-
-    console.log('hhhhhhhhhhh');
-    
-    window.location=data.url
-    
-  }else{
-    document.getElementById('errr').innerHTML='useralready exist'
-  }
-})
-.catch(error => {
-  console.error('Error:', error);
-});
+  window.onload = function () {
+    if (action === "signup") {
+      google.accounts.id.initialize({
+        client_id: "<%= typeof cliend_id !== 'undefined' ? cliend_id : '' %>",
+        callback: handleCredentialResponsesingup,
+      });
     }
-      
 
+    google.accounts.id.renderButton(
+      document.getElementById("google-signup-button"),
+      { theme: "outline", size: "large" }
+    );
+  };
 
+  function handleCredentialResponsesingup(response) {
+    console.log("ggggggggggggggg");
 
-   
+    const id_token = response.credential;
 
- 
+    console.log("ID Token: ", id_token);
 
-   
+    const decoded = jwt_decode(id_token);
+    console.log("User Profile: ", decoded);
+    const data = { name: decoded.name, email: decoded.email };
 
-    </script>
-    <%- include('../partials/user/footer') %>
- 
+    fetch("/authsignup", {
+      method: "POST",
+      body: JSON.stringify({ data }),
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((data) => {
+        console.log(data);
+
+        if (data.redirected) {
+          console.log("hhhhhhhhhhh");
+
+          window.location = data.url;
+        } else {
+          document.getElementById("errr").innerHTML = "useralready exist";
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+</script>
+<%- include('../partials/user/footer') %>

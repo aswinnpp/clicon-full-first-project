@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const Schema = mongoose.Schema;
 
 const productSchema = new mongoose.Schema({
   productname: {
@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema({
     trim: true, 
   },
   category: {
-    type: String,
+    type:Schema.Types.ObjectId,
     required: true,
     trim: true,
   },
@@ -52,8 +52,7 @@ const productSchema = new mongoose.Schema({
     default: 0,
   },
   image: {
-    type: [String], 
-    required: false, 
+    type:[String]
   },
 }, {
   timestamps: true, 
