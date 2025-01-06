@@ -5,15 +5,9 @@ const categorySchema = new Schema({
   name: {
     type: String,
     required: true,
-    unique:true
-
-   
+    unique:true 
   },
-    productId:[ {
-      type: Schema.Types.ObjectId,
-      ref: 'Product', 
-      required: false,
-    }],status: {
+    status: {
       type: String,
       enum: ['active', 'inactive'],
       default: 'active',
@@ -21,6 +15,10 @@ const categorySchema = new Schema({
     count: {
       type: Number,
       default: 0,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false, 
     },
 }, {
   timestamps: true, 

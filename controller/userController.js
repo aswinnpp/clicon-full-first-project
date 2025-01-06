@@ -1,4 +1,6 @@
 const userSchema = require("../models/usermodel");
+const Product = require("../models/productmodel");
+const Category = require("../models/categorymodel")
 const bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
@@ -10,7 +12,10 @@ dotenv.config();
 // ================== home page =================
 const loadHome= async (req,res)=>{
   try {
-    return res.render('user/userhome')
+
+    const product = await Product.find({})
+    const category = await Category.find({})
+     res.render('user/userhome',{ product, category })
   } catch (error) {
     console.log('user home error:', error);
   }

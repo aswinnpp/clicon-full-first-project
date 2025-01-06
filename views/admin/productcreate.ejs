@@ -14,10 +14,11 @@
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Create Product</h1>
   </div>
-
-  <form action="/admin/productcreate" method="POST" enctype="multipart/form-data">
+  
+  <form action="/admin/productcreate" method="POST" id="productForm" enctype="multipart/form-data">
     
     <div class="mb-3">
+      
       <label for="productName" class="form-label">Product Name</label>
       <input type="text" class="form-control" id="productname" name="productname" value="" required>
     </div>
@@ -27,24 +28,21 @@
       <input type="text" class="form-control" id="description" name="description" value="" required>
     </div>
 
-   
     <div class="mb-3">
-      <label class="form-label">Category</label>
-      <input type="text" class="form-control" id="category" name="category" value="" required>
+      <label for="categoryStatus" class="form-label">Category</label>
+      <select class="form-control" id="categoryStatus" name="category" required onchange="handleCategoryChange()">
+        <option value="">Select Category</option>
+        <% categories.forEach(category => { %>
+          <option value="<%= category.name%>"><%= category.name %></option>
+        <% }) %>
+       
+      </select>
     </div>
-
-   
+       
     <div class="mb-3">
       <label for="brand" class="form-label">Brand</label>     
       <input type="text" class="form-control" id="brand" name="brand" value="" required>
     </div>
-
-   
-    <div class="mb-3">
-      <label for="offer" class="form-label">Offer</label>     
-      <input type="text" class="form-control" id="offer" name="offer" value="" required>
-    </div>
-
    
     <div class="mb-3">
       <label for="stock" class="form-label">Stock</label>     
@@ -57,15 +55,21 @@
       <input type="text" class="form-control" id="warranty" name="warranty" value="" required>
     </div>
 
-    <div class="mb-3">
-      <label for="returnpolicy" class="form-label">Return Policy</label>     
-      <input type="text" class="form-control" id="returnpolicy" name="returnpolicy" value="" required>
-    </div>
-
-  
+    
     <div class="mb-3">
       <label for="color" class="form-label">Color</label>     
       <input type="text" class="form-control" id="color" name="color" value="" required>
+    </div>
+
+
+    <div class="mb-3" id="ramField"  style="display: none;">
+      <label for="ram" class="form-label">RAM</label>
+      <input type="text" class="form-control" id="ram" name="ram" placeholder="Enter RAM size" >
+    </div>
+    
+    <div class="mb-3" id="storageField"  style="display: none;">
+      <label for="storage" class="form-label">Storage</label>
+      <input type="text" class="form-control" id="storage" name="storage" placeholder="Enter Storage size">
     </div>
 
   
@@ -86,26 +90,26 @@
       <div class="row" id="imageUploadCards">
         <div class="col-md-4 mb-3">
           <div class="image-card">
-            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview1">
+            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview1" required>
             <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview1')">
           </div>
         </div>
         <div class="col-md-4 mb-3">
           <div class="image-card">
-            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview2">
+            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview2" required>
             <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview2')">
           </div>
         </div>
         <div class="col-md-4 mb-3">
           <div class="image-card">
-            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview3">
+            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview3" required>
             <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview3')">
          </div>
          </div>
       </div>
     </div>
     
-    <!-- Cropping Modal -->
+    
     <div id="cropModal" class="modal">
       <div class="modal-content">
         <span class="close">&times;</span>
@@ -120,31 +124,15 @@
     <small class="form-text text-muted">You must upload exactly 3 images.</small>
     <div class="text-danger" id="errorImages"></div>
 
-             
-<!-- 
-                <div id="cropModal" class="modal">
-                  <div class="modal-content">
-                      <span class="close">&times;</span>
-                      <h2>Crop Image</h2>
-                      <div class="crop-container">
-                          <img id="imageToCrop" src="" alt="Image to crop">
-                      </div>
-                      <button class="crop-button" onclick="cropImage()">Crop</button>
-                  </div>
-              </div> -->
+    <button type="submit" onclick="form.submit();" class="btn btn-primary" >Create</button>
 
-
-                                  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> 
-                                  <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
-
-
-   
-    <button type="submit" class="btn btn-primary" >Create</button>
   </form>
 </main>
 
 
-
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> 
+<script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
 
 <style>
   
@@ -247,6 +235,33 @@
 
 
 <script>
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const form = document.getElementById('productForm');
+       
+
+
+form.addEventListener('submit', async (event) => {
+   event.preventDefault();
+   const formData = new FormData(form);
+   const files = formData.getAll('images');
+   const maxSize = 5 * 1024 * 1024; 
+
+   for (const file of files) {
+       if (file.size > maxSize) {
+           Swal.fire({
+               icon: 'error',
+               title: 'Image Size Error',
+               text: 'Each image must be less than 5MB.',
+           });
+           return;
+       }
+   }
+});
+
+});
+
+
   let cropper;
   let currentImageId = '';
   
@@ -267,8 +282,9 @@
         cropper.destroy();
       }
       cropper = new Cropper(imageElement, {
-        aspectRatio: 1,
+        aspectRatio: NaN,
         viewMode: 1,
+        autoCropArea: 1,
       });
     };
     reader.readAsDataURL(file);
@@ -281,22 +297,41 @@
     document.getElementById(currentImageId).src = croppedImageUrl;
     document.getElementById('cropModal').style.display = 'none';
   
-    // Set the base64 image to the hidden input field to send it in the form
+    
     const inputField = document.createElement('input');
     inputField.type = 'hidden';
     inputField.name = 'images';
-    inputField.value = croppedImageUrl; // base64 image string
+    inputField.value = croppedImageUrl; 
   
-    document.querySelector('form').appendChild(inputField);  // Add the hidden input to the form
+    
   }
   
-  // Modal close functionality
+ 
   document.querySelector('.close').addEventListener('click', function() {
     document.getElementById('cropModal').style.display = 'none';
     if (cropper) {
       cropper.destroy();
     }
   });
+
+  function handleCategoryChange() {
+  const category = document.getElementById('categoryStatus').value;
+  const ramField = document.getElementById('ramField');
+  const storageField = document.getElementById('storageField');
+
+  
+  if (category === 'Mobiles' || category === 'Computers') {
+    ramField.style.display = 'block';       
+    storageField.style.display = 'block';  
+  } else {
+    ramField.style.display = 'none';       
+    storageField.style.display = 'none';  
+  }
+}
+
+
+
+  
   </script>
 
  <%- include('../partials/admin/footer') %>

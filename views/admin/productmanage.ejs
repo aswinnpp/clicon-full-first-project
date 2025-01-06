@@ -42,10 +42,11 @@
           <th>Name</th>
           <th>Brand</th>
           <th>Price</th>
-          <th>Offer</th>
           <th>Stock</th>
           <th>Warranty</th>
           <th>Color</th>
+          <th>Ram</th>
+          <th>Storage</th>
           <th>Description</th>
           <th>Rating</th>
           <th>Images</th>
@@ -59,35 +60,29 @@
           <td><%= products[i].category %></td>
           <td><%= products[i].productname %></td>
           <td><%= products[i].brand %></td>
-          <td><%= products[i].price %></td>
-          <td><%= products[i].offer %></td>
+          <td><%= products[i].price %></td>     
           <td><%= products[i].stock %></td>
           <td><%= products[i].warranty %></td>
           <td><%= products[i].color %></td>
+          <td><%= products[i].ram %></td>
+          <td><%= products[i].storage %></td>
           <td><%= products[i].description %></td>
           <td><%= products[i].rating %></td>
           <td>
-            <% if (products[i].image && products[i].image.length > 0) { %>
+
             <div class="d-flex flex-wrap gap-2">
-              <% for (let j = 0; j < Math.min(products[i].image.length, 3); j++)
-              { %>
-              <img
-                src="<%= products[i].image[j] %>"
-                alt="<%= products[i].productname %> - Image <%= j + 1 %>"
-                width="50"
-                height="50"
-                class="img-thumbnail"
-                loading="lazy"
-              />
-              <% } %> <% if (products[i].image.length > 3) { %>
-              <span class="badge bg-secondary align-self-center"
-                >+<%= products[i].image.length - 3 %> more</span
-              >
-              <% } %>
+              <% if (products[i].image && products[i].image.length > 0) { %>
+                <img
+                  src="/uploads/<%= products[i].image[0] %>"
+                  alt="productImage"
+                  width="100"
+                  height="100"
+                  class="img-thumbnail"
+                  loading="lazy"
+                />
+              <% }%>
+             
             </div>
-            <% } else { %>
-            <span>No images</span>
-            <% } %>
           </td>
           <td>
             <div class="d-flex flex-column gap-2">
@@ -97,7 +92,13 @@
               >
                 <button class="btn btn-success btn-sm w-100">Update</button>
               </form>
-              <button class="btn btn-danger btn-sm w-100">Delete</button>
+              <button 
+              class="btn btn-danger btn-sm" 
+              onclick="deleteCategory('<%= products[i]._id %>')">
+              Delete
+            </button>
+             
+
               <form
                 action="/admin/productview/<%= products[i]._id %>"
                 method="get"
@@ -116,5 +117,42 @@
     </table>
   </div>
 </main>
+
+<script>
+  function deleteCategory(categoryId) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to undo this action!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`productdelete/${categoryId}`, { 
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              Swal.fire('Deleted!', 'Category has been deleted.', 'success')
+              .then(()=>{location.reload()})
+              
+            } else {
+              Swal.fire('Error!', data.message || 'Failed to delete category.', 'error');
+            }
+          })
+          .catch(() => {
+            Swal.fire('Error!', 'Something went wrong. Please try again.', 'error');
+          });
+      }
+    });
+  }
+  </script>
+
 
 <%- include('../partials/admin/footer') %>

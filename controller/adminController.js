@@ -2,6 +2,8 @@ const User = require("../models/usermodel");
 const bcrypt = require("bcrypt");
 const Product = require("../models/productmodel");
 const Category = require("../models/categorymodel")
+const path = require('path')
+const fs = require ('fs')
 
 
 
@@ -55,6 +57,9 @@ const loadDashboard = async (req, res) => {
     res.status(500).send("server error");
   }
 };
+
+
+
 
 // --------------------------------------------
 // ----------- User Management-----------------
@@ -160,9 +165,10 @@ const banUser = async (req, res) => {
 
 const loadProductManage = async (req, res) => {
   try {
-    const products = await Product.find({});
+    
+    const products = await Product.find({isDeleted:false})
 
-    return res.render("admin/productmanage", { products });
+    res.render("admin/productmanage", { products });
   } catch (error) {
     console.log("productmanage page not found");
     res.status(500).send("server error");
@@ -173,13 +179,13 @@ const loadProductUpdate = async (req, res) => {
   try {
     const id = req.params.id;
   
+  
+  
+   
+    const categories = await Category.find({ isDeleted: false });
+    const products = await Product.findOne({ _id: id, isDeleted: false });
 
-    const products = await Product.findById(id);
-    if (!products) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    res.render("admin/productupdate", { products });
+    res.render("admin/productupdate", { products,categories });
   } catch (error) {
     console.error("Error loading product:", error);
     res.status(500).json({ message: "Failed to load product" });
@@ -187,13 +193,70 @@ const loadProductUpdate = async (req, res) => {
 };
 
 const productUpdate = async (req, res) => {
+
+  try {
+    const {
+      id,
+      productname,
+      category,
+      brand,
+      price,
+      stock,
+      warranty,
+      color,
+      description,
+      rating,
+    } = req.body;
+
   
+    if (!req.files || req.files.length < 3) {
+      return res.status(400).json({ error: 'Exactly 3 images are required.' });
+    }
+
+
+
+    let images = req.files.map(file=>file.filename);
+    
    
+
+   
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      {
+        productname,
+        category,
+        brand,
+        price,
+        stock,
+        warranty,
+        color,
+        description,
+        rating,
+        image:images,
+      },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ error: 'Product not found.' });
+    }
+
+    res.redirect("/admin/productmanage")
+
+
+     } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server Error' });
+  }
 };
 
 const loadProductcreate = async (req, res) => {
   try {
-    res.render("admin/productcreate");
+
+    const categories = await Category.find({isDeleted: false})
+
+
+    res.render("admin/productcreate",{categories});
   } catch (error) {
     console.log("productcreate page not found");
     res.status(500).send("server error");
@@ -201,62 +264,67 @@ const loadProductcreate = async (req, res) => {
 };
 
 const Productcreate = async (req, res) => {
+  
+  
   try {
+    
+    
+
     const {
       productname,
       category,
       brand,
       price,
-      offer,
       stock,
       warranty,
       color,
       description,
       rating,
+      ram,
+      storage,
      
     } = req.body;
+    console.log(category,brand)
 
-   
+    const categoryId = await Category.findOne({ name: { $regex: new RegExp(`^${category}$`, 'i') } });
 
-    if ( req.files.length < 3) {
-      console.log('3 image want')
-    }
-      imageUrls =[]
 
-     
-    for (const file of req.files) {
-      const outputPath = `uploads/cropped-${file.filename}`;
+    console.log(categoryId)
 
-      
-      await sharp(file.path)
-        .resize(500, 500) 
-        .toFile(outputPath);
+  if(!categoryId){
+    console.log('categoryId is null')
+  }
+    
 
-      const result = await cloudinary.uploader.upload(outputPath);
-      imageUrls.push(result.secure_url);
-    }
-   
+    let images = req.files.map(file=>file.filename);
+  
+    
+  
     const newProduct = new Product({
       productname,
       category,
+      categoryId:categoryId._id,
       brand,
       price,
-      offer,
       stock,
       warranty,
       color,
       description,
       rating,
-      image,
+      ram,
+      storage,
+      image:images,
     });
-
+      
+       
     await newProduct.save();
     res.redirect("/admin/productmanage");
+
   } catch (err) {
     console.error(err);
     res.status(500).send("Error while creating the product");
   }
-}
+};
 
 const loadProductview = async (req, res) => {
   const id = req.params.id;
@@ -269,6 +337,22 @@ const loadProductview = async (req, res) => {
     res.status(500).send("server error");
   }
 };
+
+const productDelete = async (req,res)=>{
+  try {
+
+console.log("productdelete")
+
+    const productId = req.params.id
+ 
+    await Product.findByIdAndUpdate(productId, { isDeleted: true });
+    res.json({ success: true})
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("server error");
+  }
+}
 
 //----------------------------------------------
 //----------------------------------------------
@@ -285,7 +369,7 @@ const loadCategoryManage = async (req, res) => {
   try {
 
 
-const categories = await Category.find({})
+const categories = await Category.find({isDeleted:false})
 
 
     res.render("admin/categorymanage",{ categories });
@@ -313,7 +397,7 @@ try {
 }
 
 
-}
+};
 
 const categoryCreate = async (req,res)=>{
 try {
@@ -338,7 +422,7 @@ res.redirect('/admin/categorymanage')
 }
 
 
-}
+};
 
 const loadCategoryUpdate = async (req,res)=>{
 
@@ -357,7 +441,7 @@ const loadCategoryUpdate = async (req,res)=>{
     res.status(500).send("server error");
     
   }
-}
+};
 
 const CategoryUpdate = async (req, res)=>{
 
@@ -369,7 +453,7 @@ try {
 
   
     const updatedCategory = await Category.findOneAndUpdate(
-      { _id: id },  
+      { _id: id,isDeleted: false },  
       { name, status, count },  
       { new: true } 
     )
@@ -387,7 +471,20 @@ try {
 }
 
 
-}
+};
+
+const categoryDelete = async (req,res)=>{
+console.log('nfnew')
+  
+  try {
+    const itemId = req.params.id;
+    console.log(itemId)
+    await Category.findByIdAndUpdate(itemId, { isDeleted: true });
+    res.json({ success: true})
+  } catch (error) {
+      res.status(500).send('Error deleting item');
+  }
+};
 
 // ------------------------------------------------
 // ------------------------------------------------
@@ -414,4 +511,7 @@ module.exports = {
   categoryCreate,
   loadCategoryUpdate,
   CategoryUpdate,
+  categoryDelete,
+  productDelete,
+ 
 };

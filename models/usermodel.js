@@ -1,10 +1,5 @@
 
 const mongoose = require("mongoose");
-const formattedDate = new Date().toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric'
-});
 
 
 const userSchema = new mongoose.Schema({

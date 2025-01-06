@@ -1,49 +1,51 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+
 
 const productSchema = new mongoose.Schema({
   productname: {
     type: String,
-    required: true,
     trim: true, 
   },
   category: {
-    type:Schema.Types.ObjectId,
-    required: true,
+    type:String,
+  
     trim: true,
+  },
+  ram: {
+    type: String, 
+    default:'nill'
+  },
+  storage: {
+    type: String,
+    default:'nill' 
+  },
+  categoryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'Category',
+    required: true,
   },
   brand: {
     type: String,
-    required: true,
     trim: true,
   },
   price: {
     type: Number,
-    required: true,
     min: [0, 'Price cannot be negative'], 
-  },
-  offer: {
-    type: String,
-    default: '0%',
   },
   stock: {
     type: Number,
-    required: true,
     min: [0, 'Stock cannot be negative'],
   },
   warranty: {
     type: String,
-    required: true,
     trim: true,
   },
   color: {
     type: String,
-    required: true,
     trim: true,
   },
   description: {
     type: String,
-    required: false,
   },
   rating: {
     type: Number,
@@ -53,6 +55,9 @@ const productSchema = new mongoose.Schema({
   },
   image: {
     type:[String]
+  }, isDeleted: {
+    type: Boolean,
+    default: false, 
   },
 }, {
   timestamps: true, 

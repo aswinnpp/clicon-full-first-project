@@ -42,7 +42,7 @@
                 <td><%= user.name %></td>
                 <td><%= user.email %></td>
                 <td><%= user.role %></td>
-                <td><%= user.createdAt %></td>
+                <td><%= user.createdAt.toISOString().split('T')[0] %></td>
                 <td><%= user.phone %></td>
                 <td >
                   <form action="/admin/userupdate/<%= user._id %>" method="get" >
@@ -52,7 +52,7 @@
                   <input type="hidden" name="userId" value="<%= user._id %>">
                   <!-- If the user is banned, show 'Unblock' button, otherwise show 'Ban' -->
                   <button  type="submit" class="btn <%= user.isBanned ? 'btn-success' : 'btn-danger' %> btn-sm">
-                    <%= user.isBan ? 'Unblock' : 'Ban' %>
+                    <%= user.isBan ? 'Unblock' : 'Block' %>
                   </button>
                 </form>
                 </td>

@@ -22,7 +22,7 @@
       <div class="row mb-3 " style="margin-top:80px;">
         <div class="col">
           <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search users...">
+            <input type="text" class="form-control" placeholder="Search categories...">
             <button class="btn btn-primary" type="button">Search</button>
           </div>
         </div>
@@ -43,7 +43,7 @@
         </thead>
         <tbody>
           <% categories.forEach((category, index) => { %>
-            <tr>
+            <tr id="categoryRow<%= index %>">
               <td><%= index + 1 %></td>
               <td><%= category.name %></td>
               <td><%= category.count %></td>
@@ -51,11 +51,14 @@
               <td><%= category.updatedAt.toISOString().split('T')[0] %></td>
               <td><%= category.createdAt.toISOString().split('T')[0] %></td>
               <td>
-                <form action="/admin/categoryupdate/<%= category._id %> " method="get">
+                <form action="/admin/categoryupdate/<%= category._id %>" method="get">
                   <button class="btn btn-warning btn-sm">Update</button>
                 </form>
-                
-                <button class="btn btn-danger btn-sm">Delete</button>
+                <button 
+                  class="btn btn-danger btn-sm" 
+                  onclick="deleteCategory('<%= category._id %>', 'categoryRow<%= index %>')">
+                  Delete
+                </button>
               </td>
             </tr>
           <% }) %>
@@ -66,4 +69,40 @@
 </div>
 </div>
 
-  <%- include('../partials/admin/footer') %>
+<script>
+function deleteCategory(categoryId, rowId) {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to undo this action!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch(`categorydelete/${categoryId}`, { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire('Deleted!', 'Category has been deleted.', 'success')
+            .then(()=>{location.reload()})
+            
+          } else {
+            Swal.fire('Error!', data.message || 'Failed to delete category.', 'error');
+          }
+        })
+        .catch(() => {
+          Swal.fire('Error!', 'Something went wrong. Please try again.', 'error');
+        });
+    }
+  });
+}
+</script>
+
+<%- include('../partials/admin/footer') %>

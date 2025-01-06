@@ -36,6 +36,9 @@
         border-radius: 8px;
         cursor: pointer;
       }
+      .gallery {
+        margin-top: 20px;
+      }
     </style>
   </head>
   <body>
@@ -43,17 +46,17 @@
       <div class="product-details">
         <div class="text-center mb-4">
           <img
-            src="<%= product[0].image[0] %>"
-            alt="<%= product.productname %>"
+            src="/uploads/<%= product[0].image[0] %>"
+            alt="<%= product[0].productname %>"
             class="product-img"
+            style="width: 300px; height: 300px; object-fit: cover"
           />
         </div>
-        <h2><%= product.productname %></h2>
+        <h2><%= product[0].productname %></h2>
         <div class="product-info">
           <p><strong>Category:</strong> <%= product[0].category %></p>
           <p><strong>Brand:</strong> <%= product[0].brand %></p>
           <p><strong>Price:</strong> ₹<%= product[0].price %></p>
-          <p><strong>Offer:</strong> <%= product[0].offer %>%</p>
           <p><strong>Stock:</strong> <%= product[0].stock %></p>
           <p><strong>Warranty:</strong> <%= product[0].warranty %> year(s)</p>
           <p>
@@ -65,10 +68,14 @@
         <!-- Image Gallery -->
         <div class="gallery">
           <h4>Gallery</h4>
-          <div class="d-flex flex-wrap">
-            <% product[0].image.forEach(image => { %>
-
-            <img src="<%= image %>" alt="Product Image" class="gallery-img" />
+          <div class="d-flex flex-wrap gap-2">
+            <% product[0].image.forEach(function(image) { %>
+              <img
+                src="/uploads/<%= image %>"
+                alt="Product Image"
+                class="gallery-img"
+                loading="lazy"
+              />
             <% }); %>
           </div>
         </div>
@@ -76,15 +83,29 @@
         <!-- Reviews Section -->
         <div class="reviews">
           <h4>Reviews</h4>
-          <div class="mb-3">
-            <label for="rating" class="form-label">Rating :</label>
-            <input
-              type="text"
-              class="form-control"
-              id="rating"
-              placeholder="Enter your rating"
-            />
-          </div>
+         
+            <div class="mb-3">
+              <label for="rating" class="form-label">Rating :</label>
+              <input
+                type="number"
+                class="form-control"
+                id="rating"
+                min="1"
+                max="5"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="review" class="form-label">Reviews :</label>
+              <textarea
+                class="form-control"
+                id="review"
+                rows="3"
+                required
+              ></textarea>
+            </div>
+           
+         
         </div>
       </div>
     </div>
