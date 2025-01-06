@@ -3,9 +3,9 @@ const router = express.Router();
 const userController = require("../controller/usercontroller");
 const userauth = require("../middleware/userauth");
 
-router.get("/",  userController.loadHome);
+router.get("/",userauth.isLogin,  userController.loadHome);
 
-router.get("/signup", userController.loadSignUp);
+router.get("/signup",  userController.loadSignUp);
 router.post("/signup", userController.signUp);
 
 router.post("/authsignup", userController.authsignup);

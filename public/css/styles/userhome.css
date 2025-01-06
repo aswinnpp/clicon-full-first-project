@@ -94,20 +94,12 @@
 .search-bar input::placeholder {
   color: #999;
 }
-
-.carousel-inner {
-  position: relative;
-  width: 50%;
-  overflow: visible;
+.carousel{
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.carousel,
-.d-block {
-  height: 300px;
-}
 .navbar2 {
   background-color: #004a80;
   color: white;
@@ -259,7 +251,7 @@
 
 .google-btn:hover {
   background-color: #f8f9fa;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .google-btn img {
@@ -270,7 +262,7 @@
 
 @media (max-width: 576px) {
   .google-btn {
-      max-width: 100%;
-      margin: 0 16px;
+    max-width: 100%;
+    margin: 0 16px;
   }
 }

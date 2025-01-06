@@ -13,8 +13,10 @@ dotenv.config();
 const loadHome= async (req,res)=>{
   try {
 
-    const product = await Product.find({})
-    const category = await Category.find({})
+    const product = await Product.find({
+      isDeleted:false})
+    const category = await Category.find({
+      isDeleted:false})
      res.render('user/userhome',{ product, category })
   } catch (error) {
     console.log('user home error:', error);

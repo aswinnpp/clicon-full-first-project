@@ -286,7 +286,8 @@ const Productcreate = async (req, res) => {
     } = req.body;
     console.log(category,brand)
 
-    const categoryId = await Category.findOne({ name: { $regex: new RegExp(`^${category}$`, 'i') } });
+    const categoryId = await Category.findOne({ name: { $regex: new RegExp(`^${category}$`, 'i') },
+    isDeleted:false });
 
 
     console.log(categoryId)
@@ -328,7 +329,8 @@ const Productcreate = async (req, res) => {
 
 const loadProductview = async (req, res) => {
   const id = req.params.id;
-  const product = await Product.find({ _id: id });
+  const product = await Product.find({ _id: id ,
+    isDeleted:false});
 
   try {
     res.render("admin/productview", { product });
@@ -382,7 +384,8 @@ const categories = await Category.find({isDeleted:false})
 const loadCategoryCreate = async (req,res)=>{
 
 try {
-  const category = await Category.find({})
+  const category = await Category.find({
+    isDeleted:false})
 
   console.log(category)
 
@@ -429,7 +432,8 @@ const loadCategoryUpdate = async (req,res)=>{
 
   try {
    const id = req.params.id
-    const category = await Category.find({_id:id});
+    const category = await Category.find({_id:id,
+      isDeleted:false});
    
     
    console.log(category)
@@ -453,7 +457,7 @@ try {
 
   
     const updatedCategory = await Category.findOneAndUpdate(
-      { _id: id,isDeleted: false },  
+      { _id: id },  
       { name, status, count },  
       { new: true } 
     )
