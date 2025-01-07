@@ -406,7 +406,7 @@ const loadSignIn = async (req, res) => {
       
       const cliend_id =process.env.GOOGLE_CLIENT_ID
       
-      res.render('user/user_login',{ error,cliend_id }); 
+      res.render('user/usersignin',{ error,cliend_id }); 
     } catch (error) {
       console.log('user signin error:', error);
     }

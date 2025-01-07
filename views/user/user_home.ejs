@@ -892,17 +892,17 @@
     
                                     <div class="product-body">
                                         <div class="product-cat">
-                                            <a href="#">Laptops</a>
+                                            <a href="#"><%= product.category %></a>
                                         </div><!-- End .product-cat -->
-                                        <h3 class="product-title"><a href="product.html">MacBook Pro 13" Display, i5</a></h3><!-- End .product-title -->
+                                        <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
                                         <div class="product-price">
-                                            $1,199.99
+                                           <%= product.price %>
                                         </div><!-- End .product-price -->
                                         <div class="ratings-container">
                                             <div class="ratings">
                                                 <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
                                             </div><!-- End .ratings -->
-                                            <span class="ratings-text">( 4 Reviews )</span>
+                                            <span class="ratings-text"><%= product.rating %></span>
                                         </div><!-- End .rating-container -->
                                     </div><!-- End .product-body -->
                                 </div>
