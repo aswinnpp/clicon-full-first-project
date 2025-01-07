@@ -19,7 +19,11 @@ router.post("/otp", userController.verifyOTP);
 router.post("/resend", userController.resendOtp);
 
 router.get("/forgot", userController.loadForgot);
-
 router.get("/reset", userController.loadReset);
+
+
+router.get("/productview/:product_id",userController.productView)
+
+router.get("/productlist" , userController.productList)
 
 module.exports = router;

@@ -3,6 +3,7 @@ const Product = require("../models/productmodel");
 const Category = require("../models/categorymodel")
 const bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer');
+const mongoose = require("mongoose")
 const dotenv = require('dotenv');
 const saltround =10
 dotenv.config();
@@ -17,7 +18,7 @@ const loadHome= async (req,res)=>{
       isDeleted:false})
     const category = await Category.find({
       isDeleted:false})
-     res.render('user/userhome',{ product, category })
+     res.render('user/user_home',{ product, category })
   } catch (error) {
     console.log('user home error:', error);
   }
@@ -26,6 +27,44 @@ const loadHome= async (req,res)=>{
 }
 
 
+
+const productView= async(req,res)=>{
+
+try {
+
+  const id = req.params.product_id
+  const objectId = new mongoose.Types.ObjectId(id);
+
+
+  const product = await Product.findOne({_id:objectId})
+  console.log(product)
+
+  res.render('user/productview', { product})
+  
+} catch (error) {
+  console.log('user productView error:', error);
+}
+
+
+
+}
+
+
+const productList = async (req,res)=>{
+
+try {
+
+  
+
+
+  const product = await Product.find({isDeleted:false})
+  console.log(product.length)
+  res.render('user/productlist',{product} )
+} catch (error) {
+  console.log('user productList error:', error);
+}
+
+}
 
 //===============================================
 //================ user register ================
@@ -367,7 +406,7 @@ const loadSignIn = async (req, res) => {
       
       const cliend_id =process.env.GOOGLE_CLIENT_ID
       
-      res.render('user/usersignin',{ error,cliend_id }); 
+      res.render('user/user_login',{ error,cliend_id }); 
     } catch (error) {
       console.log('user signin error:', error);
     }
@@ -400,7 +439,7 @@ const loadSignIn = async (req, res) => {
       }
       
       if(user.isBan === true){
-        req.flash('error', 'User Banned By admin!');
+        req.flash('error', 'User Baadminnned By !');
         return res.redirect("/signin");
       }
 
@@ -474,6 +513,8 @@ const loadReset = async (req, res) => {
     signUp,
     signIn,
     verifyOTP,
-    resendOtp
+    resendOtp,
+    productView,
+    productList
 
   }

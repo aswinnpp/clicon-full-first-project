@@ -1,97 +1,96 @@
+
+
 <%- include('../partials/admin/header') %>
 
-        <!-- Main Content -->
-        <div class="main-content col-12 col-md-9 col-lg-10">
-          <!-- Menu Button for Mobile -->
-          <button class="menu-btn" id="menuBtn">
-            <span class="navbar-toggler-icon"></span>
-          </button>
 
-          <!-- Total Sale Section -->
-          <div class="chart-container">
-            <h3>Total Sale</h3>
-            <h1>$980,243.00</h1>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Toggle Button for Sidebar -->
+    <button class="btn btn-dark d-md-none" onclick="toggleSidebar()" style="position: fixed; z-index: 1050;">
+      <i class="bi bi-list"></i>
+    </button>
 
-            <div class="year-selector">
-              <button id="prevYear">◄</button>
-              <span id="yearDisplay">2024</span>
-              <button id="nextYear">►</button>
-            </div>
+    <!-- Main Content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Dashboard</h1>
+      </div>
 
-            <!-- Chart -->
-            <div class="chart">
-              <div class="bar" style="height: 30%"></div>
-              <div class="bar" style="height: 50%"></div>
-              <div class="bar" style="height: 60%"></div>
-              <div class="bar" style="height: 55%"></div>
-              <div class="bar" style="height: 70%"></div>
-              <div class="bar" style="height: 80%"></div>
-              <div class="bar" style="height: 90%"></div>
-              <div class="bar" style="height: 75%"></div>
-              <div class="bar" style="height: 70%"></div>
-              <div class="bar" style="height: 60%"></div>
-              <div class="bar" style="height: 50%"></div>
-              <div class="bar" style="height: 40%"></div>
-            </div>
-            <div class="chart">
-              <span class="month">JAN</span>
-              <span class="month">FEB</span>
-              <span class="month">MAR</span>
-              <span class="month">APR</span>
-              <span class="month">MAY</span>
-              <span class="month">JUN</span>
-              <span class="month">JUL</span>
-              <span class="month">AUG</span>
-              <span class="month">SEP</span>
-              <span class="month">OCT</span>
-              <span class="month">NOV</span>
-              <span class="month">DEC</span>
+      <!-- Dashboard Widgets -->
+      <div class="row">
+        <div class="col-md-3 mb-4">
+          <div class="card text-white bg-primary">
+            <div class="card-body">
+              <h5 class="card-title">Users</h5>
+              <p class="card-text">Total Users: 1,200</p>
             </div>
           </div>
-
-          <!-- Stats Section -->
-          <div class="stats row">
-            <div class="col-6 col-md-3">Total Users: 6000</div>
-            <div class="col-6 col-md-3">Total Products: 1000</div>
-            <div class="col-6 col-md-3">Total Orders: 500</div>
-            <div class="col-6 col-md-3">Monthly Sales: 2500</div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="card text-white bg-success">
+            <div class="card-body">
+              <h5 class="card-title">Orders</h5>
+              <p class="card-text">Completed Orders: 320</p>
+            </div>
           </div>
-
-          <!-- Summary Section -->
-          <div class="summary row">
-            <div class="col-4">Revenue: $100</div>
-            <div class="col-4">Sales: $150</div>
-            <div class="col-4">Purchase: $100</div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="card text-white bg-warning">
+            <div class="card-body">
+              <h5 class="card-title">Revenue</h5>
+              <p class="card-text">Revenue: $12,000</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="card text-white bg-danger">
+            <div class="card-body">
+              <h5 class="card-title">Issues</h5>
+              <p class="card-text">Open Issues: 5</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <script>
-      let currentYear = 2024;
-
-      document.getElementById("prevYear").addEventListener("click", () => {
-        currentYear--;
-        document.getElementById("yearDisplay").textContent = currentYear;
-      });
-
-      document.getElementById("nextYear").addEventListener("click", () => {
-        currentYear++;
-        document.getElementById("yearDisplay").textContent = currentYear;
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        var menuBtn = document.getElementById("menuBtn");
-        var sidebar = document.getElementById("sidebar");
-
-        menuBtn.addEventListener("click", function () {
-          sidebar.classList.toggle("sidebar-show");
-        });
-      });
-
-      function navigateTo(url) {
-        window.location.href = url;
-      }
-    </script>
-  </body>
-</html>
+      <!-- Recent Activity Table -->
+      <h4 class="mt-4">Recent Activities</h4>
+      <div class="table-responsive">
+        <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>User</th>
+              <th>Activity</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>John Doe</td>
+              <td>Added a new product</td>
+              <td>Completed</td>
+              <td>2025-01-07</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Jane Smith</td>
+              <td>Updated order status</td>
+              <td>Pending</td>
+              <td>2025-01-06</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Michael Scott</td>
+              <td>Created a coupon</td>
+              <td>Completed</td>
+              <td>2025-01-05</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+<%- include('../partials/admin/footer') %>

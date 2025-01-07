@@ -6,51 +6,7 @@ body {
   background-color: #f0f0f0;
 }
 
-/* Sidebar styles */
-.sidebar {
-  background-color: #1e1e1e;
-  color: #fff;
-  padding: 20px;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  display: block;
-  width: 250px; /* Default width */
-  transition: left 0.3s ease;
-}
 
-.sidebar .profile {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.sidebar .profile img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-}
-
-.sidebar h3,
-.sidebar h2 {
-  margin: 5px 0;
-}
-
-.sidebar nav ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar nav ul li {
-  padding: 10px;
-  cursor: pointer;
-}
-
-.sidebar nav ul li.active,
-.sidebar nav ul li:hover {
-  background: #ff7f50;
-}
 
 .nav-btn {
   width: 100%;

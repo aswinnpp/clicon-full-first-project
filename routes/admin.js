@@ -39,11 +39,11 @@ router.get("/productmanage",adminauth.checkSession,adminController.loadProductMa
 
 router.get( "/productupdate/:id",adminauth.checkSession,adminController.loadProductUpdate);
 
-router.post("/productupdate",multer.upload.array('images', 3),adminController.productUpdate);
+router.post("/productupdate",multer.upload.array('images', 4),adminController.productUpdate);
 
 router.get( "/productcreate",adminauth.checkSession,adminController.loadProductcreate);
 
-router.post("/productcreate",multer.upload.array('images', 3),adminController.Productcreate);
+router.post("/productcreate",multer.upload.array('images', 4),adminController.Productcreate);
 
 router.get("/productview/:id",adminauth.checkSession,adminController.loadProductview);
 

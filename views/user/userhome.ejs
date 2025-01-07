@@ -50,27 +50,30 @@
 <!-- Featured Products -->
 <div class="product-grid ms-5 d-flex flex-wrap align-items-start justify-content-start" style="gap: 10px;">
     <% product.forEach(products => { %>
-        <div class="card product-card h-100 d-flex flex-column align-items-center text-center" style="width: 22%; min-width: 250px; max-width: 300px; height: 400px;">
-            <div class="wishlist-btn position-absolute top-0 end-0 m-2">
-                <i class="bi bi-heart"></i>
-            </div>
-            <img src="./uploads/<%= products.image[0] %>" class="card-img-top" alt="<%= products.name %>" style="height: 250px; object-fit: cover; width: 100%;">
-
-            <div class="card-body d-flex flex-column justify-content-between flex-grow-1">
-                <h5 class="card-title"><%= products.name %></h5>
-                <p class="card-text"><%= products.description %></p>
-                <div class="mb-2">
-                    <span class="star-rating">
-                        <% for (let i = 1; i <= 5; i++) { %>
-                            <i class="bi <%= i <= products.rating ? 'bi-star-fill' : 'bi-star' %>"></i>
-                        <% } %>
-                    </span>
-                    <span class="review-count">(<%= products.reviews %> reviews)</span>
+        <a href="http://localhost:3000/productview/<%= products._id %>">
+            <div class="card product-card h-100 d-flex flex-column align-items-center text-center" style="width: 22%; min-width: 250px; max-width: 300px; height: 400px;">
+                <div class="wishlist-btn position-absolute top-0 end-0 m-2">
+                    <i class="bi bi-heart"></i>
                 </div>
-                <p class="card-text fw-bold">$<%= products.price %></p>
-                <button class="btn btn-primary w-100">Add to Cart</button>
+                <img src="./uploads/<%= products.image[0] %>" class="card-img-top" alt="<%= products.name %>" style="height: 250px; object-fit: cover; width: 100%;">
+    
+                <div class="card-body d-flex flex-column justify-content-between flex-grow-1">
+                    <h5 class="card-title"><%= products.name %></h5>
+                    <p class="card-text"><%= products.description %></p>
+                    <div class="mb-2">
+                        <span class="star-rating">
+                            <% for (let i = 1; i <= 5; i++) { %>
+                                <i class="bi <%= i <= products.rating ? 'bi-star-fill' : 'bi-star' %>"></i>
+                            <% } %>
+                        </span>
+                        <span class="review-count">(<%= products.reviews %> reviews)</span>
+                    </div>
+                    <p class="card-text fw-bold">$<%= products.price %></p>
+                    <button class="btn btn-primary w-100">Add to Cart</button>
+                </div>
             </div>
-        </div>
+        </a>
+       
     <% }) %>
 </div>
 
