@@ -18,16 +18,13 @@
     
     <div class="mb-3">
 
-        <input type="hidden" name="id" value="<%= category[0]._id%>">
+        <input type="hidden" name="id" value="<%= category._id %>">
         
       <label for="categoryName" class="form-label">Category Name</label>
       <input type="text" class="form-control" id="categoryName" name="name" value="<%= category.name %>" required>
     </div>
 
-    <div class="mb-3">
-      <label for="categoryDescription" class="form-label">Category Count</label>
-      <input type="number" class="form-control" id="categoryDescription" name="count" value="<%= category.count %>" required>
-    </div>
+   
 
     <div class="mb-3">
       <label for="categoryStatus" class="form-label">Status</label>

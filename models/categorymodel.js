@@ -5,17 +5,14 @@ const categorySchema = new Schema({
   name: {
     type: String,
     required: true,
-    unique:true 
+    
   },
     status: {
       type: String,
       enum: ['active', 'inactive'],
       default: 'active',
     },
-    count: {
-      type: Number,
-      default: 0,
-    },
+   
     isDeleted: {
       type: Boolean,
       default: false, 

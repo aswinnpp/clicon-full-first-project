@@ -8,9 +8,10 @@ const multer = require("../utils/multter");
 
 
 
+router.get("/adminlogout", adminController.adminLogout)
 
 
-router.get("/login", adminauth.isLogin, adminController.loadLogin);
+router.get("/login",  adminController.loadLogin);
 
 router.post("/login", adminController.login);
 
@@ -25,7 +26,9 @@ router.get("/userupdate/:id",adminauth.checkSession,adminController.loadUserUpda
 
 router.post("/userupdate", adminController.updateUser);
 
-router.post("/banuser", adminController.banUser);
+
+
+router.post("/banuser/:id", adminController.banUser);
 
 
 
@@ -39,7 +42,7 @@ router.get("/productmanage",adminauth.checkSession,adminController.loadProductMa
 
 router.get( "/productupdate/:id",adminauth.checkSession,adminController.loadProductUpdate);
 
-router.post("/productupdate",multer.upload.array('images', 4),adminController.productUpdate);
+router.post("/productupdate",multer.uploadMultiple,adminController.productUpdate);
 
 router.get( "/productcreate",adminauth.checkSession,adminController.loadProductcreate);
 

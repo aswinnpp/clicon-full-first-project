@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer');
 const mongoose = require("mongoose")
 const dotenv = require('dotenv');
+const session = require("express-session");
 const saltround =10
 dotenv.config();
 
@@ -18,7 +19,17 @@ const loadHome= async (req,res)=>{
       isDeleted:false})
     const category = await Category.find({
       isDeleted:false})
-     res.render('user/user_home',{ product, category })
+
+      const user = req.session?.details 
+      const email = req.session?.details?.email
+      console.log(email);
+       
+      const userr = await userSchema.find({email})
+
+      console.log()
+
+     
+     res.render('user/user_home',{ product, category,user,userr })
   } catch (error) {
     console.log('user home error:', error);
   }
@@ -26,20 +37,30 @@ const loadHome= async (req,res)=>{
    
 }
 
+const Logout = async (req, res)=>{
+
+ req.session.destroy()
+ res.redirect("/")
 
 
-const productView= async(req,res)=>{
+}
+
+const productView = async(req,res)=>{
 
 try {
 
   const id = req.params.product_id
   const objectId = new mongoose.Types.ObjectId(id);
 
+const allproduct =await Product.find({})
+  const product = await Product.find({_id:objectId})
+  const user = await userSchema.find({})
+  console.log(typeof product)
+  const category = await Category.find({
+    isDeleted:false})
 
-  const product = await Product.findOne({_id:objectId})
-  console.log(product)
 
-  res.render('user/productview', { product})
+  res.render('user/productview', { product,allproduct,category,user})
   
 } catch (error) {
   console.log('user productView error:', error);
@@ -49,7 +70,6 @@ try {
 
 }
 
-
 const productList = async (req,res)=>{
 
 try {
@@ -58,18 +78,37 @@ try {
 
 
   const product = await Product.find({isDeleted:false})
+  const category = await Category.find({
+    isDeleted:false})
+    const user = await userSchema.find({})
   console.log(product.length)
-  res.render('user/productlist',{product} )
+  res.render('user/productlist',{product,category,user} )
 } catch (error) {
   console.log('user productList error:', error);
 }
 
 }
 
+const banPage = async (req,res)=>{
+
+
+  try {
+
+    res.render("user/banuser")
+    
+  } catch (error) {
+
+    console.log(error)
+    
+  }
+}
+
 //===============================================
 //================ user register ================
 //===============================================
   const loadSignUp = async (req, res) => {
+    
+    
     try {
       const message = req.flash('success');
       const cliend_id = process.env.GOOGLE_CLIENT_ID || ""
@@ -89,15 +128,18 @@ const signUp = async (req, res) => {
     const { email, password, name , Confirmpassword } = req.body;
 
     const user = await userSchema.findOne({ email });
-    if (user) {
-      req.flash('success', 'User already exist!');
-      return res.redirect("/signup");
-    }
-      if( password !== Confirmpassword){
-        req.flash('success', 'Password Not Match');
-        return res.redirect("/signup");
 
-      }
+    // if (user) {
+    //   req.flash('success', 'User already exist!');
+    //   return res.redirect("/signup");
+    // }
+
+    
+    //   if( password !== Confirmpassword){
+    //     req.flash('success', 'Password Not Match');
+    //     return res.redirect("/signup");
+
+    //   }
 
     const otp = generateOTP();
     const timestamp = Date.now();
@@ -136,9 +178,9 @@ const generateOTP = () => {
 //------------------ send OTP to email ------------
 const sendOtpEmail = (email, otp) => {
   const mailOptions = {
-    from: process.env.GMAIL_USER, // Sender address
-    to: email, // Receiver's email address
-    subject: 'Your OTP Verification Code', // Email subject
+    from: process.env.GMAIL_USER,
+    to: email,
+    subject: 'Your OTP Verification Code', 
    html: `
       <html>
         <head>
@@ -240,19 +282,18 @@ const resendOtp = async (req, res) => {
   try {
     const  email  = req.session.details.email
    console.log(email)
-    // Generate a new OTP
     let newOtp;
     do {
       newOtp = generateOTP();
-    } while (newOtp === req.session.otp); // Ensure it's not the same as the previous one
+    } while (newOtp === req.session.otp);
 
-    // Update OTP and timestamp in session
+    
     req.session.otp = newOtp;
-    req.session.timestamp = Date.now(); // Update timestamp
+    req.session.timestamp = Date.now(); 
    
     console.log('resend session creation',req.session)
 
-    // Send the new OTP via email
+    
     await transporter.sendMail({
       from: process.env.GMAIL_USER,
       to: email,
@@ -349,24 +390,28 @@ const authsignup=async(req,res)=>{
   const email=data.email
   const user = await userSchema.findOne({email});
   console.log(user);
-  
+    
+
+
+   
   if(user){
     return res.json({ status: 'not done' });
   }else{
     console.log(data)
   const newUser = new userSchema({
     email:data.email,
-    name:data.name
+    name:data.name,
+    image:data.imageUrl
   });
-
+  req.session.details={email}
   newUser.authuser = true;
   await newUser.save();
-  
+  res.redirect(302, '/');
   }
 
-  user.authuser = true
-  await user.save();
-  res.redirect(302, '/');
+
+
+ 
 }
 
 const authsignin = async (req,res)=>{
@@ -378,10 +423,15 @@ const authsignin = async (req,res)=>{
 
   
   if(!user){
-    return res.json({ status: 'not done' });
+    return res.status(404).json({ status: 'not done',message:'user not found' });
+  }
+
+  if(user.isBan === true){
+    
+    return res.status(401).json({ message:'user banned By Admin'});
   }
  
-
+  req.session.details={email}
 
   res.redirect(302, '/');
 
@@ -400,6 +450,8 @@ const authsignin = async (req,res)=>{
 //=============== user login ====================
 //==============================================
 const loadSignIn = async (req, res) => {
+  console.log('ikswyjznthgfhgbfsgbv');
+  
     try {
       
       const error = req.flash('error');
@@ -415,13 +467,13 @@ const loadSignIn = async (req, res) => {
   const signIn = async (req, res) => {
     try {
      
-      console.log(req.body);
+    
   
     
       const { email, password, name } = req.body;
   
       
-      if (!email || !password || !name) {
+      if (!email || !password) {
         req.flash('error', 'All fields are required!');
         return res.redirect("/signin");
       }
@@ -439,7 +491,7 @@ const loadSignIn = async (req, res) => {
       }
       
       if(user.isBan === true){
-        req.flash('error', 'User Baadminnned By !');
+        req.flash('error', 'User Banned By Admin !');
         return res.redirect("/signin");
       }
 
@@ -456,7 +508,7 @@ const loadSignIn = async (req, res) => {
   
       
       req.session.user = user._id; 
-      req.session.email = user.email;
+      req.session.details={email}
   
       
       res.redirect("/"); 
@@ -515,6 +567,8 @@ const loadReset = async (req, res) => {
     verifyOTP,
     resendOtp,
     productView,
-    productList
+    productList,
+    Logout,
+    banPage
 
   }

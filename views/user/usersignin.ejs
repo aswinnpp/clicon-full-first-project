@@ -1,10 +1,44 @@
-<%- include('../partials/user/header') %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clicon Store</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="/css/styles/userhome.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+  </head>
+  <body>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #6e8efb, #a777e3);
+        background-size: cover;     
+        background-position: center; 
+        background-repeat: no-repeat; 
+        height: 100vh;  
+        overflow: hidden;
+       
+               
+      }
+    </style>
 
-<div class="container3 mt-5">
+<div class="container3 " style="margin-top: 200px;">
   <div class="auth-wrapper">
     <ul class="nav nav-tabs mb-3" id="auth-tab" role="tablist">
       <li class="nav-item" role="presentation">
-        <form action="./signin">
+        <form action="/signin">
           <button
             class="nav-link active"
             id="sign-up-tab"
@@ -35,18 +69,12 @@
         <p style="color: red" id="in">
           <%= typeof error !== 'undefined' ? error : '' %>
         </p>
+        <p style="color: red" id="in">
+          <%= typeof massage !== 'undefined' ? massage : '' %>
+        </p>
 
         <form action="/signin" method="post">
-          <div class="mb-3">
-            <label for="sign-up-name" class="form-label">Name</label>
-            <input
-              type="text"
-              class="form-control"
-              id="sign-up-name"
-              placeholder="Enter your name"
-              name="name"
-            />
-          </div>
+         
           <div class="mb-3">
             <label for="sign-up-email" class="form-label">Email address</label>
             <input
@@ -57,16 +85,21 @@
               name="email"
             />
           </div>
-          <div class="mb-3">
-            <label for="sign-up-password" class="form-label">Password</label>
-            <input
-              type="password"
-              class="form-control"
-              id="sign-up-password"
-              placeholder="Enter your password"
-              name="password"
-            />
-          </div>
+         <div class="mb-3">
+    <label for="sign-up-password" class="form-label">Password</label>
+    <div class="input-group">
+      <input
+        type="password"
+        class="form-control"
+        id="sign-up-password"
+        placeholder="Enter your password"
+        name="password"
+      />
+      <button type="button" id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 18px; cursor: pointer;">
+        👁️
+      </button>
+    </div>
+  </div>
 
           <a
             href="/forgot"
@@ -78,7 +111,7 @@
           >
             Forgot Password</a
           >
-          <button type="submit" class="btn btn-primary mt-2">Sign Up</button>
+          <button type="submit" class="btn btn-primary mt-2">Sign In</button>
         </form>
         <div class="container">
           <button
@@ -93,9 +126,39 @@
     </div>
   </div>
 </div>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+
 
 <script>
+
+const togglePasswordBtn = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('sign-up-password');
+
+  togglePasswordBtn.addEventListener('click', function() {
+    
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text'; 
+      togglePasswordBtn.textContent = '🙈'; 
+    } else {
+      passwordInput.type = 'password';  
+      togglePasswordBtn.textContent = '👁️';  
+    }
+  });
+
+  passwordInput.addEventListener('input', function() {
+
+    togglePasswordBtn.disabled = false;
+  });
+ 
+
+
+
+
+
+
+
+
+
+
   let action = "signin";
 
   window.onload = function () {
@@ -125,10 +188,16 @@
       headers: { "Content-Type": "application/json" },
     })
       .then((data) => {
+        console.log(data)
         if (data.redirected) {
+          
           window.location = data.url;
-        } else {
-          document.getElementById("in").innerHTML = "useralready not found";
+        } 
+        if(data.status === 404) {
+          document.getElementById("in").innerHTML = "user  not found";
+        }
+        if(data.status === 401) {
+          document.getElementById("in").innerHTML = "user banned by admin please contact him";
         }
       })
       .catch((error) => {
@@ -136,5 +205,15 @@
       });
   }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
-<%- include('../partials/user/footer') %>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+</footer>
+</body>
+</html>

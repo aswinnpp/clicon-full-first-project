@@ -14,5 +14,5 @@ const checkSession = (req, res, next) => {
       next();
     }
   };
-  module.exports = { checkSession, isLogin };
+  module.exports = { checkSession ,isLogin};
   

@@ -29,7 +29,7 @@ const productSchema = new mongoose.Schema({
     trim: true,
   },
   price: {
-    type: Number,
+    type: String,
     min: [0, 'Price cannot be negative'], 
   },
   stock: {
@@ -41,7 +41,7 @@ const productSchema = new mongoose.Schema({
     trim: true,
   },
   color: {
-    type: String,
+    type: [String],
     trim: true,
   },
   description: {

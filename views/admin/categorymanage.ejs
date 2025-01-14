@@ -19,6 +19,11 @@
         </form>
       </div>
 
+
+      <p style="color: red" id="in">
+        <%= message %>
+      </p>
+
       <div class="row mb-3 " style="margin-top:80px;">
         <div class="col">
           <div class="input-group">
@@ -27,14 +32,16 @@
           </div>
         </div>
       </div>
+
     
+
     <div class="table-responsive">
       <table class="table table-striped table-sm mt-5">
         <thead>
           <tr>
             <th>No</th>
             <th>Name</th>
-            <th>Count</th>
+          
             <th>Status</th>
             <th>Updated At</th>
             <th>Created At</th>
@@ -46,7 +53,7 @@
             <tr id="categoryRow<%= index %>">
               <td><%= index + 1 %></td>
               <td><%= category.name %></td>
-              <td><%= category.count %></td>
+             
               <td><%= category.status %></td>
               <td><%= category.updatedAt.toISOString().split('T')[0] %></td>
               <td><%= category.createdAt.toISOString().split('T')[0] %></td>
@@ -55,30 +62,148 @@
                   <button class="btn btn-warning btn-sm">Update</button>
                 </form>
                 <button 
-                  class="btn btn-danger btn-sm" 
-                  onclick="deleteCategory('<%= category._id %>', 'categoryRow<%= index %>')">
-                  Delete
-                </button>
+                id="buttoncategoryRow<%= index %>" 
+                class="btn <%= category.isDeleted ? 'btn-success' : 'btn-danger' %> btn-sm" 
+                onclick="toggleCategoryStatus('<%= category._id %>', 'categoryRow<%= index %>', <%= category.isDeleted %>)">
+                <%= category.isDeleted ? 'List' : 'Unlist' %>
+              </button>
               </td>
             </tr>
           <% }) %>
         </tbody>
       </table>
     </div>
+
+
+
+    <div class="d-flex justify-content-center mt-3 pagination-container " >
+      <ul class="pagination">
+        <!-- Previous button with left arrow -->
+        <li class="page-item <%= currentPage <= 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="?page=<%= currentPage - 1 %>">←</a> <!-- Left Arrow -->
+        </li>
+    
+        <!-- Page Numbers -->
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+          </li>
+        <% } %>
+    
+        <!-- Next button with right arrow -->
+        <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="?page=<%= currentPage + 1 %>">→</a> <!-- Right Arrow -->
+        </li>
+      </ul>
+    </div>
+    
   </main>
-</div>
-</div>
+
+
+
+
+<style>
+  
+
+.pagination-container {
+  position: fixed;
+  bottom: 0; 
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999; 
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  
+}
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; 
+  margin: 0;
+}
+
+
+.pagination .page-link {
+  display: inline-block;
+  background-color: transparent; 
+  color: rgb(97, 69, 122); 
+  text-align: center;
+  font-size: 16px; 
+  line-height: 30px; 
+  text-decoration: none;
+  cursor: pointer;
+  padding: 5px 10px; 
+}
+
+
+.pagination .page-item.active .page-link {
+  font-weight: bold;
+  color: black; 
+}
+
+
+.pagination .page-item.disabled .page-link {
+  color: #ccc; 
+  cursor: not-allowed;
+}
+
+
+.pagination .page-link:hover {
+  background-color: #f0f0f0; 
+  border-radius: 4px;
+}
+
+
+@media (max-width: 768px) {
+  
+  .pagination-container {
+    padding: 10px 20px;
+  }
+
+  .pagination .page-link {
+    font-size: 14px; 
+  }
+}
+
+
+@media (max-width: 480px) {
+  
+  .pagination .page-link {
+    font-size: 12px; 
+  }
+
+  .pagination-container {
+    padding: 10px 15px; 
+  }
+}
+
+
+  
+  </style>
+
 
 <script>
-function deleteCategory(categoryId, rowId) {
+
+
+
+
+function toggleCategoryStatus(categoryId, rowId, isDeleted) {
+ 
+  const action = isDeleted ? 'list' : 'unlist'; 
   Swal.fire({
-    title: "Are you sure?",
-    text: "You won't be able to undo this action!",
+    title: `Are you sure you want to ${action} this category?`,
+    text: `This category will be ${action === 'unlist' ? 'hidden' : 'visible'} to users.`,
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#d33",
     cancelButtonColor: "#3085d6",
-    confirmButtonText: "Yes, delete it!"
+    confirmButtonText: `Yes, ${action} it!`
   }).then((result) => {
     if (result.isConfirmed) {
       fetch(`categorydelete/${categoryId}`, { 
@@ -86,15 +211,23 @@ function deleteCategory(categoryId, rowId) {
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ isDeleted: !isDeleted }) 
       })
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            Swal.fire('Deleted!', 'Category has been deleted.', 'success')
-            .then(()=>{location.reload()})
-            
+            Swal.fire('Success!', `Category has been ${action}ed.`, 'success');
+
+          
+            const button = document.getElementById(`button${rowId}`);
+            if (button) {
+              button.innerText = isDeleted ? 'Unlist' : 'List';
+              button.classList.toggle('btn-success', !isDeleted);
+              button.classList.toggle('btn-danger', isDeleted);
+              button.setAttribute('onclick', `toggleCategoryStatus('${categoryId}', '${rowId}', ${!isDeleted})`);
+            }
           } else {
-            Swal.fire('Error!', data.message || 'Failed to delete category.', 'error');
+            Swal.fire('Error!', data.message || `Failed to ${action} category.`, 'error');
           }
         })
         .catch(() => {
@@ -103,6 +236,7 @@ function deleteCategory(categoryId, rowId) {
     }
   });
 }
+
 </script>
 
 <%- include('../partials/admin/footer') %>

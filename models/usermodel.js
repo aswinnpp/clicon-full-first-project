@@ -34,6 +34,9 @@ const userSchema = new mongoose.Schema({
   authuser:{
     type:Boolean,
     default:false
+  },
+  image:{
+    type:[String]
   }
 }, {
   timestamps: true, 

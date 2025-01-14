@@ -1,6 +1,41 @@
-<%- include('../partials/user/header') %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clicon Store</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="/css/styles/userhome.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+  </head>
+  <body>
 
-<div class="container3 mt-3">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #6e8efb, #a777e3);
+        background-size: cover;     
+        background-position: center; 
+        background-repeat: no-repeat; 
+        height: 100vh;  
+        overflow: hidden; 
+               
+      }
+    </style>
+    
+
+<div class="container3 " style="margin-top: 200px;">
   <div class="auth-wrapper">
     <ul class="nav nav-tabs mb-3" id="auth-tab" role="tablist">
       <li class="nav-item" role="presentation">
@@ -45,6 +80,7 @@
         <p id="errr" style="color: red">
           <%= typeof message !== 'undefined' ? message : '' %>
         </p>
+        <p  style="color: red"  id="error"></p>
         <form id="sign-up-form" action="/signup" method="post">
           <div class="mb-3">
             <label for="sign-up-name" class="form-label">Name</label>
@@ -69,14 +105,20 @@
 
           <div class="mb-3">
             <label for="sign-up-password" class="form-label">Password</label>
-            <input
-              type="password"
-              name="password"
-              class="form-control"
-              id="sign-up-password"
-              placeholder="Enter your password"
-            />
+            <div class="input-group">
+              <input
+                type="password"
+                class="form-control"
+                id="sign-up-password"
+                placeholder="Enter your password"
+                name="password"
+              />
+              <button type="button" id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 18px; cursor: pointer;">
+                👁️
+              </button>
+            </div>
           </div>
+
           <div class="mb-3">
             <label for="sign-up-confirm-password" class="form-label"
               >Confirm Password</label
@@ -97,7 +139,7 @@
           <button
             class="google-btn d-flex align-items-center justify-content-center mt-3 ms-3"
           >
-            <img src="/images/google icon.png" alt="Google logo" />
+        
             <span class="text-secondary" id="google-signup-button"
               >Sign in with Google</span
             >
@@ -109,13 +151,37 @@
 </div>
 
 <script>
+
+
+
+const togglePasswordBtn = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('sign-up-password');
+
+  togglePasswordBtn.addEventListener('click', function() {
+    
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text'; 
+      togglePasswordBtn.textContent = '🙈'; 
+    } else {
+      passwordInput.type = 'password';  
+      togglePasswordBtn.textContent = '👁️';  
+    }
+  });
+
+  passwordInput.addEventListener('input', function() {
+
+    togglePasswordBtn.disabled = false;
+  });
+ 
+
+
+
   document.addEventListener("DOMContentLoaded", () => {
-    const signUpForm = document.querySelector("#sign-up-form"); // Ensure this points to your form
-
+    const signUpForm = document.querySelector("#sign-up-form"); 
     signUpForm.addEventListener("submit", (event) => {
-      event.preventDefault(); // Prevent default form submission
+      event.preventDefault(); 
 
-      // Get form values
+    
       const name = document.getElementById("sign-up-name").value.trim();
       const email = document.getElementById("sign-up-email").value.trim();
       const password = document.getElementById("sign-up-password").value.trim();
@@ -123,18 +189,19 @@
         .getElementById("sign-up-confirm-password")
         .value.trim();
 
-      const errorMsg = document.getElementById("phone-error");
+      const errorMsg = document.getElementById("error");
 
       if (name === "") {
-        Swal.fire("Name is required.");
+        errorMsg.innerHTML="Name is required."
+      
         return;
       }
 
       if (email === "") {
-        Swal.fire("Email is required.");
+        errorMsg.innerHTML="Email is required."
         return;
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        Swal.fire("Invalid email address.");
+        errorMsg.innerHTML="Invalid email address."       
         return;
       }
 
@@ -146,28 +213,31 @@
         !/(?=.*[0-9])/.test(password) ||
         !/(?=.*[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>\/?])/.test(password)
       ) {
-        Swal.fire(
-          "Password must:\n" +
-            "- Be at least 6 characters long\n" +
-            "- Contain one lowercase letter\n" +
-            "- Contain one uppercase letter\n" +
-            "- Contain one number\n" +
-            "- Contain one special character"
-        );
+        errorMsg.innerHTML= `Password must contain:<br> 
+            -  at least 6 characters long<br>
+            - one lowercase letter<br>
+            - one uppercase letter<br>
+            - one number<br>
+            - one special character`
+        
         return;
       }
 
       if (confirmPassword === "") {
-        Swal.fire("Confirm password is required.");
+        
+        errorMsg.innerHTML="Confirm password is required." 
+
         return;
       } else if (password !== confirmPassword) {
-        Swal.fire("Passwords do not match.");
+        errorMsg.innerHTML="Passwords do not match." 
         return;
       }
 
       signUpForm.submit();
     });
   });
+
+
 
   let action = "signup";
 
@@ -194,7 +264,7 @@
 
     const decoded = jwt_decode(id_token);
     console.log("User Profile: ", decoded);
-    const data = { name: decoded.name, email: decoded.email };
+    const data = { name: decoded.name, email: decoded.email, imageUrl: decoded.picture  };
 
     fetch("/authsignup", {
       method: "POST",
@@ -217,4 +287,15 @@
       });
   }
 </script>
-<%- include('../partials/user/footer') %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+</footer>
+</body>
+</html>

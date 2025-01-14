@@ -1,16 +1,47 @@
+const User = require("../models/usermodel");
+
+
 const checkSession = (req, res, next) => {
-    if (req.session.user) {
+    if (req.session.details) {
       next();
     } else {
-      res.redirect("/login");
+      res.render("user/usersignin");
+    }
+  };
+
+
+ 
+  const isLogin = (req, res, next) => {
+    console.log(req .session.details )
+    if (req.session.details) {
+      res.redirect("/");
+    } else {
+      next();
+    }
+  };
+
+
+  const isBan = async (req, res, next) => {
+    try {
+      
+      if(req.session.details){
+        const email = req.session.details.email
+        const user = await User.findOne({ email })
+        if(user.isBan===true){
+          req.session.destroy()
+          next()
+        }else{
+          next()
+        }
+
+      }else{
+        next()
+      }
+      
+    } catch (error) {
+      console.error("Error in isBan middleware:", error);
+      res.status(500).send("Internal Server Error");
     }
   };
   
-  const isLogin = (req, res, next) => {
-    if (req.session.user) {
-      res.redirect("/user/Home");
-    } else {
-      next();
-    }
-  };
-  module.exports = { checkSession, isLogin };
+  module.exports = { checkSession, isLogin ,isBan};

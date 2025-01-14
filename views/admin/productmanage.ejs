@@ -54,8 +54,7 @@
         </tr>
       </thead>
       <tbody>
-        <% if (products && products.length > 0) { %> <% for (let i = 0; i <
-        products.length; i++) { %>
+        <% if (products && products.length > 0) { %> <% for (let i = 0; i < products.length; i++) { %>
         <tr>
           <td><%= products[i].category %></td>
           <td><%= products[i].productname %></td>
@@ -92,11 +91,13 @@
               >
                 <button class="btn btn-success btn-sm w-100">Update</button>
               </form>
+
               <button 
               class="btn btn-danger btn-sm" 
-              onclick="deleteCategory('<%= products[i]._id %>')">
-              Delete
+              onclick="toggleProductStatus('<%= products[i]._id %>', <%= products[i].isDeleted %>)">
+              <%= products[i].isDeleted ? 'List' : 'Unlist' %>
             </button>
+            
              
 
               <form
@@ -116,42 +117,151 @@
       </tbody>
     </table>
   </div>
+
+  <div class="d-flex justify-content-center mt-3 pagination-container">
+    <ul class="pagination">
+      <!-- Previous button with left arrow -->
+      <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+        <a class="page-link" href="?page=<%= currentPage - 1 %>">←</a> <!-- Left Arrow -->
+      </li>
+  
+      <!-- Page Numbers -->
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+          <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+        </li>
+      <% } %>
+  
+      <!-- Next button with right arrow -->
+      <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+        <a class="page-link" href="?page=<%= currentPage + 1 %>">→</a> <!-- Right Arrow -->
+      </li>
+    </ul>
+  </div>
+  
+
 </main>
 
-<script>
-  function deleteCategory(categoryId) {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to undo this action!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        fetch(`productdelete/${categoryId}`, { 
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              Swal.fire('Deleted!', 'Category has been deleted.', 'success')
-              .then(()=>{location.reload()})
-              
-            } else {
-              Swal.fire('Error!', data.message || 'Failed to delete category.', 'error');
-            }
-          })
-          .catch(() => {
-            Swal.fire('Error!', 'Something went wrong. Please try again.', 'error');
-          });
-      }
-    });
+
+<style>
+  
+
+.pagination-container {
+  position: absolute;
+  bottom: 10px; 
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 10px; 
+  box-sizing: border-box; 
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px; 
+  margin: 0;
+}
+
+.pagination .page-link {
+  display: inline-block;
+  background-color: #ffffff;
+  color: rgb(97, 69, 122);
+  border-radius: 50%; 
+  width: 30px; 
+  height: 30px; 
+  text-align: center;
+  font-size: 12px; 
+  line-height: 30px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid transparent; 
+}
+
+
+.pagination .page-item.active .page-link {
+  background-color: #000000;
+  border-color: #000000;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+
+.pagination .page-link:hover {
+  background-color: #f0f0f0; 
+  border-color: #ccc;
+}
+
+@media (max-width: 480px) {
+  .pagination .page-link {
+    width: 25px;
+    height: 25px;
+    font-size: 10px; 
+    line-height: 25px;
   }
+}
+
+@media (max-width: 768px) {
+  .pagination-container {
+    padding: 0 20px;
+  }
+}
+
+  
+  </style>
+
+
+
+<script>
+
+
+
+ function toggleProductStatus(productId, isDeleted) {
+  const action = isDeleted ? 'list' : 'unlist';
+  Swal.fire({
+    title: `Are you sure you want to ${action} this product?`,
+    text: `This product will be ${action === 'unlist' ? 'hidden' : 'visible'} to users.`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: `Yes, ${action} it!`
+  }).then((result) => {
+    if (result.isConfirmed) {
+      console.log(typeof isDeleted);
+      
+      fetch(`productdelete/${productId}`, { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isDeleted}) 
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire('Success!', `Product has been ${action}ed.`, 'success')
+              .then(() => location.reload());
+          } else {
+            Swal.fire('Error!', data.message || `Failed to ${action} product.`, 'error');
+          }
+        })
+        .catch((ee) => {
+          console.log('jjk'+ee);
+          
+          Swal.fire('Error!', 'Something went wrong. Please try again.', 'error');
+        });
+    }
+  });
+}
+
+
+
   </script>
 
 

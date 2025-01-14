@@ -3,7 +3,8 @@ const bcrypt = require("bcrypt");
 const Product = require("../models/productmodel");
 const Category = require("../models/categorymodel")
 const path = require('path')
-const fs = require ('fs')
+const fs = require ('fs');
+const router = require("../routes/admin");
 
 
 
@@ -15,7 +16,6 @@ const loadLogin = async (req, res) => {
     res.status(500).send("server error");
   }
 };
-
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -48,7 +48,6 @@ const login = async (req, res) => {
     res.render("admin/login", { message: "Login failed" || "" });
   }
 };
-
 const loadDashboard = async (req, res) => {
   try {
     return res.render("admin/dashboard");
@@ -57,20 +56,37 @@ const loadDashboard = async (req, res) => {
     res.status(500).send("server error");
   }
 };
+const adminLogout = async (req, res)=>{
+  console.log("dmm")
 
-
-
+  req.session.destroy()
+  res.redirect("/admin/login")
+ 
+ 
+ }
 
 // --------------------------------------------
 // ----------- User Management-----------------
 // --------------------------------------------
 const loadUserManage = async (req, res) => {
   try {
-    const users = await User.find({});
 
-    console.log("consolling users:", users);
+    const page = parseInt(req.query.page) || 1;
+    const limit = 3;
+    const skip = (page - 1) * limit;
 
-    return res.render("admin/usermanage", { users });
+
+    const users = await User.find({ role: "user" }).skip(skip).limit(limit);
+    const totalUsers = await Product.countDocuments(); 
+    const totalPages = Math.ceil(totalUsers / limit);
+    
+
+    return res.render("admin/usermanage", { users,
+      currentPage: page,
+      totalPages
+     });
+
+
   } catch (error) {
     console.log("usermanage page not found");
     res.status(500).send("server error");
@@ -134,20 +150,22 @@ const updateUser = async (req, res) => {
 };
 //----------- Ban user ------------------------
 const banUser = async (req, res) => {
-  const { userId } = req.body;
+
+
 
   try {
-    const user = await User.findById(userId);
+    const userId = req.params.id;
+    const { isBan } = req.body; 
+    
+   
 
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
+    
+    const updatedUser = await User.findByIdAndUpdate(userId, { isBan:!isBan });
+    
 
-    user.isBan = !user.isBan;
+    res.json({ success: true });
 
-    await user.save();
-
-    res.redirect("/admin/usermanage");
+   
   } catch (error) {
     console.log(error);
     res.status(500).send("Error banning user");
@@ -159,16 +177,26 @@ const banUser = async (req, res) => {
 
 
 
+
 // --------------------------------------------
 // ---------Product Manage --------------------
 // --------------------------------------------
 
 const loadProductManage = async (req, res) => {
   try {
-    
-    const products = await Product.find({isDeleted:false})
+    const page = parseInt(req.query.page) || 1;
+    const limit = 3;
+    const skip = (page - 1) * limit; 
 
-    res.render("admin/productmanage", { products });
+    const products = await Product.find({}).skip(skip).limit(limit);
+    const totalProducts = await Product.countDocuments(); 
+    const totalPages = Math.ceil(totalProducts / limit); 
+
+    res.render("admin/productmanage", { 
+      products, 
+      currentPage: page,
+      totalPages 
+    });
   } catch (error) {
     console.log("productmanage page not found");
     res.status(500).send("server error");
@@ -209,16 +237,23 @@ const productUpdate = async (req, res) => {
     } = req.body;
 
   
-    if (!req.files || req.files.length < 3) {
-      return res.status(400).json({ error: 'Exactly 3 images are required.' });
-    }
-
-
-
-    let images = req.files.map(file=>file.filename);
+  
+    const currentProduct = await Product.findById(id);
     
-   
 
+    let images = currentProduct.image || [];
+
+
+for(let i=0;i<Object.entries(req.files).length;i++){
+  const file = Object.entries(req.files)[i][1][0]
+  let lastChar = file.fieldname.slice(-1);
+        let u = Number(lastChar);
+        images[u]=file.filename
+}
+
+
+
+   
    
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
@@ -328,11 +363,15 @@ const Productcreate = async (req, res) => {
 };
 
 const loadProductview = async (req, res) => {
-  const id = req.params.id;
-  const product = await Product.find({ _id: id ,
-    isDeleted:false});
+ 
+
 
   try {
+    
+    const id = req.params.id;
+    const product = await Product.find({ _id: id ,
+      isDeleted:false});
+
     res.render("admin/productview", { product });
   } catch (error) {
     console.log("productview page not found");
@@ -340,19 +379,25 @@ const loadProductview = async (req, res) => {
   }
 };
 
-const productDelete = async (req,res)=>{
+const productDelete =  async (req, res) => {
+
+  console.log(req.params.id);
+
   try {
-
-console.log("productdelete")
-
-    const productId = req.params.id
- 
-    await Product.findByIdAndUpdate(productId, { isDeleted: true });
-    res.json({ success: true})
+    const productId = req.params.id;
+    const { isDeleted } = req.body; 
     
+    
+    
+
+    
+    await Product.findByIdAndUpdate(productId, { isDeleted:!isDeleted  });
+
+    res.json({ success: true });
   } catch (error) {
     console.log(error);
-    res.status(500).send("server error");
+    
+    res.json({ success: false, message: 'Failed to update product status.' });
   }
 }
 
@@ -370,11 +415,20 @@ console.log("productdelete")
 const loadCategoryManage = async (req, res) => {
   try {
 
+    const message = req.flash("success");
+    const page = parseInt(req.query.page) || 1;
+    const limit = 3;
+    const skip = (page - 1) * limit; 
 
-const categories = await Category.find({isDeleted:false})
+ const categories = await Category.find({}).skip(skip).limit(limit);
+ const totalCategory = await Product.countDocuments(); 
+ const totalPages = Math.ceil(totalCategory / limit); 
 
-
-    res.render("admin/categorymanage",{ categories });
+    res.render("admin/categorymanage",{ categories,
+      currentPage: page,
+      totalPages,
+      message 
+     });
   } catch (error) {
     console.log("categorymanage page not found");
     res.status(500).send("server error");
@@ -387,7 +441,11 @@ try {
   const category = await Category.find({
     isDeleted:false})
 
-  console.log(category)
+
+    
+
+   
+  console.log("category",category)
 
 
 
@@ -406,17 +464,31 @@ const categoryCreate = async (req,res)=>{
 try {
   
 const {id,name , status , count } = req.body 
+  
+const checkExist = await Category.find({name})
+
+
+
+if(checkExist.length>0){
+
+    req.flash( "success","category already exist")
+    return res.redirect("/admin/categorymanage")  
+
+}
+
+
+
 
 console.log(name,status,count,id)
 const newCategory = new Category({
   name, 
   status,
-  count,
+  
 });
 
 
 await newCategory.save()
-
+req.flash( "success","category create successfully")
 res.redirect('/admin/categorymanage')
  
 } catch (error) {
@@ -452,13 +524,12 @@ const CategoryUpdate = async (req, res)=>{
 
 
 try {
-  const { name, status, count, id } = req.body;
-
+  const { name, status,  id } = req.body;
 
   
     const updatedCategory = await Category.findOneAndUpdate(
       { _id: id },  
-      { name, status, count },  
+      { name, status },  
       { new: true } 
     )
     if (!updatedCategory) {
@@ -480,14 +551,19 @@ try {
 const categoryDelete = async (req,res)=>{
 console.log('nfnew')
   
-  try {
-    const itemId = req.params.id;
-    console.log(itemId)
-    await Category.findByIdAndUpdate(itemId, { isDeleted: true });
-    res.json({ success: true})
-  } catch (error) {
-      res.status(500).send('Error deleting item');
-  }
+try {
+  const categoryId = req.params.id;
+  const { isDeleted } = req.body; 
+  
+// const category = await Category.findOne({_id:categoryId})
+// console.log(category.count)
+
+  await Category.findByIdAndUpdate(categoryId, { isDeleted });
+
+  res.json({ success: true });
+} catch (error) {
+  res.json({ success: false, message: 'Failed to update category status.' });
+}
 };
 
 // ------------------------------------------------
@@ -517,5 +593,6 @@ module.exports = {
   CategoryUpdate,
   categoryDelete,
   productDelete,
+  adminLogout
  
 };

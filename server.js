@@ -12,6 +12,18 @@ app.use(express.json());
 const env = require("dotenv").config();
 const flash = require("connect-flash");
 const bodyParser = require('body-parser')
+const cors = require('cors');
+const morgan = require('morgan')
+
+
+
+
+
+
+
+
+// app.use(morgan('dev'))
+app.use(cors());
 app.use(flash());
 
 connectDB();
@@ -29,8 +41,6 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(nocache());
-
-
 
 app.use("/admin", adminRoute);
 app.use("/", userRoute);

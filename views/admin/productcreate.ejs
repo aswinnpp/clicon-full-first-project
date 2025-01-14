@@ -75,7 +75,7 @@
   
     <div class="mb-3">
       <label for="price" class="form-label">Price</label>
-      <input type="number" class="form-control" id="price" name="price" value="" required min="0">
+      <input type="text" class="form-control" id="price" name="price" value="" required min="0">
     </div>
   
     
@@ -128,7 +128,7 @@
       </div>
     </div>
     
-    <small class="form-text text-muted">You must upload exactly 3 images.</small>
+    <small class="form-text text-muted">You must upload exactly 4 images.</small>
     <div class="text-danger" id="errorImages"></div>
 
     <button type="submit" onclick="form.submit();" class="btn btn-primary" >Create</button>
@@ -299,7 +299,7 @@ form.addEventListener('submit', async (event) => {
   
   function cropImage() {
     const canvas = cropper.getCroppedCanvas();
-    const croppedImageUrl = canvas.toDataURL(); // base64 image
+    const croppedImageUrl = canvas.toDataURL();
   
     document.getElementById(currentImageId).src = croppedImageUrl;
     document.getElementById('cropModal').style.display = 'none';

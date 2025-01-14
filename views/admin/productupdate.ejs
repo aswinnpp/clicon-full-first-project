@@ -30,17 +30,8 @@
     </div>
 
    
-    <div class="mb-3">
-      <label for="categoryStatus" class="form-label">Category</label>
-      <select class="form-control" id="categoryStatus" name="category" required onchange="handleCategoryChange()">
-        <option value="">Select Category</option>
-        <% categories.forEach(category => { %>
-          <option value="<%= category.name%>"><%= category.name %></option>
-        <% }) %>
-       
-      </select>
-    </div>
-
+    
+    
    
     <div class="mb-3">
       <label for="brand" class="form-label">Brand</label>     
@@ -60,24 +51,30 @@
 
     
     <div class="mb-3">
-      <label for="color" class="form-label">Color</label>     
-      <input type="text" class="form-control" id="color" name="color"  value="<%=products.color%>"  required>
-    </div>
-
-    <div class="mb-3" id="ramField"  style="display: none;">
-      <label for="ram" class="form-label">RAM</label>
-      <input type="text" class="form-control" id="ram" name="ram" placeholder="Enter RAM size" >
+      <label for="categoryStatus" class="form-label">Category</label>
+      <select class="form-control" id="categoryStatus" name="category" required onchange="handleCategoryChange()">
+        <option value="" disabled>Select Category</option>
+        <% categories.forEach(category => { %>
+          <!-- Pre-select the category based on the current product's category -->
+          <option value="<%= category.name %>" <%= products.category === category.name ? 'selected' : '' %>><%= category.name %></option>
+        <% }) %>
+      </select>
     </div>
     
-    <div class="mb-3" id="storageField"  style="display: none;">
+    <div class="mb-3" id="ramField" style="<%= products.category === 'Mobile' || products.category === 'Computer' ? '' : 'display: none;' %>;">
+      <label for="ram" class="form-label">RAM</label>
+      <input type="text" class="form-control" id="ram" name="ram" placeholder="Enter RAM size" value="<%= products.ram || '' %>">
+    </div>
+    
+    <div class="mb-3" id="storageField" style="<%= products.category === 'Mobile' || products.category === 'Computer' ? '' : 'display: none;' %>;">
       <label for="storage" class="form-label">Storage</label>
-      <input type="text" class="form-control" id="storage" name="storage" placeholder="Enter Storage size">
+      <input type="text" class="form-control" id="storage" name="storage" placeholder="Enter Storage size" value="<%= products.storage || '' %>">
     </div>
 
   
     <div class="mb-3">
       <label for="price" class="form-label">Price</label>
-      <input type="number" class="form-control" id="price" name="price"  value="<%=products.price%>"  required min="0">
+      <input type="text" class="form-control" id="price" name="price"  value="<%=products.price%>"  required min="0">
     </div>
   
     
@@ -92,26 +89,26 @@
       <div class="row" id="imageUploadCards">
         <div class="col-md-4 mb-3">
           <div class="image-card">
-            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview1">
-            <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview1')">
+            <img src="/uploads/<%= products.image[0] %>" alt="Placeholder Image" id="imagePreview1" required>
+            <input value="<%= products.image[0] %>" type="file" name="image0" accept="image/*"  required onchange="handleImageUpload(event, 'imagePreview1')">
           </div>
         </div>
         <div class="col-md-4 mb-3">
           <div class="image-card">
-            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview2">
-            <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview2')">
+            <img src="/uploads/<%= products.image[1] %>" alt="Placeholder Image" id="imagePreview2" required>
+            <input   value="<%= products.image[1] %>" type="file" name="image1" accept="image/*" required  onchange="handleImageUpload(event, 'imagePreview2')">
           </div>
         </div>
         <div class="col-md-4 mb-3">
           <div class="image-card">
-            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview3">
-            <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview3')">
+            <img src="/uploads/<%= products.image[2] %>" alt="Placeholder Image" id="imagePreview3" required >
+            <input  value="<%= products.image[2] %>" type="file" name="image2" accept="image/*"  required onchange="handleImageUpload(event, 'imagePreview3')">
          </div>
          </div>
          <div class="col-md-4 mb-3">
           <div class="image-card">
-            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview3" required>
-            <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview3')">
+            <img src="/uploads/<%= products.image[3] %>" alt="Placeholder Image" id="imagePreview3" required>
+            <input  value="<%= products.image[3] %>" type="file" name="image3" accept="image/*" required  onchange="handleImageUpload(event, 'imagePreview3')">
          </div>
          </div>
       </div>
@@ -129,10 +126,10 @@
       </div>
     </div>
     
-    <small class="form-text text-muted">You must upload exactly 3 images.</small>
+    <small class="form-text text-muted">You must upload exactly 4 images.</small>
     <div class="text-danger" id="errorImages"></div>
 
-    <button type="submit" onclick="form.submit();" class="btn btn-primary" >Update</button>
+    <button type="submit" onclick="form.submit()" class="btn btn-primary" >Update</button>
 
   </form>
 </main>
@@ -270,37 +267,50 @@ form.addEventListener('submit', async (event) => {
 });
 
 
-  let cropper;
-  let currentImageId = '';
-  
-  function handleImageUpload(event, imagePreviewId) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-      document.getElementById(imagePreviewId).src = e.target.result;
-  
-      document.getElementById('cropModal').style.display = 'block';
-      currentImageId = imagePreviewId;
-  
-      const imageElement = document.getElementById('imageToCrop');
-      imageElement.src = e.target.result;
-  
-      if (cropper) {
-        cropper.destroy();
-      }
-      cropper = new Cropper(imageElement, {
-        aspectRatio: NaN,
-        viewMode: 1,
-        autoCropArea: 1,
-      });
-    };
-    reader.readAsDataURL(file);
+let cropper;
+let currentImageId = '';
+
+function handleImageUpload(event, imagePreviewId) {
+  const file = event.target.files[0];
+
+  if (!file) {
+    const currentImageUrl = document.getElementById(imagePreviewId).src;
+
+    document.getElementById(imagePreviewId).src = currentImageUrl;
+
+    document.getElementById('cropModal').style.display = 'none';
+    return;
   }
-  
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    document.getElementById(imagePreviewId).src = e.target.result;
+
+    document.getElementById('cropModal').style.display = 'block';
+    currentImageId = imagePreviewId;
+
+    const imageElement = document.getElementById('imageToCrop');
+    imageElement.src = e.target.result;
+
+    if (cropper) {
+      cropper.destroy();
+    }
+    cropper = new Cropper(imageElement, {
+      aspectRatio: NaN,
+      viewMode: 1,
+      autoCropArea: 1,
+    });
+  };
+
+  reader.readAsDataURL(file);
+}
+
+
+
   function cropImage() {
     const canvas = cropper.getCroppedCanvas();
-    const croppedImageUrl = canvas.toDataURL(); // base64 image
+    const croppedImageUrl = canvas.toDataURL(); 
   
     document.getElementById(currentImageId).src = croppedImageUrl;
     document.getElementById('cropModal').style.display = 'none';
@@ -323,166 +333,24 @@ form.addEventListener('submit', async (event) => {
   });
 
   function handleCategoryChange() {
-  const category = document.getElementById('categoryStatus').value;
-  const ramField = document.getElementById('ramField');
-  const storageField = document.getElementById('storageField');
+    const selectedCategory = document.getElementById('categoryStatus').value;
 
-  
-  if (category === 'Mobile' || category === 'Computers') {
-    ramField.style.display = 'block';       
-    storageField.style.display = 'block';  
-  } else {
-    ramField.style.display = 'none';       
-    storageField.style.display = 'none';  
+    document.getElementById('ramField').style.display = 'none';
+    document.getElementById('storageField').style.display = 'none';
+
+    if (selectedCategory === 'Mobiles' || selectedCategory === 'Computers') {
+      document.getElementById('ramField').style.display = 'block';
+      document.getElementById('storageField').style.display = 'block';
+    }
   }
-}
-document.getElementById('productForm').addEventListener('submit', function (event) {
-    let isValid = true;
 
-    
-    const productName = document.getElementById('productname');
-    if (productName.value.trim() === '') {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Product Name is required',
-      });
-      isValid = false;
-    }
-
-   
-    const description = document.getElementById('description');
-    if (description.value.trim() === '') {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Description is required',
-      });
-      isValid = false;
-    }
-
- 
-    const category = document.getElementById('categoryStatus');
-    if (category.value === '') {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Category is required',
-      });
-      isValid = false;
-    }
-
-    const brand = document.getElementById('brand');
-    if (brand.value.trim() === '') {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Brand is required',
-      });
-      isValid = false;
-    }
-
-   
-    const stock = document.getElementById('stock');
-    if (stock.value === '' || stock.value <= 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Stock must be a positive number',
-      });
-      isValid = false;
-    }
-
-
-    const warranty = document.getElementById('warranty');
-    if (warranty.value.trim() === '') {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Warranty is required',
-      });
-      isValid = false;
-    }
-
-
-    const color = document.getElementById('color');
-    if (color.value.trim() === '') {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Color is required',
-      });
-      isValid = false;
-    }
-
-  
-    const price = document.getElementById('price');
-    if (price.value === '' || price.value <= 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Price must be a positive number',
-      });
-      isValid = false;
-    }
-
-  
-    const rating = document.getElementById('rating');
-    if (rating.value < 0 || rating.value > 5) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Rating must be between 0 and 5',
-      });
-      isValid = false;
-    }
-
-    const imageInputs = document.querySelectorAll('input[type="file"]');
-    let imageCount = 0;
-    imageInputs.forEach(input => {
-      if (input.files.length > 0) {
-        imageCount++;
-      }
-    });
-
-    if (imageCount !== 3) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'You must upload exactly 3 images',
-      });
-      isValid = false;
-    }
-
-    
-    const selectedCategory = category.value;
-    const ram = document.getElementById('ram');
-    const storage = document.getElementById('storage');
-
-    if ((selectedCategory === 'Mobile' || selectedCategory === 'Computers')) {
-      if (ram.value.trim() === '') {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'RAM is required for selected category',
-        });
-        isValid = false;
-      }
-      if (storage.value.trim() === '') {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Storage is required for selected category',
-        });
-        isValid = false;
-      }
-    }
-
-   
-    if (!isValid) {
-      event.preventDefault();
-    }
+  document.addEventListener("DOMContentLoaded", function() {
+    handleCategoryChange(); 
   });
+
+
+
+  
   </script>
 
  <%- include('../partials/admin/footer') %>
