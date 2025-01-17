@@ -10,8 +10,6 @@ router.post("/signup", userController.signUp);
 
 
 router.get("/logout", userController.Logout)
-
-
 router.get('/banpage',userController.banPage)
 
 
@@ -26,7 +24,6 @@ router.post("/otp", userController.verifyOTP);
 router.post("/resend", userController.resendOtp);
 
 router.get("/forgot", userController.loadForgot);
-
 router.post ("/forgot",userController.forgot)
 
 
@@ -41,7 +38,9 @@ router.get("/cart",userauth.checkSession,userauth.isBan, userController.loadCart
 router.get("/wishlist",userauth.checkSession,userauth.isBan, userController.loadWhishlist )
 router.get("/profile/:id",userauth.checkSession,userauth.isBan,userController.loadProfile)
 
-
+router.post("/address",userController.addAddress)
+router.post("/remove-address/:id",userController.removeAdrress)
+router.post("/edit-address",userController.editAddress)
 
 
 

@@ -42,7 +42,7 @@
 .demo-list {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Optional: Adjusts spacing between items */
+    gap: 10px; 
 }
 
 .demo-item {
@@ -336,10 +336,9 @@
                                     </div>
                               
                                     <div class="product-details-action">
-                                        
-                                        <a href="/cart/add/<%= product._id %>" class="btn btn-success" role="button">
-                                          Buy Now
-                                        </a>
+                                        <a href="<%= product.stock < 5 ? '#' : '/cart/add/' + product._id %>" class="btn btn-success" role="button">
+                                            <%= product.stock < 5 ? 'Out of Stock' : 'Buy Now' %>
+                                          </a>
                                       
                                         <div class="details-action-wrapper">
                                         

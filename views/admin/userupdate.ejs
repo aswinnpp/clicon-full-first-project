@@ -17,8 +17,8 @@
   </div>
 
   <form action="/admin/userupdate" method="POST">
-    <% if (user && user._id) { %>
-      <input type="hidden" name="id" value="<%= user._id %>">
+    <% if (user && user?._id) { %>
+      <input type="hidden" name="id" value="<%= user?._id %>">
     <% } else { %>
       <input type="hidden" name="id" value="">
       <p style="color: red;">User ID is missing. Please try again later.</p>
@@ -27,11 +27,11 @@
     <div class="row mb-3">
       <div class="col-12 col-md-6">
         <label for="userName" class="form-label">User Name</label>
-        <input type="text" class="form-control" id="userName" name="name" value="<%= user.name %>" required>
+        <input type="text" class="form-control" id="userName" name="name" value="<%= user?.name %>" required>
       </div>
       <div class="col-12 col-md-6">
         <label for="email" class="form-label">Email Address</label>
-        <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+        <input type="email" class="form-control" id="email" name="email" value="<%= user?.email %>" required>
       </div>
     </div>
   
@@ -42,7 +42,7 @@
   
     <div class="mb-3">
       <label for="phone" class="form-label">Phone No</label>
-      <input type="text" class="form-control" id="phone" name="phone" value="<%= user.phone %>" required>
+      <input type="text" class="form-control" id="phone" name="phone" value="<%= user?.phone %>" required>
     </div>
   
     <button type="submit" class="btn btn-primary">Update</button>

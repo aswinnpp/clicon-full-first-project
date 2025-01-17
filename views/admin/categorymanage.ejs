@@ -1,4 +1,6 @@
 <%- include('../partials/admin/header') %>
+
+<link rel="stylesheet" href="../../css/styles/categorymanage.css">
     <!-- Main Content -->
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 d-md-none">
@@ -52,19 +54,19 @@
           <% categories.forEach((category, index) => { %>
             <tr id="categoryRow<%= index %>">
               <td><%= index + 1 %></td>
-              <td><%= category.name %></td>
+              <td><%= category?.name %></td>
              
-              <td><%= category.status %></td>
-              <td><%= category.updatedAt.toISOString().split('T')[0] %></td>
-              <td><%= category.createdAt.toISOString().split('T')[0] %></td>
+              <td><%= category?.status %></td>
+              <td><%= category?.updatedAt.toISOString().split('T')[0] %></td>
+              <td><%= category?.createdAt.toISOString().split('T')[0] %></td>
               <td>
-                <form action="/admin/categoryupdate/<%= category._id %>" method="get">
+                <form action="/admin/categoryupdate/<%= category?._id %>" method="get">
                   <button class="btn btn-warning btn-sm">Update</button>
                 </form>
                 <button 
                 id="buttoncategoryRow<%= index %>" 
                 class="btn <%= category.isDeleted ? 'btn-success' : 'btn-danger' %> btn-sm" 
-                onclick="toggleCategoryStatus('<%= category._id %>', 'categoryRow<%= index %>', <%= category.isDeleted %>)">
+                onclick="toggleCategoryStatus('<%= category?._id %>', 'categoryRow<%= index %>', <%= category?.isDeleted %>)">
                 <%= category.isDeleted ? 'List' : 'Unlist' %>
               </button>
               </td>
@@ -102,90 +104,7 @@
 
 
 
-<style>
-  
 
-.pagination-container {
-  position: fixed;
-  bottom: 0; 
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999; 
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-  
-}
-
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px; 
-  margin: 0;
-}
-
-
-.pagination .page-link {
-  display: inline-block;
-  background-color: transparent; 
-  color: rgb(97, 69, 122); 
-  text-align: center;
-  font-size: 16px; 
-  line-height: 30px; 
-  text-decoration: none;
-  cursor: pointer;
-  padding: 5px 10px; 
-}
-
-
-.pagination .page-item.active .page-link {
-  font-weight: bold;
-  color: black; 
-}
-
-
-.pagination .page-item.disabled .page-link {
-  color: #ccc; 
-  cursor: not-allowed;
-}
-
-
-.pagination .page-link:hover {
-  background-color: #f0f0f0; 
-  border-radius: 4px;
-}
-
-
-@media (max-width: 768px) {
-  
-  .pagination-container {
-    padding: 10px 20px;
-  }
-
-  .pagination .page-link {
-    font-size: 14px; 
-  }
-}
-
-
-@media (max-width: 480px) {
-  
-  .pagination .page-link {
-    font-size: 12px; 
-  }
-
-  .pagination-container {
-    padding: 10px 15px; 
-  }
-}
-
-
-  
-  </style>
 
 
 <script>

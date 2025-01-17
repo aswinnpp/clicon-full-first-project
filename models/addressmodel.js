@@ -26,9 +26,13 @@ const addressSchema = new mongoose.Schema({
   postalCode: {
     type: String,
     required: true
+  },
+  phone:{
+    type:Number,
+    require:true
   }
 });
 
-const Address = mongoose.model('Address', addressSchema);
+module.exports = mongoose.model('Address', addressSchema);
 
-module.exports = Address;
+

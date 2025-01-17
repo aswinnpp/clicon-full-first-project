@@ -46,7 +46,7 @@
       <div class="product-details">
         <div class="text-center mb-4">
           <img
-            src="/uploads/<%= product[0].image[0] %>"
+            src="/uploads/<%= product[0]?.image[0] %>"
             alt="<%= product[0].productname %>"
             class="product-img"
             style="width: 300px; height: 300px; object-fit: cover"
@@ -54,22 +54,22 @@
         </div>
         <h2><%= product[0].productname %></h2>
         <div class="product-info">
-          <p><strong>Category:</strong> <%= product[0].category %></p>
-          <p><strong>Brand:</strong> <%= product[0].brand %></p>
-          <p><strong>Price:</strong> ₹<%= product[0].price %></p>
-          <p><strong>Stock:</strong> <%= product[0].stock %></p>
-          <p><strong>Warranty:</strong> <%= product[0].warranty %> year(s)</p>
+          <p><strong>Category:</strong> <%= product[0]?.category %></p>
+          <p><strong>Brand:</strong> <%= product[0]?.brand %></p>
+          <p><strong>Price:</strong> ₹<%= product[0]?.price %></p>
+          <p><strong>Stock:</strong> <%= product[0]?.stock %></p>
+          <p><strong>Warranty:</strong> <%= product[0]?.warranty %> year(s)</p>
           <p>
-            <strong>Return Policy:</strong> <%= product[0].returnPolicy %> Days
+            <strong>Return Policy:</strong> <%= product[0]?.returnPolicy %> Days
           </p>
-          <p><strong>Color:</strong> <%= product[0].color %></p>
+          <p><strong>Color:</strong> <%= product[0]?.color %></p>
         </div>
 
         <!-- Image Gallery -->
         <div class="gallery">
           <h4>Gallery</h4>
           <div class="d-flex flex-wrap gap-2">
-            <% product[0].image.forEach(function(image) { %>
+            <% product[0]?.image.forEach(function(image) { %>
               <img
                 src="/uploads/<%= image %>"
                 alt="Product Image"

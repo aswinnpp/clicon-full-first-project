@@ -1,5 +1,6 @@
 const userSchema = require("../models/usermodel");
 const Product = require("../models/productmodel");
+const Address = require("../models/addressmodel")
 const Category = require("../models/categorymodel")
 const bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer');
@@ -685,11 +686,14 @@ const loadProfile = async (req,res)=>{
 try {
 
   const id = req.params.id
+  // console.log("id",id)
 
   const user = await userSchema.findOne({_id:id})
-  // console.log(user)
+  const address = await Address.find({userId:id})
+  // console.log("user",user)
+  
 
-  res.render("user/profile",{user})
+  res.render("user/profile",{user,id,address})
   
 } catch (error) {
 
@@ -701,6 +705,70 @@ try {
 
 }
 
+const addAddress = async (req,res)=>{
+  try {
+
+    console.log(req.body)
+    const {postalCode,country,state,phone,city,street,id} =req.body
+
+
+   const address = new Address({
+
+    postalCode,
+    country,
+    state,
+    phone,
+    city,
+    street,
+    userId:id
+   })
+
+   address.save()
+
+   res.redirect(`/profile/${id}`)
+    
+  } catch (error) {
+    
+    console.log(error)
+  }
+
+  
+
+}
+
+const removeAdrress = async (req,res)=>{
+
+  const userId = req.params.id
+  
+
+  await Address.findByIdAndDelete(userId);
+
+   res.redirect(`/profile/${userId}`)
+
+}
+
+const editAddress = async (req,res)=>{
+
+const {adressaId,street,city,state,Country,postalCode,phone,userId} = req.body
+
+
+console.log(userId)
+
+ const updatedAddress = await Address.findByIdAndUpdate(
+      adressaId,
+      {
+
+        street,city,
+        state,
+        Country,
+        postalCode,
+        phone
+
+      })
+
+res.redirect(`/profile/${userId}`)
+
+}
 
 
 
@@ -725,6 +793,9 @@ try {
     loadWhishlist,
     forgot,
     reset,
-    loadProfile
+    loadProfile,
+    addAddress,
+    removeAdrress,
+    editAddress
 
   }

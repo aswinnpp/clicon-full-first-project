@@ -39,10 +39,10 @@
           <tbody>
             <% users.forEach(user => { %>
               <tr>
-                <td><%= user.name %></td>
-                <td><%= user.email %></td>
-                <td><%= user.role %></td>
-                <td><%= user.createdAt.toISOString().split('T')[0] %></td>
+                <td><%= user?.name %></td>
+                <td><%= user?.email %></td>
+                <td><%= user?.role %></td>
+                <td><%= user?.createdAt.toISOString().split('T')[0] %></td>
               
                 <td >
                   <!-- <form action="/admin/userupdate/<%= user._id %>" method="get" >
@@ -51,7 +51,7 @@
 
                 <button 
               class="btn btn-danger btn-sm" 
-              onclick="toggleProductStatus('<%= user._id %>', <%= user.isBan %>  )">
+              onclick="toggleProductStatus('<%= user?._id %>', <%= user.isBan %>  )">
               <%= user.isBan ? 'unblock' : 'Block' %>
             </button>
 

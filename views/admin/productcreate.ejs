@@ -33,7 +33,7 @@
       <select class="form-control" id="categoryStatus" name="category" required onchange="handleCategoryChange()">
         <option value="">Select Category</option>
         <% categories.forEach(category => { %>
-          <option value="<%= category.name%>"><%= category.name %></option>
+          <option value="<%= category.name%>"><%= category?.name %></option>
         <% }) %>
        
       </select>
@@ -114,8 +114,8 @@
          
          <div class="col-md-4 mb-3">
           <div class="image-card">
-            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview3" required>
-            <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview3')">
+            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview4" required>
+            <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview4')">
          </div>
          </div>
       </div>
