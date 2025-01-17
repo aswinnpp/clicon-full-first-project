@@ -89,13 +89,13 @@
                                             </div><!-- End .header-menu -->
                                         </div>
                                     </li>
-                                    <% if(user){%>
+                                    <!-- <% if(user){%>
 
                                         <li><a href="/logout">Logout</a></li>
                                   <%  }else{%>
 
-                                    <li><a href="http://localhost:3000/signin">Sign in / Sign up</a></li>
-                                <%  } %>
+                                    <li><a href="/signin">Sign in / Sign up</a></li>
+                                <%  } %> -->
                                 </ul>
                             </li>
                         </ul><!-- End .top-menu -->
@@ -131,119 +131,55 @@
                     </div>
 
                     <div class="header-right">
-                        <div class="dropdown compare-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Compare Products" aria-label="Compare Products">
+                        <div class="compare-dropdown">
+                            <a href="#" title="Compare Products" aria-label="Compare Products">
                                 <div class="icon">
-                                    <i class="icon-random"></i>
+                                    <i class="icon-random" style="font-size: 24px;"></i>
                                 </div>
                                 <p>Compare</p>
                             </a>
-
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <ul class="compare-products">
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product.html">Blue Night Dress</a></h4>
-                                    </li>
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product.html">White Long Skirt</a></h4>
-                                    </li>
-                                </ul>
-
-                                <div class="compare-actions">
-                                    <a href="#" class="action-link">Clear All</a>
-                                    <a href="#" class="btn btn-outline-primary-2"><span>Compare</span><i class="icon-long-arrow-right"></i></a>
-                                </div>
-                            </div><!-- End .dropdown-menu -->
-                        </div><!-- End .compare-dropdown -->
+                        </div>
+                        <!-- End .compare-dropdown -->
 
                         <div class="wishlist">
-                            <a href="wishlist.html" title="Wishlist">
+                            <a href="/wishlist" title="Wishlist">
                                 <div class="icon">
                                     <i class="icon-heart-o"></i>
-                                    <span class="wishlist-count badge">3</span>
+                                    
                                 </div>
                                 <p>Wishlist</p>
                             </a>
                         </div><!-- End .compare-dropdown -->
 
-                        <div class="dropdown cart-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                        <div class="cart-dropdown">
+                            <a href="/cart" class="dropdown-toggle" role="button" data-display="static">
                                 <div class="icon">
                                     <i class="icon-shopping-cart"></i>
-                                    <span class="cart-count">2</span>
                                 </div>
                                 <p>Cart</p>
                             </a>
-
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <div class="dropdown-cart-products">
-                                    <div class="product">
-                                        <div class="product-cart-details">
-                                            <h4 class="product-title">
-                                                <a href="product.html">Beige knitted elastic runner shoes</a>
-                                            </h4>
-
-                                            <span class="cart-product-info">
-                                                <span class="cart-product-qty">1</span>
-                                                x $84.00
-                                            </span>
-                                        </div><!-- End .product-cart-details -->
-
-                                        <figure class="product-image-container">
-                                            <a href="product.html" class="product-image">
-                                                <img src="assets/images/products/cart/product-1.jpg" alt="product">
-                                            </a>
-                                        </figure>
-                                        <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                    </div><!-- End .product -->
-
-                                    <div class="product">
-                                        <div class="product-cart-details">
-                                            <h4 class="product-title">
-                                                <a href="product.html">Blue utility pinafore denim dress</a>
-                                            </h4>
-
-                                            <span class="cart-product-info">
-                                                <span class="cart-product-qty">1</span>
-                                                x $76.00
-                                            </span>
-                                        </div><!-- End .product-cart-details -->
-
-                                        <figure class="product-image-container">
-                                            <a href="product.html" class="product-image">
-                                                <img src="assets/images/products/cart/product-2.jpg" alt="product">
-                                            </a>
-                                        </figure>
-                                        <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                    </div><!-- End .product -->
-                                </div><!-- End .cart-product -->
-
-                                <div class="dropdown-cart-total">
-                                    <span>Total</span>
-
-                                    <span class="cart-total-price">$160.00</span>
-                                </div><!-- End .dropdown-cart-total -->
-
-                                <div class="dropdown-cart-action">
-                                    <a href="cart.html" class="btn btn-primary">View Cart</a>
-                                    <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
-                                </div><!-- End .dropdown-cart-total -->
-                            </div><!-- End .dropdown-menu -->
                         </div><!-- End .cart-dropdown -->
-                    </div><!-- End .header-right -->
+                        
+
+
+                       
+                         
+
+                    </div>
+
+
+
                 </div><!-- End .container -->
             </div><!-- End .header-middle -->
 
             <div class="header-bottom sticky-header">
                 <div class="container">
                     <div class="header-left">
-                        <div class="dropdown category-dropdown">
+                        <!-- <div class="dropdown category-dropdown">
                             <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Browse Categories">
                                 Browse Categories <i class="icon-angle-down"></i>
-                            </a>
-
+                            </a> -->
+<!-- 
                             <div class="dropdown-menu">
                                 <nav class="side-nav">
                                     <% category.forEach(Categories =>{%>
@@ -255,10 +191,10 @@
                                     
                                
                                 </nav>
-                            </div><!-- End .dropdown-menu -->
+                            </div>End .dropdown-menu -->
 
 
-                        </div><!-- End .category-dropdown -->
+                        <!-- </div>End .category-dropdown -->
                     </div><!-- End .header-left -->
                     <div class="header-center">
                         <nav class="main-nav" style="display: flex; align-items: center;">
@@ -276,11 +212,11 @@
                                     <a href="elements-list.html" class="sf-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Contact</a>
                                 </li>
                                 <!-- Icon item -->
-                                <li class="icon-item" style="margin-left: auto;">
+                                <!-- <li class="icon-item" style="margin-left: auto;">
                                     <a href="/profile" style="text-decoration: none; color: #000;">
                                         <i class="bi bi-person-circle" style="font-size: 24px; color: #030303; cursor: pointer;"></i>
                                     </a>
-                                </li>
+                                </li> -->
                             </ul>
                         </nav>
                     </div>
@@ -290,14 +226,14 @@
                     </div>
                 </div><!-- End .container -->
             </div><!-- End .header-bottom -->
-        </header><!-- End .header -->
+        </header>
 
         <main class="main">
             <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
-                <div class="container d-flex align-items-center">
+                <div class="container d-flex align-items-center  border-bottom"  style="border-color: burlywood;">>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href="">Products</a></li>
+                        <li class="breadcrumb-item"><a href="/productview/<%= product[0]._id %>">Products</a></li>
                     
                     </ol>
 
@@ -305,7 +241,7 @@
                 </div><!-- End .container -->
             </nav><!-- End .breadcrumb-nav -->
 
-            <div class="page-content">
+            <div class="page-content mt-5" >
                 <div class="container">
                     <div class="product-details-top">
                         <div class="row">
@@ -356,7 +292,9 @@
                                     <div class="product-price">
                                     <%= product[0].price %>
                                     </div>
-                              
+                                    <div class="product-price">
+                                        <%= product[0].offer %> <p style="color: green; font-size: larger;" >Off</p>
+                                     </div>
                                     <!-- Product Description -->
                                     <div class="product-content">
                                       <p><%= product[0].description %></p>
@@ -397,20 +335,25 @@
                                       </div>
                                     </div>
                               
-                                    Actions
                                     <div class="product-details-action">
-                                      <a href="/cart/add/<%= product._id %>" class="btn-product btn-cart">
-                                        <span>Add to Cart</span>
-                                      </a>
-                                      <div class="details-action-wrapper">
-                                        <a href="#" class="btn-product btn-wishlist" title="Wishlist">
-                                          <span>Add to Wishlist</span>
+                                        
+                                        <a href="/cart/add/<%= product._id %>" class="btn btn-success" role="button">
+                                          Buy Now
                                         </a>
-                                        <a href="#" class="btn-product btn-compare" title="Compare">
-                                          <span>Add to Compare</span>
-                                        </a>
+                                      
+                                        <div class="details-action-wrapper">
+                                        
+
+                                          <a href="/wishlist/add/<%= product._id %>" class="btn btn-outline-secondary" title="Add to Wishlist" aria-label="Add to Wishlist">
+                                            Add to Wishlist
+                                          </a>
+                                      
+                                          
+                                          <a href="/compare/add/<%= product._id %>" class="btn btn-outline-secondary" title="Add to Compare" aria-label="Add to Compare">
+                                            Add to Compare
+                                          </a>
+                                        </div>
                                       </div>
-                                    </div>
                               
                                     <!-- Footer Details -->
                                     
@@ -632,6 +575,11 @@
                                     <div class="product-price">
                                         <%= product.price || '0.00' %>
                                     </div><!-- End .product-price -->
+
+
+                                    <div class="product-price">
+                                        <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
+                                     </div>
                     
                                     <div class="ratings-container">
                                         <div class="ratings">
@@ -648,6 +596,8 @@
                     </div><!-- End .owl-carousel -->
                     
                 </div><!-- End .container -->
+
+
             </div><!-- End .page-content -->
         </main><!-- End .main -->
 
@@ -726,7 +676,8 @@
 	        		</figure><!-- End .footer-payments -->
 	        	</div><!-- End .container -->
 	        </div><!-- End .footer-bottom -->
-        </footer><!-- End .footer -->
+        </footer>
+        <!-- End .footer -->
     </div><!-- End .page-wrapper -->
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 

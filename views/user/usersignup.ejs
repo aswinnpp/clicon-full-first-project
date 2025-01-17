@@ -190,13 +190,21 @@ const togglePasswordBtn = document.getElementById('togglePassword');
         .value.trim();
 
       const errorMsg = document.getElementById("error");
+      
+
+
+     
+  
+      errorMessage.innerHTML = '';
+    
+
 
       if (name === "") {
         errorMsg.innerHTML="Name is required."
       
         return;
       }
-
+   
       if (email === "") {
         errorMsg.innerHTML="Email is required."
         return;

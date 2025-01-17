@@ -12,8 +12,8 @@ const checkSession = (req, res, next) => {
 
  
   const isLogin = (req, res, next) => {
-    console.log(req .session.details )
-    if (req.session.details) {
+    console.log('gbdfsvdcz'+req .session.details )
+    if (req.session.logged) {
       res.redirect("/");
     } else {
       next();
@@ -27,7 +27,7 @@ const checkSession = (req, res, next) => {
       if(req.session.details){
         const email = req.session.details.email
         const user = await User.findOne({ email })
-        if(user.isBan===true){
+        if(user?.isBan===true){
           req.session.destroy()
           next()
         }else{

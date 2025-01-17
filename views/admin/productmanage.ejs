@@ -41,6 +41,7 @@
           <th>Category</th>
           <th>Name</th>
           <th>Brand</th>
+          <th>Offer</th>
           <th>Price</th>
           <th>Stock</th>
           <th>Warranty</th>
@@ -59,6 +60,7 @@
           <td><%= products[i].category %></td>
           <td><%= products[i].productname %></td>
           <td><%= products[i].brand %></td>
+          <td><%= products[i].offer %></td>
           <td><%= products[i].price %></td>     
           <td><%= products[i].stock %></td>
           <td><%= products[i].warranty %></td>
@@ -146,74 +148,87 @@
 <style>
   
 
-.pagination-container {
-  position: absolute;
-  bottom: 10px; 
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  padding: 0 10px; 
-  box-sizing: border-box; 
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px; 
-  margin: 0;
-}
-
-.pagination .page-link {
-  display: inline-block;
-  background-color: #ffffff;
-  color: rgb(97, 69, 122);
-  border-radius: 50%; 
-  width: 30px; 
-  height: 30px; 
-  text-align: center;
-  font-size: 12px; 
-  line-height: 30px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  border: 1px solid transparent; 
-}
-
-
-.pagination .page-item.active .page-link {
-  background-color: #000000;
-  border-color: #000000;
-  color: #ffffff;
-  font-weight: bold;
-}
-
-
-.pagination .page-link:hover {
-  background-color: #f0f0f0; 
-  border-color: #ccc;
-}
-
-@media (max-width: 480px) {
-  .pagination .page-link {
-    width: 25px;
-    height: 25px;
-    font-size: 10px; 
-    line-height: 25px;
-  }
-}
-
-@media (max-width: 768px) {
   .pagination-container {
-    padding: 0 20px;
+    position: fixed;
+    bottom: 0; 
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999; 
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    
   }
-}
-
   
-  </style>
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; 
+    margin: 0;
+  }
+  
+  
+  .pagination .page-link {
+    display: inline-block;
+    background-color: transparent; 
+    color: rgb(97, 69, 122); 
+    text-align: center;
+    font-size: 16px; 
+    line-height: 30px; 
+    text-decoration: none;
+    cursor: pointer;
+    padding: 5px 10px; 
+  }
+  
+  
+  .pagination .page-item.active .page-link {
+    font-weight: bold;
+    color: black; 
+  }
+  
+  
+  .pagination .page-item.disabled .page-link {
+    color: #ccc; 
+    cursor: not-allowed;
+  }
+  
+  
+  .pagination .page-link:hover {
+    background-color: #f0f0f0; 
+    border-radius: 4px;
+  }
+  
+  
+  @media (max-width: 768px) {
+    
+    .pagination-container {
+      padding: 10px 20px;
+    }
+  
+    .pagination .page-link {
+      font-size: 14px; 
+    }
+  }
+  
+  
+  @media (max-width: 480px) {
+    
+    .pagination .page-link {
+      font-size: 12px; 
+    }
+  
+    .pagination-container {
+      padding: 10px 15px; 
+    }
+  }
+  
+  
+    
+    </style>
 
 
 

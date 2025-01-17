@@ -110,6 +110,9 @@ const banPage = async (req,res)=>{
     
     
     try {
+
+     
+
       const message = req.flash('success');
       const cliend_id = process.env.GOOGLE_CLIENT_ID || ""
       res.render('user/usersignup',{message ,cliend_id}); 
@@ -120,45 +123,36 @@ const banPage = async (req,res)=>{
 
 // ------------------ User sign up---------------
 const signUp = async (req, res) => {
-  console.log(req.body); 
-
- 
-  
   try {
-    const { email, password, name , Confirmpassword } = req.body;
-
+    const { email, password, name, Confirmpassword } = req.body;
     const user = await userSchema.findOne({ email });
 
-    // if (user) {
-    //   req.flash('success', 'User already exist!');
-    //   return res.redirect("/signup");
-    // }
-
-    
-    //   if( password !== Confirmpassword){
-    //     req.flash('success', 'Password Not Match');
-    //     return res.redirect("/signup");
-
-    //   }
+    if (user) {
+      req.flash("success", "User already exists.");
+      return res.redirect("/signup");
+    }
 
     const otp = generateOTP();
     const timestamp = Date.now();
 
+    
     req.session.otp = otp;
+    req.session.type = "signup";
     req.session.timestamp = timestamp;
-    req.session.details={email,password,name, Confirmpassword }
+    req.session.details = { email, password, name };
 
     sendOtpEmail(email, otp);
-    console.log('sign up otp creation',req.session)
-    console.log('OTP:', otp);
+    console.log("Signup OTP created:", req.session);
+    console.log("OTP:", otp);
 
-    res.redirect('/otp')
-
+    return res.redirect("/otp");
   } catch (error) {
-    console.error(error); 
-    res.render("/signup",);
+    console.error("Error in signup:", error);
+    req.flash("error", "An error occurred. Please try again.");
+    return res.redirect("/signup");
   }
 };
+
 
 //------------------- OTP Page ------------------
 const loadOtp = async (req, res) => {
@@ -281,7 +275,7 @@ const resendOtp = async (req, res) => {
 
   try {
     const  email  = req.session.details.email
-   console.log(email)
+   
     let newOtp;
     do {
       newOtp = generateOTP();
@@ -291,7 +285,7 @@ const resendOtp = async (req, res) => {
     req.session.otp = newOtp;
     req.session.timestamp = Date.now(); 
    
-    console.log('resend session creation',req.session)
+    
 
     
     await transporter.sendMail({
@@ -309,66 +303,83 @@ const resendOtp = async (req, res) => {
 };
 
 //----------------- verify OTP---------------------
-  const verifyOTP = async (req, res) => {
-    const { otp } = req.body;
+const verifyOTP = async (req, res) => {
+  const { otp } = req.body;
+  const currentTime = Date.now();
 
-    console.log(req.session)
-    const currentTime = Date.now();
-  
-    
-    if (req.session.otp && req.session.timestamp) {
-      const otpAge = currentTime - req.session.timestamp;
-     
-      const isExpired = otpAge == 30000;  
-  
-      if (isExpired) {
-        req.flash('OTP', 'OTP Expired');
-        delete req.session.otp
-        return res.redirect('/otp')
-      
-      }
-     const data=req.session.details
-      
-      if (parseInt(otp) === req.session.otp) {
-        
-        const hashedPassword = await bcrypt.hash(data.password, saltround);
-        const newUser = new userSchema({
-          email:data.email,
-          password: hashedPassword,
-          name:data.name,
-          phone:data.phone,
-        });
-  
-        await newUser.save();
-        console.log(newUser);
-  
-        // OTP is valid and user is saved
-        res.redirect('/');  // Redirect to a welcome page or dashboard
-      } else if(parseInt(otp) === req.session.newotp){
-        const hashedPassword = await bcrypt.hash(data.password, saltround);
-        const newUser = new userSchema({
-          email:data.email,
-          password: hashedPassword,
-          name:data.name,
-          phone:data.phone,
-        });
-  
-        await newUser.save();
-        console.log(newUser);
-  
-        // OTP is valid and user is saved
-        res.redirect('/');  // Redirect to a welcome page or dashboard
-  
-      }
-      else {
-        req.flash('OTP', 'OTP not match')
-        return res.redirect('/otp')
-      }
-    }else {
-      req.flash('OTP', 'OTP Generation Failed')
-      return res.redirect('/otp')
+  if (parseInt(otp) !== req.session.otp) {
+    req.flash("OTP", "Invalid OTP. Please try again.");
+    return res.redirect("/otp");
+  }
+
+  if (req.session.otp && req.session.timestamp && req.session.type) {
+    const otpAge = currentTime - req.session.timestamp;
+    const isExpired = otpAge >= 30000; 
+
+
+
+    if (isExpired) {
+      req.flash("OTP", "OTP has expired.");
+      return res.redirect("/otp");
     }
+
+   
+
+    const workflowType = req.session.type;
+
+    if (workflowType === "signup") {
+      const data = req.session.details;
+
+      try {
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+        const newUser = new userSchema({
+          email: data.email,
+          password: hashedPassword,
+          name: data.name,
+        });
+
+        await newUser.save();
+
+       
+        req.session.logged = true;
+        delete req.session.otp;
+        delete req.session.timestamp;
+        delete req.session.details;
+        delete req.session.type;
+
+        req.flash("error", "User registered successfully.");
+        return res.redirect("/signin");
+      } catch (error) {
+        console.error("Error saving user:", error);
+        req.flash("OTP", "Error creating account. Please try again.");
+        return res.redirect("/otp");
+      }
+    } else if (workflowType === "forgot") {
+      try {
+        const user = await userSchema.findOne({ email: req.session.forgot });
+        if (!user) {
+          req.flash("OTP", "User not found.");
+          return res.redirect("/forgot");
+        }
+
+        delete req.session.otp;
+        delete req.session.timestamp;
+        delete req.session.type;
+
+        return res.render("user/resetpassword");
+      } catch (error) {
+        console.error("Error processing forgot password:", error);
+        req.flash("OTP", "Error resetting password. Please try again.");
+        return res.redirect("/otp");
+      }
+    }
+  }
+
+  req.flash("OTP", "OTP generation failed. Please try again.");
+  return res.redirect("/otp");
 };
+
+
 
 // ===============================================
 // ===============================================
@@ -450,11 +461,12 @@ const authsignin = async (req,res)=>{
 //=============== user login ====================
 //==============================================
 const loadSignIn = async (req, res) => {
-  console.log('ikswyjznthgfhgbfsgbv');
+
   
     try {
       
       const error = req.flash('error');
+      
       
       const cliend_id =process.env.GOOGLE_CLIENT_ID
       
@@ -470,7 +482,7 @@ const loadSignIn = async (req, res) => {
     
   
     
-      const { email, password, name } = req.body;
+      const { email, password } = req.body;
   
       
       if (!email || !password) {
@@ -529,26 +541,165 @@ const loadSignIn = async (req, res) => {
 
 const loadForgot = async (req, res) => {
     try {
+      const message = req.flash("message")
       
-      res.render('user/forgotpassword'); 
+      res.render('user/forgotpassword',{message}); 
     } catch (error) {
       console.log('user forgotpassword error:', error);
     }
   };
 
+
+
+
+const forgot = async (req, res) => {
+    try {
+      const { email } = req.body;
+      const user = await userSchema.findOne({ email });
+
+
+      if (email == "") {
+        req.flash("message", "This Field Are Require");
+        return res.redirect("/forgot");
+      }
+  
+      if (!user) {
+        req.flash("message", "This user does not exist.");
+        return res.redirect("/forgot");
+      }
+
+     
+  
+      const otp = generateOTP();
+      const timestamp = Date.now();
+  
+     
+      req.session.otp = otp;
+      req.session.type = "forgot";
+      req.session.timestamp = timestamp;
+      req.session.forgot = email;
+  
+      sendOtpEmail(email, otp);
+      console.log("Forgot password OTP created:", req.session);
+      console.log("OTP:", otp);
+  
+      return res.render("user/otpverify");
+    } catch (error) {
+      console.error("Error in forgot password:", error);
+      req.flash("message", "An error occurred. Please try again.");
+      return res.redirect("/forgot");
+    }
+  };
+  
+
+
+
+
+
 const loadReset = async (req, res) => {
     try {
-      
+          
+
+ 
+
       res.render('user/resetpassword'); 
     } catch (error) {
       console.log('user resetpassword error:', error);
     }
   };
 
+  
 
 
+  const reset = async (req, res) => {
+    try {
+      const email = req.session.forgot;
+      
+  
+      const user = await userSchema.findOne({ email });
+   
+  
+      if (!user) {
+        req.flash('error', 'User not found');
+        return res.redirect('/reset'); 
+      }
+  
+      const { newpassword, newconfirmpassword } = req.body;
+      
+  
+      if (newpassword !== newconfirmpassword) {
+        req.flash('error', 'Passwords do not match');
+        return res.redirect('/reset');
+      }
+  
+      const hashedPassword = await bcrypt.hash(newpassword, 10);
+  
+      user.password = hashedPassword;
+      await user.save();
+  
+    
+  
+      req.flash('error', 'Password reset successfully');
+      res.redirect('/signin'); 
+    } catch (error) {
+      console.error("Error in reset function:", error);
+      res.status(500).send('Server Error');
+    }
+  };
+  
+
+  const loadCart = async (req,res) =>{
+
+    try {
+
+      const user = req.session?.details 
 
 
+      res.render("user/cart",{user})
+    } catch (error) {
+      console.log(error)
+      
+    }
+
+  }
+
+const loadWhishlist = async (req,res)=>{
+
+try {
+  
+  const user = req.session?.details 
+
+
+res.render("user/wishlist",{user})
+
+} catch (error) {
+
+  console.log(error)
+}
+
+
+  }
+
+const loadProfile = async (req,res)=>{
+
+try {
+
+  const id = req.params.id
+
+  const user = await userSchema.findOne({_id:id})
+  // console.log(user)
+
+  res.render("user/profile",{user})
+  
+} catch (error) {
+
+  console.log(error)
+ 
+  
+}
+
+
+}
 
 
 
@@ -569,6 +720,11 @@ const loadReset = async (req, res) => {
     productView,
     productList,
     Logout,
-    banPage
+    banPage,
+    loadCart,
+    loadWhishlist,
+    forgot,
+    reset,
+    loadProfile
 
   }

@@ -22,7 +22,9 @@
         "forgotpassword",
         "googleusercontent",
         "multter",
+        "newconfirmpassword",
         "newotp",
+        "newpassword",
         "newproduct",
         "nulll",
         "otpresent",
@@ -43,7 +45,9 @@
         "unlist",
         "usermanage",
         "usermodel",
+        "userr",
         "usersignin",
-        "usersignup"
+        "usersignup",
+        "Whishlist"
     ]
 }

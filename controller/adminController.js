@@ -71,24 +71,26 @@ const adminLogout = async (req, res)=>{
 const loadUserManage = async (req, res) => {
   try {
 
+    const message = req.flash("success");
     const page = parseInt(req.query.page) || 1;
     const limit = 3;
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit; 
 
-
-    const users = await User.find({ role: "user" }).skip(skip).limit(limit);
-    const totalUsers = await Product.countDocuments(); 
+  
+    const users = await User.find({}).skip(skip).limit(limit);
+    const totalUsers = await Category.countDocuments();
     const totalPages = Math.ceil(totalUsers / limit);
-    
 
-    return res.render("admin/usermanage", { users,
+  
+    res.render("admin/usermanage", {
+      users,
       currentPage: page,
-      totalPages
-     });
-
+      totalPages,
+      message,
+    });
 
   } catch (error) {
-    console.log("usermanage page not found");
+    console.log("error");
     res.status(500).send("server error");
   }
 };
@@ -184,18 +186,22 @@ const banUser = async (req, res) => {
 
 const loadProductManage = async (req, res) => {
   try {
+    const message = req.flash("success");
     const page = parseInt(req.query.page) || 1;
     const limit = 3;
     const skip = (page - 1) * limit; 
 
+  
     const products = await Product.find({}).skip(skip).limit(limit);
-    const totalProducts = await Product.countDocuments(); 
-    const totalPages = Math.ceil(totalProducts / limit); 
+    const totalProduct = await Product.countDocuments();
+    const totalPages = Math.ceil(totalProduct / limit);
 
-    res.render("admin/productmanage", { 
-      products, 
+  
+    res.render("admin/productmanage", {
+      products,
       currentPage: page,
-      totalPages 
+      totalPages,
+      message,
     });
   } catch (error) {
     console.log("productmanage page not found");
@@ -228,6 +234,7 @@ const productUpdate = async (req, res) => {
       productname,
       category,
       brand,
+      offer,
       price,
       stock,
       warranty,
@@ -261,6 +268,7 @@ for(let i=0;i<Object.entries(req.files).length;i++){
         productname,
         category,
         brand,
+        offer,
         price,
         stock,
         warranty,
@@ -309,6 +317,7 @@ const Productcreate = async (req, res) => {
       productname,
       category,
       brand,
+      offer,
       price,
       stock,
       warranty,
@@ -341,6 +350,7 @@ const Productcreate = async (req, res) => {
       category,
       categoryId:categoryId._id,
       brand,
+      offer,
       price,
       stock,
       warranty,
@@ -416,19 +426,20 @@ const loadCategoryManage = async (req, res) => {
   try {
 
     const message = req.flash("success");
-    const page = parseInt(req.query.page) || 1;
-    const limit = 3;
+    const page = parseInt(req.query.page) || 1; 
+    const limit = 3; 
     const skip = (page - 1) * limit; 
 
- const categories = await Category.find({}).skip(skip).limit(limit);
- const totalCategory = await Product.countDocuments(); 
- const totalPages = Math.ceil(totalCategory / limit); 
+    const categories = await Category.find({}).skip(skip).limit(limit);
+    const totalCategory = await Category.countDocuments();
+    const totalPages = Math.ceil(totalCategory / limit);
 
-    res.render("admin/categorymanage",{ categories,
+    res.render("admin/categorymanage", {
+      categories,
       currentPage: page,
       totalPages,
-      message 
-     });
+      message,
+    });
   } catch (error) {
     console.log("categorymanage page not found");
     res.status(500).send("server error");
@@ -465,7 +476,7 @@ try {
   
 const {id,name , status , count } = req.body 
   
-const checkExist = await Category.find({name})
+const checkExist = await Category.find({ name: { $regex: new RegExp('^' + name + '$', 'i') } });
 
 
 
