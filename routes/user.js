@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controller/userController");
 const userauth = require("../middleware/userauth");
+const multer = require('multer');
+const upload = multer();
+
 
 router.get("/", userauth.isBan,  userController.loadHome);
 
@@ -16,7 +19,7 @@ router.get('/banpage',userController.banPage)
 router.post("/authsignup", userController.authsignup);
 router.post("/authsignin",userController.authsignin);
 
-router.get("/signin",userauth.isLogin, userController.loadSignIn);
+router.get("/signin",userauth.isLogin,userController.loadSignIn);
 router.post("/signin", userController.signIn);
 
 router.get("/otp",  userController.loadOtp);
@@ -41,6 +44,7 @@ router.get("/profile/:id",userauth.checkSession,userauth.isBan,userController.lo
 router.post("/address",userController.addAddress)
 router.post("/remove-address/:id",userController.removeAdrress)
 router.post("/edit-address",userController.editAddress)
+router.post("/update-profile", upload.single('image'),userController.editProfile)
 
 
 

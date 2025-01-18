@@ -328,7 +328,7 @@
                                           class="form-control"
                                           value="1"
                                           min="1"
-                                          max="<%= product.stock %>"
+                                          max="5"
                                           step="1"
                                           required
                                         />
@@ -336,10 +336,11 @@
                                     </div>
                               
                                     <div class="product-details-action">
-                                        <a href="<%= product.stock < 5 ? '#' : '/cart/add/' + product._id %>" class="btn btn-success" role="button">
-                                            <%= product.stock < 5 ? 'Out of Stock' : 'Buy Now' %>
-                                          </a>
-                                      
+                                        <a href="<%= product[0]?.stock < 5 ? '#' : '/cart/add/' + product._id %>" 
+                                            class="btn <%= product[0]?.stock < 5 ? 'btn-warning' : 'btn-success' %>" 
+                                            role="button">
+                                            <%= product[0]?.stock < 5 ? 'Out of Stock' : 'Buy Now' %>
+                                         </a>                                      
                                         <div class="details-action-wrapper">
                                         
 

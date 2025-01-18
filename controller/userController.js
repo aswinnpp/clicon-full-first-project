@@ -125,6 +125,7 @@ const banPage = async (req,res)=>{
 // ------------------ User sign up---------------
 const signUp = async (req, res) => {
   try {
+    console.log("sdad")
     const { email, password, name, Confirmpassword } = req.body;
     const user = await userSchema.findOne({ email });
 
@@ -147,13 +148,13 @@ const signUp = async (req, res) => {
     console.log("OTP:", otp);
 
     return res.redirect("/otp");
+    
   } catch (error) {
     console.error("Error in signup:", error);
     req.flash("error", "An error occurred. Please try again.");
     return res.redirect("/signup");
   }
 };
-
 
 //------------------- OTP Page ------------------
 const loadOtp = async (req, res) => {
@@ -416,6 +417,7 @@ const authsignup=async(req,res)=>{
     image:data.imageUrl
   });
   req.session.details={email}
+  req.session.logged=true
   newUser.authuser = true;
   await newUser.save();
   res.redirect(302, '/');
@@ -444,6 +446,7 @@ const authsignin = async (req,res)=>{
   }
  
   req.session.details={email}
+  req.session.logged=true
 
   res.redirect(302, '/');
 
@@ -522,6 +525,7 @@ const loadSignIn = async (req, res) => {
       
       req.session.user = user._id; 
       req.session.details={email}
+      req.session.logged=true
   
       
       res.redirect("/"); 
@@ -681,6 +685,9 @@ res.render("user/wishlist",{user})
 
   }
 
+
+
+  
 const loadProfile = async (req,res)=>{
 
 try {
@@ -736,16 +743,17 @@ const addAddress = async (req,res)=>{
 
 }
 
-const removeAdrress = async (req,res)=>{
+  const removeAdrress = async (req,res)=>{
 
-  const userId = req.params.id
-  
+    const userId = req.params.id; 
+    const addressId =req.query.address;
 
-  await Address.findByIdAndDelete(userId);
 
-   res.redirect(`/profile/${userId}`)
+    await Address.findByIdAndDelete(addressId);
 
-}
+    res.redirect(`/profile/${userId}`)
+
+  }
 
 const editAddress = async (req,res)=>{
 
@@ -769,6 +777,15 @@ console.log(userId)
 res.redirect(`/profile/${userId}`)
 
 }
+
+
+
+const editProfile = async (req, res) => {
+  const { userId,image } = req.body;
+  console.log("BODY", req.body); 
+  console.log("USER ID", userId); 
+  console.log("IMAGE", image); 
+};
 
 
 
@@ -796,6 +813,7 @@ res.redirect(`/profile/${userId}`)
     loadProfile,
     addAddress,
     removeAdrress,
-    editAddress
+    editAddress,
+    editProfile
 
   }

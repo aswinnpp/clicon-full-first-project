@@ -6,7 +6,7 @@ const path = require("path");
 
 const connectDB = require("./database/connectDB");
 const session = require("express-session");
-const nocache = require("nocache");
+const nocache = require('nocache');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 const env = require("dotenv").config();
@@ -17,10 +17,11 @@ const morgan = require('morgan')
 
 
 
+app.use(nocache());
+app.use(nocache());
 
 
-
-
+app.use(nocache());
 
 // app.use(morgan('dev'))
 app.use(cors());
@@ -40,8 +41,6 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use(nocache());
-
 app.use("/admin", adminRoute);
 app.use("/", userRoute);
 app.listen(process.env.PORT, () => {

@@ -12,7 +12,7 @@ const checkSession = (req, res, next) => {
 
  
   const isLogin = (req, res, next) => {
-    console.log('gbdfsvdcz'+req .session.details )
+    console.log('gbdfsvdcz'+req .session.logged )
     if (req.session.logged) {
       res.redirect("/");
     } else {

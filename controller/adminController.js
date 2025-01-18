@@ -77,7 +77,7 @@ const loadUserManage = async (req, res) => {
     const skip = (page - 1) * limit; 
 
   
-    const users = await User.find({}).skip(skip).limit(limit);
+    const users = await User.find({role:'user'}).skip(skip).limit(limit);
     const totalUsers = await Category.countDocuments();
     const totalPages = Math.ceil(totalUsers / limit);
 
@@ -577,11 +577,35 @@ try {
 }
 };
 
+
 // ------------------------------------------------
 // ------------------------------------------------
 // ------------------------------------------------
 
 
+const loadOrdermanage = async (req,res)=>{
+
+
+  try {
+
+    res.render("admin/ordermanage")
+    
+  } catch (error) {
+    
+  }
+}
+
+const loadCouponmanage = async (req,res) =>{
+
+  try {
+    
+res.render("admin/couponmanage")
+
+
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 module.exports = {
   loadLogin,
@@ -604,6 +628,8 @@ module.exports = {
   CategoryUpdate,
   categoryDelete,
   productDelete,
-  adminLogout
+  adminLogout,
+  loadOrdermanage,
+  loadCouponmanage
  
 };

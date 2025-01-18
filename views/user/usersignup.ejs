@@ -25,7 +25,7 @@
         
         background: linear-gradient(135deg, #6e8efb, #a777e3)
        
-               
+       }      
       
     </style>
     
@@ -76,6 +76,7 @@
           <%= typeof message !== 'undefined' ? message : '' %>
         </p>
         <p  style="color: red"  id="error"></p>
+
         <form id="sign-up-form" action="/signup" method="post">
           <div class="mb-3">
             <label for="sign-up-name" class="form-label">Name</label>
@@ -190,7 +191,7 @@ const togglePasswordBtn = document.getElementById('togglePassword');
 
      
   
-      errorMessage.innerHTML = '';
+      errorMsg.innerHTML = '';
     
 
 
@@ -258,6 +259,7 @@ const togglePasswordBtn = document.getElementById('togglePassword');
     );
   };
 
+
   function handleCredentialResponsesingup(response) {
     console.log("ggggggggggggggg");
 
@@ -282,7 +284,7 @@ const togglePasswordBtn = document.getElementById('togglePassword');
 
           window.location = data.url;
         } else {
-          document.getElementById("errr").innerHTML = "useralready exist";
+          document.getElementById("error").innerHTML = "useralready exist";
         }
       })
       .catch((error) => {

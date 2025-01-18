@@ -179,7 +179,7 @@
 
                         <div style="margin-left: 30px;" class="profile-container">
                             
-                                <a href="/profile/<%= userr[0] ? userr[0]._id : '' %>">
+                            <a href="<%= userr && userr[0] && userr[0]?._id ? `/profile/${userr[0]._id}` : '/signin' %>">
 
                                 <% if (userr && userr[0]?.image && userr[0]?.image[0]) { %>
                                     <img src= "<%- userr[0].image[0] %>"    alt="Profile Image">
@@ -208,7 +208,7 @@
                 <div class="container">
 
                     <div class="header-left">
-                        <!-- <div class="dropdown category-dropdown">
+                        <div class="dropdown category-dropdown">
                             <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Browse Categories">
                                 Browse Categories <i class="icon-angle-down"></i>
                             </a>
@@ -226,7 +226,7 @@
                                 </nav>
                                
                             </div>
-                        </div> -->
+                        </div>
                         
                     </div>
 
@@ -330,62 +330,7 @@
 
             <div class="container">
                 <h2 class="title text-center mb-4">Explore Popular Categories</h2><!-- End .title text-center -->
-                
-                <div class="cat-blocks-container ">
-                    <div class="row " style="position: relative; ">
-                        <div class="col-6 col-sm-4 col-lg-2">
-                            <a href="category.html" class="cat-block">
-                                <figure>
-                                    <span>
-                                        <img src="assets/images/demos/demo-4/cats/1.png" alt="Category image">
-                                    </span>
-                                </figure>
-
-                                <h3 class="cat-block-title">Computer & Laptop</h3><!-- End .cat-block-title -->
-                            </a>
-                        </div><!-- End .col-sm-4 col-lg-2 -->
-
-                      
-
-                        <div class="col-6 col-sm-4 col-lg-2">
-                            <a href="category.html" class="cat-block">
-                                <figure>
-                                    <span>
-                                        <img src="assets/images/demos/demo-4/cats/3.png" alt="Category image">
-                                    </span>
-                                </figure>
-
-                                <h3 class="cat-block-title">Smart Phones</h3><!-- End .cat-block-title -->
-                            </a>
-                        </div><!-- End .col-sm-4 col-lg-2 -->
-
-                       
-
-                        <div class="col-6 col-sm-4 col-lg-2">
-                            <a href="category.html" class="cat-block">
-                                <figure>
-                                    <span>
-                                        <img src="assets/images/demos/demo-4/cats/5.png" alt="Category image">
-                                    </span>
-                                </figure>
-
-                                <h3 class="cat-block-title">Audio</h3><!-- End .cat-block-title -->
-                            </a>
-                        </div><!-- End .col-sm-4 col-lg-2 -->
-
-                        <div class="col-6 col-sm-4 col-lg-2">
-                            <a href="category.html" class="cat-block">
-                                <figure>
-                                    <span>
-                                        <img src="/images/joystic 2.jpeg" alt="Category image">
-                                    </span>
-                                </figure>
-
-                                <h3 class="cat-block-title">Gaming</h3><!-- End .cat-block-title -->
-                            </a>
-                        </div><!-- End .col-sm-4 col-lg-2 -->
-                    </div><!-- End .row -->
-                </div><!-- End .cat-blocks-container -->
+              <!-- End .cat-blocks-container -->
             </div><!-- End .container -->
 
             <div class="mb-4"></div><!-- End .mb-4 -->
@@ -460,11 +405,17 @@
                             <li class="nav-item">
                                 <a class="nav-link" id="new-acc-link" data-toggle="tab" href="#new-acc-tab" role="tab" aria-controls="new-acc-tab" aria-selected="false">Gaming</a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" id="new-phones-link" data-toggle="tab" href="#new-phones-tab" role="tab" aria-controls="new-phones-tab" aria-selected="false">Mobiles</a>
+                            </li>
+
                         </ul>
                    </div><!-- End .heading-right -->
                 </div><!-- End .heading -->
 
                 <div class="tab-content tab-content-carousel just-action-icons-sm">
+                    <!-- All -->
                     <div class="tab-pane p-0 fade show active" id="new-all-tab" role="tabpanel" aria-labelledby="new-all-link">
                         <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
                             data-owl-options='{
@@ -539,81 +490,9 @@
 
                         </div><!-- End .owl-carousel -->
                     </div><!-- .End .tab-pane -->
-                    <div class="tab-pane p-0 fade" id="new-tv-tab" role="tabpanel" aria-labelledby="new-tv-link">
-                        <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
-                            data-owl-options='{
-                                "nav": true, 
-                                "dots": true,
-                                "margin": 20,
-                                "loop": false,
-                                "responsive": {
-                                    "0": {
-                                        "items":2
-                                    },
-                                    "480": {
-                                        "items":2
-                                    },
-                                    "768": {
-                                        "items":3
-                                    },
-                                    "992": {
-                                        "items":4
-                                    },
-                                    "1200": {
-                                        "items":5
-                                    }
-                                }
-                            }'>
-                            <% product.forEach(product=> {%>
-                            
-                                <div class="product product-2">
-                                    <figure class="product-media">
-                                        <span class="product-label label-circle label-top">Top</span>
-                                        <a href="http://localhost:3000/productview/<%= product._id %>">
-                                            <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
-                                        </a>
-    
-                                        <div class="product-action-vertical">
-                                            <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
-                                        </div><!-- End .product-action -->
-    
-                                        <div class="product-action">
-                                            <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                            <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                        </div><!-- End .product-action -->
-                                    </figure><!-- End .product-media -->
-    
-                                    <div class="product-body">
-                                        <div class="product-cat">
-                                            <a href="#"><%= product.category %></a>
-                                        </div><!-- End .product-cat -->
-                                        <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
-                                        <div class="product-price">
-                                           <%= product.price %>
-                                        </div><!-- End .product-price -->
 
-                                        <div class="product-price">
-                                            <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
-                                         </div>
-
-                                        <div class="ratings-container">
-                                            <div class="ratings">
-                                                <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                            </div><!-- End .ratings -->
-                                            <span class="ratings-text"><%= product.rating %></span>
-                                        </div><!-- End .rating-container -->
-                                    </div><!-- End .product-body -->
-                                </div>
-                            
-                            
-                            <%})%>
-
-
-
-
-                          
-                        </div><!-- End .owl-carousel -->
-                    </div><!-- .End .tab-pane -->
+                
+                           <!-- computer -->
                     <div class="tab-pane p-0 fade" id="new-computers-tab" role="tabpanel" aria-labelledby="new-computers-link">
                         <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
                             data-owl-options='{
@@ -640,130 +519,58 @@
                                 }
                             }'>
                               <% product.forEach(product=> {%>
-                            
-                                <div class="product product-2">
-                                    <figure class="product-media">
-                                        <span class="product-label label-circle label-top">Top</span>
-                                        <a href="http://localhost:3000/productview/<%= product._id %>">
-                                            <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
-                                        </a>
+                                <% if (product.category && product.category.toLowerCase() === 'computers') { %>
+
+                                    <div class="product product-2">
+                                        <figure class="product-media">
+                                            <span class="product-label label-circle label-top">Top</span>
+                                            <a href="http://localhost:3000/productview/<%= product._id %>">
+                                                <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
+                                            </a>
+        
+                                            <div class="product-action-vertical">
+                                                <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
+                                            </div><!-- End .product-action -->
+        
+                                            <div class="product-action">
+                                                <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
+                                                <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                                            </div><!-- End .product-action -->
+                                        </figure><!-- End .product-media -->
+        
+                                        <div class="product-body">
+                                            <div class="product-cat">
+                                                <a href="#"><%= product.category %></a>
+                                            </div><!-- End .product-cat -->
+                                            <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
+                                            <div class="product-price">
+                                               <%= product.price %>
+                                            </div><!-- End .product-price -->
     
-                                        <div class="product-action-vertical">
-                                            <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
-                                        </div><!-- End .product-action -->
+                                            <div class="product-price">
+                                                <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
+                                             </div>
     
-                                        <div class="product-action">
-                                            <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                            <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                        </div><!-- End .product-action -->
-                                    </figure><!-- End .product-media -->
-    
-                                    <div class="product-body">
-                                        <div class="product-cat">
-                                            <a href="#"><%= product.category %></a>
-                                        </div><!-- End .product-cat -->
-                                        <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
-                                        <div class="product-price">
-                                           <%= product.price %>
-                                        </div><!-- End .product-price -->
-
-                                        <div class="product-price">
-                                            <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
-                                         </div>
-
-                                        <div class="ratings-container">
-                                            <div class="ratings">
-                                                <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                            </div><!-- End .ratings -->
-                                            <span class="ratings-text"><%= product.rating %></span>
-                                        </div><!-- End .rating-container -->
-                                    </div><!-- End .product-body -->
-                                </div>
-                            
-                            
-                            <%})%>
-
-                            
-                        </div><!-- End .owl-carousel -->
-                    </div><!-- .End .tab-pane -->
-                    <div class="tab-pane p-0 fade" id="new-phones-tab" role="tabpanel" aria-labelledby="new-phones-link">
-                        <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
-                            data-owl-options='{
-                                "nav": true, 
-                                "dots": true,
-                                "margin": 20,
-                                "loop": false,
-                                "responsive": {
-                                    "0": {
-                                        "items":2
-                                    },
-                                    "480": {
-                                        "items":2
-                                    },
-                                    "768": {
-                                        "items":3
-                                    },
-                                    "992": {
-                                        "items":4
-                                    },
-                                    "1200": {
-                                        "items":5
-                                    }
-                                }
-                            }'>
-
-                              <% product.forEach(product=> {%>
-
-
-
+                                            <div class="ratings-container">
+                                                <div class="ratings">
+                                                    <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
+                                                </div><!-- End .ratings -->
+                                                <span class="ratings-text"><%= product.rating %></span>
+                                            </div><!-- End .rating-container -->
+                                        </div><!-- End .product-body -->
+                                    </div>
+                               <% } %>
                                 
                             
-                                <div class="product product-2">
-                                    <figure class="product-media">
-                                        <span class="product-label label-circle label-top">Top</span>
-                                        <a href="http://localhost:3000/productview/<%= product._id %>">
-                                            <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
-                                        </a>
-    
-                                        <div class="product-action-vertical">
-                                            <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
-                                        </div><!-- End .product-action -->
-    
-                                        <div class="product-action">
-                                            <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                            <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                        </div><!-- End .product-action -->
-                                    </figure><!-- End .product-media -->
-    
-                                    <div class="product-body">
-                                        <div class="product-cat">
-                                            <a href="#"><%= product.category %></a>
-                                        </div><!-- End .product-cat -->
-                                        <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
-                                        <div class="product-price">
-                                           <%= product.price %>
-                                        </div><!-- End .product-price -->
-
-                                        <div class="product-price">
-                                            <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
-                                         </div>
-
-                                        <div class="ratings-container">
-                                            <div class="ratings">
-                                                <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                            </div><!-- End .ratings -->
-                                            <span class="ratings-text"><%= product.rating %></span>
-                                        </div><!-- End .rating-container -->
-                                    </div><!-- End .product-body -->
-                                </div>
-                            
                             
                             <%})%>
 
-
-                           
+                            
                         </div><!-- End .owl-carousel -->
                     </div><!-- .End .tab-pane -->
+                   
+
+                    <!-- audio -->
                     <div class="tab-pane p-0 fade" id="new-watches-tab" role="tabpanel" aria-labelledby="new-watches-link">
                         <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
                             data-owl-options='{
@@ -791,53 +598,142 @@
                             }'>
 
                             <% product.forEach(product=> {%>
-                            
-                                <div class="product product-2">
-                                    <figure class="product-media">
-                                        <span class="product-label label-circle label-top">Top</span>
-                                        <a href="http://localhost:3000/productview/<%= product._id %>">
-                                            <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
-                                        </a>
-    
-                                        <div class="product-action-vertical">
-                                            <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
-                                        </div><!-- End .product-action -->
-    
-                                        <div class="product-action">
-                                            <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                            <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                        </div><!-- End .product-action -->
-                                    </figure><!-- End .product-media -->
-    
-                                    <div class="product-body">
-                                        <div class="product-cat">
-                                            <a href="#"><%= product.category %></a>
-                                        </div><!-- End .product-cat -->
-                                        <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
-                                        <div class="product-price">
-                                           <%= product.price %>
-                                        </div><!-- End .product-price -->
+                                <% if (product.category && product.category.toLowerCase() === 'audio') { %>
 
-                                        <div class="product-price">
-                                            <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
-                                         </div>
-
-                                        <div class="ratings-container">
-                                            <div class="ratings">
-                                                <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                            </div><!-- End .ratings -->
-                                            <span class="ratings-text"><%= product.rating %></span>
-                                        </div><!-- End .rating-container -->
-                                    </div><!-- End .product-body -->
-                                </div>
+                                    <div class="product product-2">
+                                        <figure class="product-media">
+                                            <span class="product-label label-circle label-top">Top</span>
+                                            <a href="http://localhost:3000/productview/<%= product._id %>">
+                                                <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
+                                            </a>
+        
+                                            <div class="product-action-vertical">
+                                                <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
+                                            </div><!-- End .product-action -->
+        
+                                            <div class="product-action">
+                                                <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
+                                                <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                                            </div><!-- End .product-action -->
+                                        </figure><!-- End .product-media -->
+        
+                                        <div class="product-body">
+                                            <div class="product-cat">
+                                                <a href="#"><%= product.category %></a>
+                                            </div><!-- End .product-cat -->
+                                            <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
+                                            <div class="product-price">
+                                               <%= product.price %>
+                                            </div><!-- End .product-price -->
+    
+                                            <div class="product-price">
+                                                <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
+                                             </div>
+    
+                                            <div class="ratings-container">
+                                                <div class="ratings">
+                                                    <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
+                                                </div><!-- End .ratings -->
+                                                <span class="ratings-text"><%= product.rating %></span>
+                                            </div><!-- End .rating-container -->
+                                        </div><!-- End .product-body -->
+                                    </div>
+                               <% } %>
+                                
                             
                             
                             <%})%>
-
                          
                         </div><!-- End .owl-carousel -->
                     </div><!-- .End .tab-pane -->
+
+                      <!-- Gaming -->
+
                     <div class="tab-pane p-0 fade" id="new-acc-tab" role="tabpanel" aria-labelledby="new-acc-link">
+        <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
+            data-owl-options='{
+                "nav": true, 
+                "dots": true,
+                "margin": 20,
+                "loop": false,
+                "responsive": {
+                    "0": {
+                        "items":2
+                    },
+                    "480": {
+                        "items":2
+                    },
+                    "768": {
+                        "items":3
+                    },
+                    "992": {
+                        "items":4
+                    },
+                    "1200": {
+                        "items":5
+                    }
+                }
+            }'>
+
+
+            <% product.forEach(product=> {%>
+                <% if (product.category && product.category.toLowerCase() === 'gaming') { %>
+
+                    <div class="product product-2">
+                        <figure class="product-media">
+                            <span class="product-label label-circle label-top">Top</span>
+                            <a href="http://localhost:3000/productview/<%= product._id %>">
+                                <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
+                            </a>
+
+                            <div class="product-action-vertical">
+                                <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
+                            </div><!-- End .product-action -->
+
+                            <div class="product-action">
+                                <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
+                                <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                            </div><!-- End .product-action -->
+                        </figure><!-- End .product-media -->
+
+                        <div class="product-body">
+                            <div class="product-cat">
+                                <a href="#"><%= product.category %></a>
+                            </div><!-- End .product-cat -->
+                            <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
+                            <div class="product-price">
+                               <%= product.price %>
+                            </div><!-- End .product-price -->
+
+                            <div class="product-price">
+                                <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
+                             </div>
+
+                            <div class="ratings-container">
+                                <div class="ratings">
+                                    <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
+                                </div><!-- End .ratings -->
+                                <span class="ratings-text"><%= product.rating %></span>
+                            </div><!-- End .rating-container -->
+                        </div><!-- End .product-body -->
+                    </div>
+               <% } %>
+                
+            
+            
+            <%})%>
+           
+        </div><!-- End .owl-carousel -->
+                    </div><!-- .End .tab-pane -->
+
+
+
+
+
+
+
+
+                    <div class="tab-pane p-0 fade" id="new-phones-tab" role="tabpanel" aria-labelledby="new-phones-link">
                         <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
                             data-owl-options='{
                                 "nav": true, 
@@ -863,54 +759,60 @@
                                 }
                             }'>
 
+                            <% product.forEach(product=> {%>
+                                <% if (product.category && product.category.toLowerCase() === 'mobiles') { %>
 
-                             <% product.forEach(product=> {%>
-                            
-                                <div class="product product-2">
-                                    <figure class="product-media">
-                                        <span class="product-label label-circle label-top">Top</span>
-                                        <a href="http://localhost:3000/productview/<%= product._id %>">
-                                            <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
-                                        </a>
+                                    <div class="product product-2">
+                                        <figure class="product-media">
+                                            <span class="product-label label-circle label-top">Top</span>
+                                            <a href="http://localhost:3000/productview/<%= product._id %>">
+                                                <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
+                                            </a>
+        
+                                            <div class="product-action-vertical">
+                                                <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
+                                            </div><!-- End .product-action -->
+        
+                                            <div class="product-action">
+                                                <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
+                                                <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                                            </div><!-- End .product-action -->
+                                        </figure><!-- End .product-media -->
+        
+                                        <div class="product-body">
+                                            <div class="product-cat">
+                                                <a href="#"><%= product.category %></a>
+                                            </div><!-- End .product-cat -->
+                                            <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
+                                            <div class="product-price">
+                                               <%= product.price %>
+                                            </div><!-- End .product-price -->
     
-                                        <div class="product-action-vertical">
-                                            <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
-                                        </div><!-- End .product-action -->
+                                            <div class="product-price">
+                                                <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
+                                             </div>
     
-                                        <div class="product-action">
-                                            <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                            <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                        </div><!-- End .product-action -->
-                                    </figure><!-- End .product-media -->
-    
-                                    <div class="product-body">
-                                        <div class="product-cat">
-                                            <a href="#"><%= product.category %></a>
-                                        </div><!-- End .product-cat -->
-                                        <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
-                                        <div class="product-price">
-                                           <%= product.price %>
-                                        </div><!-- End .product-price -->
-
-                                        <div class="product-price">
-                                            <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
-                                         </div>
-
-                                        <div class="ratings-container">
-                                            <div class="ratings">
-                                                <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                            </div><!-- End .ratings -->
-                                            <span class="ratings-text"><%= product.rating %></span>
-                                        </div><!-- End .rating-container -->
-                                    </div><!-- End .product-body -->
-                                </div>
+                                            <div class="ratings-container">
+                                                <div class="ratings">
+                                                    <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
+                                                </div><!-- End .ratings -->
+                                                <span class="ratings-text"><%= product.rating %></span>
+                                            </div><!-- End .rating-container -->
+                                        </div><!-- End .product-body -->
+                                    </div>
+                               <% } %>
+                                
                             
                             
                             <%})%>
+
+
                            
                         </div><!-- End .owl-carousel -->
                     </div><!-- .End .tab-pane -->
 
+
+                 
 
                 </div><!-- End .tab-content -->
             </div><!-- End .container -->

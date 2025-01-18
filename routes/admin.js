@@ -54,15 +54,20 @@ router.get("/productview/:id",adminauth.checkSession,adminController.loadProduct
 
 
 
-
-
-
-
 router.get("/categorymanage",adminauth.checkSession,adminController.loadCategoryManage);
+
 router.get('/categorycreate',adminauth.checkSession,adminController.loadCategoryCreate)
+
 router.post('/categorycreate',adminController.categoryCreate)
+
 router.get('/categoryupdate/:id',adminauth.checkSession,adminController.loadCategoryUpdate)
+
 router.post('/categoryupdate',adminController.CategoryUpdate)
+
+
+router.get("/ordermanage" ,adminController.loadOrdermanage)
+
+router.get("/couponmanage" ,adminController.loadCouponmanage)
 
 
 
