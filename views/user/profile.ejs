@@ -743,8 +743,7 @@ table td a {
 
                   <form action="/update-profile" method="POST" id="profile-edit-form" enctype="multipart/form-data">
 
-                    <input type="text" id="userId" name="userId" value="<%= user._id %>" hidden>
-
+                    <input type="text" id="userId" name="userId" value="<%= user?._id %>" hidden>
                     <div class="modal-header">
                       <h5 class="modal-title" id="updateProfileLabel" style="color: white;">Update Profile</h5>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -1162,7 +1161,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   signUpForm.addEventListener("submit", (event) => {
-    // event.preventDefault(); // Uncomment if you need to prevent default form submission
+  
+   
+   
+
+
 
     const password = document.getElementById("profile-password").value.trim();
     const confirmPassword = document
@@ -1171,7 +1174,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const errorMsg = document.getElementById("error");
     errorMsg.innerHTML = '';
 
-    // Only validate password if the user wants to change it
     if (changePasswordCheckbox.checked) {
       // Password validation
       if (

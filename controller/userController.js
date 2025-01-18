@@ -780,11 +780,16 @@ res.redirect(`/profile/${userId}`)
 
 
 
-const editProfile = async (req, res) => {
+const   editProfile = async (req, res) => {
   const { userId,image } = req.body;
+
+  console.log('Incoming files:', req.files);
+
+  
   console.log("BODY", req.body); 
   console.log("USER ID", userId); 
-  console.log("IMAGE", image); 
+  console.log("image", image); 
+   
 };
 
 

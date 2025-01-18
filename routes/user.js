@@ -44,7 +44,7 @@ router.get("/profile/:id",userauth.checkSession,userauth.isBan,userController.lo
 router.post("/address",userController.addAddress)
 router.post("/remove-address/:id",userController.removeAdrress)
 router.post("/edit-address",userController.editAddress)
-router.post("/update-profile", upload.single('image'),userController.editProfile)
+router.post("/update-profile",  upload.single('image'), userController.editProfile)
 
 
 

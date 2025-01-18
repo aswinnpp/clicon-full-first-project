@@ -12,9 +12,9 @@ const storage = multer.diskStorage({
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
   if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);  // Allow the file to be uploaded
+      cb(null, true);  
   } else {
-      cb(new Error('Please upload only JPG, JPEG, or PNG files.'), false);  // Reject other file types
+      cb(new Error('Please upload only JPG, JPEG, or PNG files.'), false);  
   }
 };
 const upload = multer({
@@ -30,7 +30,6 @@ const upload = multer({
 
 const uploaded = multer({ storage, fileFilter });
 
-// Use `multer.fields()` to handle multiple files with different field names
 const uploadMultiple = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 },
