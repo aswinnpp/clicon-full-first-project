@@ -14,8 +14,10 @@
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Update Product</h1>
   </div>
-
+  <p id="valid"></p>
   <form action="/admin/productupdate" method="POST" id="productForm" enctype="multipart/form-data">
+
+   
 
     <input type="hidden" name="id" value="<%=products?._id %>">
     
@@ -33,10 +35,10 @@
     
     
    
-    <div class="mb-3">
+    <!-- <div class="mb-3">
       <label for="brand" class="form-label">Brand</label>     
       <input type="text" class="form-control" id="brand" name="brand"  value="<%=products?.brand%>"  required>
-    </div>
+    </div> -->
 
     <div class="mb-3">
       <label for="offer" class="form-label">Offer</label>     
@@ -142,6 +144,7 @@
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> 
 <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+<link rel="stylesheet" href="path-to-cropper.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
 
 <style>
@@ -248,7 +251,6 @@
 
 document.addEventListener('DOMContentLoaded', (event) => {
     const form = document.getElementById('productForm');
-       
 
 
 form.addEventListener('submit', async (event) => {
@@ -272,29 +274,24 @@ form.addEventListener('submit', async (event) => {
 });
 
 
+
+
 let cropper;
 let currentImageId = '';
 
 function handleImageUpload(event, imagePreviewId) {
   const file = event.target.files[0];
-
-  if (!file) {
-    const currentImageUrl = document.getElementById(imagePreviewId).src;
-
-    document.getElementById(imagePreviewId).src = currentImageUrl;
-
-    document.getElementById('cropModal').style.display = 'none';
-    return;
-  }
+  if (!file) return;
 
   const reader = new FileReader();
+  reader.onload = function (e) {
+    const imagePreview = document.getElementById(imagePreviewId);
+    imagePreview.src = e.target.result;
 
-  reader.onload = function(e) {
-    document.getElementById(imagePreviewId).src = e.target.result;
+    const modal = document.getElementById('cropModal');
+    modal.style.display = 'block';
 
-    document.getElementById('cropModal').style.display = 'block';
     currentImageId = imagePreviewId;
-
     const imageElement = document.getElementById('imageToCrop');
     imageElement.src = e.target.result;
 
@@ -302,7 +299,7 @@ function handleImageUpload(event, imagePreviewId) {
       cropper.destroy();
     }
     cropper = new Cropper(imageElement, {
-      aspectRatio: NaN,
+      aspectRatio: NaN, // Free cropping
       viewMode: 1,
       autoCropArea: 1,
     });
@@ -311,47 +308,79 @@ function handleImageUpload(event, imagePreviewId) {
   reader.readAsDataURL(file);
 }
 
+function cropImage() {
+  if (!cropper) return;
 
-
-  function cropImage() {
-    const canvas = cropper.getCroppedCanvas();
-    const croppedImageUrl = canvas.toDataURL(); 
-  
-    document.getElementById(currentImageId).src = croppedImageUrl;
-    document.getElementById('cropModal').style.display = 'none';
-  
-    
-    const inputField = document.createElement('input');
-    inputField.type = 'hidden';
-    inputField.name = 'images';
-    inputField.value = croppedImageUrl; 
-  
-    
+  const canvas = cropper.getCroppedCanvas();
+  if (!canvas) {
+    alert('Failed to crop image.');
+    return;
   }
+
+  const croppedImageUrl = canvas.toDataURL();
+
+  const imagePreview = document.getElementById(currentImageId);
+  imagePreview.src = croppedImageUrl;
+
+  const inputField = document.querySelector(`input[name="${currentImageId}_cropped"]`);
+  if (inputField) {
+    inputField.value = croppedImageUrl;
+  } else {
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = `${currentImageId}_cropped`;
+    hiddenInput.value = croppedImageUrl;
+
+    const form = document.getElementById('productForm');
+    form.appendChild(hiddenInput);
+  }
+
+  closeModal();
+}
+
+function closeModal() {
+  const modal = document.getElementById('cropModal');
+  modal.style.display = 'none';
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
+}
+
+function submitForm(event) {
+  event.preventDefault();
+
+  const hiddenInputs = document.querySelectorAll('input[type="hidden"]');
   
- 
-  document.querySelector('.close').addEventListener('click', function() {
-    document.getElementById('cropModal').style.display = 'none';
-    if (cropper) {
-      cropper.destroy();
-    }
-  });
+  
+  if (hiddenInputs.length < 4) {
+    document.getElementById('errorImages').textContent = 'Please upload and crop exactly 4 images.';
+    return;
+  }
+
+  
+  const formData = new FormData(document.getElementById('productForm'));
+  console.log("Submitting form with data: ", formData); 
+
+}
+
 
   function handleCategoryChange() {
-    const selectedCategory = document.getElementById('categoryStatus').value;
+  const category = document.getElementById('categoryStatus').value;
+  const ramField = document.getElementById('ramField');
+  const storageField = document.getElementById('storageField');
 
-    document.getElementById('ramField').style.display = 'none';
-    document.getElementById('storageField').style.display = 'none';
-
-    if (selectedCategory === 'Mobiles' || selectedCategory === 'Computers') {
-      document.getElementById('ramField').style.display = 'block';
-      document.getElementById('storageField').style.display = 'block';
-    }
+  
+  if (category === 'Mobiles' || category === 'Computers'||category === 'Mobile' || category === 'Computer') {
+    ramField.style.display = 'block';       
+    storageField.style.display = 'block';  
+  } else {
+    ramField.style.display = 'none';       
+    storageField.style.display = 'none';  
   }
+}
 
-  document.addEventListener("DOMContentLoaded", function() {
-    handleCategoryChange(); 
-  });
+
 
 
 

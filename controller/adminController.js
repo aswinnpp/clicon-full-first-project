@@ -4,8 +4,8 @@ const Product = require("../models/productmodel");
 const Category = require("../models/categorymodel")
 const path = require('path')
 const fs = require ('fs');
+const mongoose =require("mongoose")
 const router = require("../routes/admin");
-
 
 
 const loadLogin = async (req, res) => {
@@ -73,13 +73,16 @@ const loadUserManage = async (req, res) => {
 
     const message = req.flash("success");
     const page = parseInt(req.query.page) || 1;
-    const limit = 3;
+    const limit = 5;
     const skip = (page - 1) * limit; 
 
   
     const users = await User.find({role:'user'}).skip(skip).limit(limit);
     const totalUsers = await Category.countDocuments();
+
     const totalPages = Math.ceil(totalUsers / limit);
+
+    
 
   
     res.render("admin/usermanage", {
@@ -87,6 +90,7 @@ const loadUserManage = async (req, res) => {
       currentPage: page,
       totalPages,
       message,
+      limit
     });
 
   } catch (error) {
@@ -202,6 +206,7 @@ const loadProductManage = async (req, res) => {
       currentPage: page,
       totalPages,
       message,
+      limit
     });
   } catch (error) {
     console.log("productmanage page not found");
@@ -214,7 +219,9 @@ const loadProductUpdate = async (req, res) => {
     const id = req.params.id;
   
   
-  
+    if (!id  || !mongoose.Types.ObjectId.isValid(id )) { 
+      return res.status(404).render('admin/404')
+     }
    
     const categories = await Category.find({ isDeleted: false });
     const products = await Product.findOne({ _id: id, isDeleted: false });
@@ -227,8 +234,30 @@ const loadProductUpdate = async (req, res) => {
 };
 
 const productUpdate = async (req, res) => {
-
   try {
+  
+
+    const croppedImages = Object.keys(req.body).filter((key) =>
+      key.includes('_cropped')
+    );
+
+    
+    const croppedImageFilenames = {};
+    croppedImages.forEach((imageKey) => {
+      const base64Data = req.body[imageKey];
+      const matches = base64Data.match(/^data:image\/(\w+);base64,(.+)$/);
+      if (matches) {
+        const extension = matches[1];
+        const base64String = matches[2];
+        const filename = `${imageKey}-${Date.now()}.${extension}`;
+        const filepath = path.join(__dirname, '../uploads', filename);
+
+        
+        fs.writeFileSync(filepath, Buffer.from(base64String, 'base64'));
+        croppedImageFilenames[imageKey] = filename;
+      }
+    });
+
     const {
       id,
       productname,
@@ -243,30 +272,32 @@ const productUpdate = async (req, res) => {
       rating,
     } = req.body;
 
-  
-  
+    const categoryId = await Category.findOne({
+      name: { $regex: new RegExp(`^${category}$`, 'i') },
+      isDeleted: false,
+    });
+
     const currentProduct = await Product.findById(id);
-    
 
     let images = currentProduct.image || [];
 
-
-for(let i=0;i<Object.entries(req.files).length;i++){
-  const file = Object.entries(req.files)[i][1][0]
-  let lastChar = file.fieldname.slice(-1);
-        let u = Number(lastChar);
-        images[u]=file.filename
-}
-
-
-
    
-   
+    for (let i = 0; i < Object.entries(req.files).length; i++) {
+      const file = Object.entries(req.files)[i][1][0];
+      let lastChar = file.fieldname.slice(-1);
+      let u = Number(lastChar);
+
+      const key = `imagePreview${u + 1}_cropped`;
+      file.filename = croppedImageFilenames[key] || file.filename;
+
+      images[u] = file.filename;
+    }
+
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
       {
         productname,
-        category,
+        category: categoryId.name,
         brand,
         offer,
         price,
@@ -275,23 +306,24 @@ for(let i=0;i<Object.entries(req.files).length;i++){
         color,
         description,
         rating,
-        image:images,
+        image: images,
       },
       { new: true }
     );
 
     if (!updatedProduct) {
-      return res.status(404).json({ error: 'Product not found.' });
+      console.error("Failed to update product.");
+      return res.status(404).json({ error: "Failed to update product." });
     }
 
-    res.redirect("/admin/productmanage")
-
-
-     } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server Error' });
+    console.log("Product updated:", updatedProduct);
+    res.redirect('/admin/productmanage');
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ message: 'Server Error', error: err.message });
   }
 };
+
 
 const loadProductcreate = async (req, res) => {
   try {
@@ -305,50 +337,53 @@ const loadProductcreate = async (req, res) => {
     res.status(500).send("server error");
   }
 };
-
 const Productcreate = async (req, res) => {
-  
-  
   try {
-    
-    
-
-    const {
-      productname,
-      category,
-      brand,
-      offer,
-      price,
-      stock,
-      warranty,
-      color,
-      description,
-      rating,
-      ram,
-      storage,
-     
+    const { 
+      productname, 
+      category, 
+      brand, 
+      offer, 
+      price, 
+      stock, 
+      warranty, 
+      color, 
+      description, 
+      rating, 
+      ram, 
+      storage 
     } = req.body;
-    console.log(category,brand)
 
-    const categoryId = await Category.findOne({ name: { $regex: new RegExp(`^${category}$`, 'i') },
-    isDeleted:false });
-
-
-    console.log(categoryId)
-
-  if(!categoryId){
-    console.log('categoryId is null')
-  }
     
+    const categoryId = await Category.findOne({
+      name: { $regex: new RegExp(`^${category}$`, 'i') },
+      isDeleted: false,
+    });
 
-    let images = req.files.map(file=>file.filename);
+   
+
+    let images = [];
+
   
+
+
+    Object.keys(req.body).forEach((key) => {
+      if (key.includes('_cropped')) {
+        const base64Image = req.body[key];
+        const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, ''); 
+        const buffer = Buffer.from(base64Data, 'base64');
+        const filename = `image_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.png`;
+        const filepath = path.join(__dirname, '../uploads/', filename);
+        fs.writeFileSync(filepath, buffer);
+        images.push(filename); 
+      }
+    });
+
     
-  
     const newProduct = new Product({
       productname,
       category,
-      categoryId:categoryId._id,
+      categoryId: categoryId,
       brand,
       offer,
       price,
@@ -359,36 +394,32 @@ const Productcreate = async (req, res) => {
       rating,
       ram,
       storage,
-      image:images,
+      image: images,
     });
-      
-       
-    await newProduct.save();
-    res.redirect("/admin/productmanage");
 
+    await newProduct.save();
+    res.redirect('/admin/productmanage');
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error while creating the product");
+    res.status(500).send('Error while creating the product');
   }
 };
-
 const loadProductview = async (req, res) => {
- 
-
-
   try {
     
     const id = req.params.id;
     const product = await Product.find({ _id: id ,
       isDeleted:false});
 
+
+   
+
     res.render("admin/productview", { product });
   } catch (error) {
     console.log("productview page not found");
-    res.status(500).send("server error");
+    res.status(404).render('admin/404')
   }
 };
-
 const productDelete =  async (req, res) => {
 
   console.log(req.params.id);
@@ -399,7 +430,6 @@ const productDelete =  async (req, res) => {
     
     
     
-
     
     await Product.findByIdAndUpdate(productId, { isDeleted:!isDeleted  });
 
@@ -439,6 +469,7 @@ const loadCategoryManage = async (req, res) => {
       currentPage: page,
       totalPages,
       message,
+      limit
     });
   } catch (error) {
     console.log("categorymanage page not found");
@@ -517,7 +548,10 @@ const loadCategoryUpdate = async (req,res)=>{
    const id = req.params.id
     const category = await Category.find({_id:id,
       isDeleted:false});
-   
+    
+      if (!id  || !mongoose.Types.ObjectId.isValid(id )) { 
+        return res.status(404).render('admin/404')
+       }
     
    console.log(category)
    
@@ -537,7 +571,9 @@ const CategoryUpdate = async (req, res)=>{
 try {
   const { name, status,  id } = req.body;
 
-  
+  if (!id  || !mongoose.Types.ObjectId.isValid(id )) { 
+    return res.status(404).render('admin/404')
+   }
     const updatedCategory = await Category.findOneAndUpdate(
       { _id: id },  
       { name, status },  
@@ -568,6 +604,10 @@ try {
   
 // const category = await Category.findOne({_id:categoryId})
 // console.log(category.count)
+
+if (!categoryId  || !mongoose.Types.ObjectId.isValid(categoryId )) { 
+  return res.status(404).render('admin/404')
+ }
 
   await Category.findByIdAndUpdate(categoryId, { isDeleted });
 

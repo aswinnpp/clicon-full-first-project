@@ -526,14 +526,17 @@ table td a {
           <!-- Main Content -->
           <section class="dashboard-content container" style=" margin-top: 80px; padding: 20px;">
               <!-- Profile Info -->
-              <div class="profile-section  " style="background-color: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+              <div class="profile-section  " style="background-color: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
                 <div class="d-flex align-items-center justify-content-center" >
                   <% if (user && user.image) { %>
-                    <img style="height: 100px; border-radius: 50%;" src="<%= user.image %>" alt="Profile Image">
-                <% } else { %>
-                    <img style="height: 100px; border-radius: 50%;" src="/images/profile.avif" alt="Default Profile Image">
-                <% } %>
+                                    
+                    <img style="height: 100px; width: 100px; border-radius: 50%;" src="<%= user.image %>" alt="Profile Image">
+                  <% } else { %>
+                   
+                    <img style="height: 100px; width: 100px; border-radius: 50%;" src="/images/profile.avif" alt="Default Profile Image">
+                  <% } %>
                 </div>
+                  
 
 
                 
@@ -545,7 +548,7 @@ table td a {
                           <h3 style="margin: 0; font-size: 22px;">Account Info</h3>
                           <p style="margin: 5px 0;"><strong>Name:</strong> <%=user?.name %></p>
                           <p style="margin: 5px 0;"><strong>Email:</strong><%=user?.email%></p>
-                          <p style="margin: 5px 0;"><strong>Phone:</strong><%=address[0]?.phone%></p>
+                          <p style="margin: 5px 0;"><strong>Phone:</strong><%=user?.phone%></p>
                       </div>
                   </div>
                   <div class="d-flex align-items-center justify-content-center">
@@ -574,7 +577,7 @@ table td a {
         <!-- Modal Body -->
         <div class="modal-body p-4">
           <form action="/address" method="post">
-            <input type="text" name="id" value="<%= id %>" hidden>
+            <input type="text" name="id" value="<%= user?.id %>" hidden>
             <!-- Street Address -->
             <div class="mb-3">
               <label for="street" class="form-label fs-5 text-secondary">Street Address</label>
@@ -755,8 +758,9 @@ table td a {
                       
                           <img
                           id="profileImagePreview"
-                          src="<%= user?.image || 'default-profile.png' %>"
+                          src="<%=user?.image || 'default-profile.png' %>"
                           alt="Profile Image"
+                        
                           class="rounded-circle"
                           style="width: 100%; height: 100%; object-fit: cover; border: 2px solid #ccc;"
                         />
@@ -771,7 +775,7 @@ table td a {
                         />
                        
                       </div>
-                      <div style="display: flex; position:absolute; left: 200px;">
+                      <div style="display: flex; position:absolute; left: 150px;">
                         <P id="error" style="color: red;"   > </P>
                       </div>
                       
@@ -787,7 +791,12 @@ table td a {
                       </div>
 
                       <div class="mb-3">
-                        <label for="changePassword" class="form-label">Change Password</label>
+                        <label for="number" class="form-label">Set Primary phone no:</label>
+                        <input type="text" class="form-control" id="phone" name="phone" value="<%= user.phone %>" >
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="changePassword" class="form-label">Set New Password</label>
                         <input type="checkbox" id="changePassword" name="changePassword">
                       </div>
                       
@@ -1147,62 +1156,94 @@ table td a {
 
 <script>
 
+
+document.getElementById('profileImage').addEventListener('change', function(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('profileImagePreview').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   const signUpForm = document.querySelector("#profile-edit-form");
   const changePasswordCheckbox = document.getElementById("changePassword");
   const passwordFields = document.getElementById("passwordFields");
+  const errorMsg = document.getElementById("error");
 
   changePasswordCheckbox.addEventListener("change", () => {
     if (changePasswordCheckbox.checked) {
-      passwordFields.style.display = "block"; // Show password fields
+      passwordFields.style.display = "block"; 
     } else {
-      passwordFields.style.display = "none"; // Hide password fields
+      passwordFields.style.display = "none"; 
     }
   });
 
   signUpForm.addEventListener("submit", (event) => {
-  
-   
-   
-
-
+    event.preventDefault();
 
     const password = document.getElementById("profile-password").value.trim();
-    const confirmPassword = document
-      .getElementById("profile-confirmpassword")
-      .value.trim();
-    const errorMsg = document.getElementById("error");
-    errorMsg.innerHTML = '';
+    const confirmPassword = document.getElementById("profile-confirmpassword").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    
+    errorMsg.innerHTML = ''; 
+   
+    let hasError = false;
 
+   
     if (changePasswordCheckbox.checked) {
-      // Password validation
-      if (
-        password === "" ||
-        password.length < 6 ||
-        !/(?=.*[a-z])/.test(password) ||
-        !/(?=.*[A-Z])/.test(password) ||
-        !/(?=.*[0-9])/.test(password) ||
-        !/(?=.*[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>\/?])/.test(password)
-      ) {
-        errorMsg.innerHTML = `Need Strong Password`;
-        return;
+      if (password === "") {
+        errorMsg.innerHTML = "Password is required.";
+        hasError = true;
+      } else if (password.length < 6) {
+        errorMsg.innerHTML = "Password must be at least 6 characters.";
+        hasError = true;
+      } else if (!/(?=.*[a-z])/.test(password)) {
+        errorMsg.innerHTML = "Password must contain at least one lowercase letter.";
+        hasError = true;
+      } else if (!/(?=.*[A-Z])/.test(password)) {
+        errorMsg.innerHTML = "Password must contain at least one uppercase letter.";
+        hasError = true;
+      } else if (!/(?=.*[0-9])/.test(password)) {
+        errorMsg.innerHTML = "Password must contain at least one number.";
+        hasError = true;
+      } else if (!/(?=.*[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>\/?])/.test(password)) {
+        errorMsg.innerHTML = "Password must contain at least one special character.";
+        hasError = true;
       }
 
-      // Confirm Password validation
       if (confirmPassword === "") {
         errorMsg.innerHTML = "Confirm password is required.";
-        return;
+        hasError = true;
       } else if (password !== confirmPassword) {
         errorMsg.innerHTML = "Passwords do not match.";
-        return;
+        hasError = true;
       }
     }
 
-    signUpForm.submit(); // Submit the form if validation passes
+    
+    if (phone === "") {
+      errorMsg.innerHTML = "Phone number is required.";
+      hasError = true;
+    } else if (!/^\d{10,15}$/.test(phone)) {
+      errorMsg.innerHTML = "Please enter a valid phone number (only digits, 10-15 characters).";
+      hasError = true;
+    }
+
+    
+    if (hasError) {
+      return;
+    }
+
+  
+    signUpForm.submit();
   });
 });
 
-    function selectAddress(selectedCheckbox) {
+function selectAddress(selectedCheckbox) {
 
       const checkboxes = document.querySelectorAll('.address-checkbox');
       
@@ -1214,7 +1255,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    function populateModal(event) {
+function populateModal(event) {
   
   event.preventDefault();
 
@@ -1247,8 +1288,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const modal = new bootstrap.Modal(document.getElementById('editAddressModal'));
   modal.show();
 }
-
-
   </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

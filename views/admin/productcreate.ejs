@@ -14,7 +14,7 @@
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Create Product</h1>
   </div>
-  
+  <p id="ttt" style="color: red;"></p>
   <form action="/admin/productcreate" method="POST" id="productForm" enctype="multipart/form-data">
     
     <div class="mb-3">
@@ -39,14 +39,14 @@
       </select>
     </div>
        
-    <div class="mb-3">
+    <!-- <div class="mb-3">
       <label for="brand" class="form-label">Brand</label>     
       <input type="text" class="form-control" id="brand" name="brand" value="" required>
-    </div>
+    </div> -->
 
     <div class="mb-3">
       <label for="brand" class="form-label">Offer</label>     
-      <input type="text" class="form-control" id="brand" name="offer" value="" required>
+      <input type="text" class="form-control" id="offer" name="offer" value="" required>
     </div>
    
     <div class="mb-3">
@@ -86,7 +86,7 @@
     
     <div class="mb-3">
       <label for="rating" class="form-label">Rating</label>
-      <input type="number" class="form-control" id="rating" name="rating" value="" min="0" max="5" step="0.1">
+      <input type="number" class="form-control" id="rating" required name="rating" value="" min="0" max="5" step="0.1">
     </div>
 
 
@@ -95,29 +95,31 @@
       <div class="row" id="imageUploadCards">
         <div class="col-md-4 mb-3">
           <div class="image-card">
-            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview1" required>
-            <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview1')">
+            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview1" >
+            <input type="file" name="images" accept="image/*" required  onchange="handleImageUpload(event, 'imagePreview1')">
           </div>
         </div>
         <div class="col-md-4 mb-3">
           <div class="image-card">
-            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview2" required>
-            <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview2')">
+            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview2" >
+            <input type="file" name="images" accept="image/*" required  onchange="handleImageUpload(event, 'imagePreview2')">
           </div>
         </div>
         <div class="col-md-4 mb-3">
           <div class="image-card">
-            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview3" required>
-            <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview3')">
+            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview3" >
+            <input type="file" name="images" accept="image/*" required  onchange="handleImageUpload(event, 'imagePreview3')">
          </div>
          </div>
          
          <div class="col-md-4 mb-3">
           <div class="image-card">
-            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview4" required>
-            <input type="file" name="images" accept="image/*" required multiple onchange="handleImageUpload(event, 'imagePreview4')">
+            <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="imagePreview4" >
+            <input type="file" name="images" accept="image/*" required  onchange="handleImageUpload(event, 'imagePreview4')">
          </div>
          </div>
+
+
       </div>
     </div>
     
@@ -136,9 +138,10 @@
     <small class="form-text text-muted">You must upload exactly 4 images.</small>
     <div class="text-danger" id="errorImages"></div>
 
-    <button type="submit" onclick="form.submit();" class="btn btn-primary" >Create</button>
+    <button type="submit" id="sub" class="btn btn-primary" >Create</button>
 
   </form>
+
 </main>
 
 
@@ -250,81 +253,221 @@
 
 document.addEventListener('DOMContentLoaded', (event) => {
     const form = document.getElementById('productForm');
-       
+    const button = document.getElementById('sub');
+    
+  
+    if (!form) {
+        console.error("Form element not found.");
+        return;
+    }
+
+    
+    form.addEventListener('submit', (event) => {
+        event.preventDefault(); 
+        console.log('Default form submission blocked.');
+    });
 
 
-form.addEventListener('submit', async (event) => {
-   event.preventDefault();
-   const formData = new FormData(form);
-   const files = formData.getAll('images');
-   const maxSize = 5 * 1024 * 1024; 
 
-   for (const file of files) {
-       if (file.size > maxSize) {
-           Swal.fire({
-               icon: 'error',
-               title: 'Image Size Error',
-               text: 'Each image must be less than 5MB.',
-           });
-           return;
-       }
-   }
+    button.addEventListener("click", async (event) => {
+        
+            
+
+          const errorMsg = document.getElementById('ttt');
+          errorMsg.innerHTML = ''
+
+       const name = document.getElementById('productname').value;
+          if (name === "") {
+      errorMsg.innerHTML = "Product name is required.";
+      return; 
+    }
+    
+
+    const description = document.getElementById('description').value;
+    if (description === '') {
+      errorMsg.innerHTML = "Description  is required";
+      return; 
+    }
+
+    // const brand = document.getElementById('brand').value;
+    // if (brand === '') {
+    //   errorMsg.innerHTML = "brand  is required";
+    //   return; 
+    // }
+
+    const offer = document.getElementById('offer').value;
+    if (offer === '') {
+      errorMsg.innerHTML = "Description  is required";
+      return; 
+    }
+
+    const stock = document.getElementById('stock').value;
+    if (stock === '') {
+      errorMsg.innerHTML = "Description  is required";
+      return; 
+    }
+
+    const warranty = document.getElementById('warranty').value;
+    if (warranty === '') {
+      errorMsg.innerHTML = "Description  is required";
+      return; 
+    }
+
+    const color = document.getElementById('color').value;
+    if (color === '') {
+      errorMsg.innerHTML = "Description  is required";
+      return; 
+    }
+
+    
+    // const ram = document.getElementById('ram').value;
+    // if (ram === '') {
+    //   errorMsg.innerHTML = "Ram  is required";
+    //   return; 
+    // }
+
+    // const storage = document.getElementById('storage').value;
+    // if (storage === '') {
+    //   errorMsg.innerHTML = "Storage  is required";
+    //   return; 
+    // }
+   
+
+
+
+
+
+    const price = document.getElementById('price').value;
+    if (price <= 0) {
+      errorMsg.innerHTML = "Price must be a positive number.";
+      return; 
+    }
+
+    
+    const rating = document.getElementById('rating').value;
+    if (rating < 0 || rating > 5) {
+      errorMsg.innerHTML = "Rating must be between 0 and 5.";
+      return; 
+    }
+
+    
+    const imageInputs = document.querySelectorAll('input[type="file"][name="images"]');
+    const imageFiles = Array.from(imageInputs).filter(input => input.files.length > 0);
+    if (imageFiles.length !== 4) {
+      errorMsg.innerHTML = "You must upload exactly 4 images.";
+      return; 
+    }
+
+
+            if (typeof form.submit === 'function') {
+                form.submit(); 
+            } else {
+                console.error('form.submit is not a function.');
+            }
+    
+    });
 });
 
-});
+let cropper;
+let currentImageId = '';
 
+function handleImageUpload(event, imagePreviewId) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-  let cropper;
-  let currentImageId = '';
-  
-  function handleImageUpload(event, imagePreviewId) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-      document.getElementById(imagePreviewId).src = e.target.result;
-  
-      document.getElementById('cropModal').style.display = 'block';
-      currentImageId = imagePreviewId;
-  
-      const imageElement = document.getElementById('imageToCrop');
-      imageElement.src = e.target.result;
-  
-      if (cropper) {
-        cropper.destroy();
-      }
-      cropper = new Cropper(imageElement, {
-        aspectRatio: NaN,
-        viewMode: 1,
-        autoCropArea: 1,
-      });
-    };
-    reader.readAsDataURL(file);
-  }
-  
-  function cropImage() {
-    const canvas = cropper.getCroppedCanvas();
-    const croppedImageUrl = canvas.toDataURL();
-  
-    document.getElementById(currentImageId).src = croppedImageUrl;
-    document.getElementById('cropModal').style.display = 'none';
-  
-    
-    const inputField = document.createElement('input');
-    inputField.type = 'hidden';
-    inputField.name = 'images';
-    inputField.value = croppedImageUrl; 
-  
-    
-  }
-  
- 
-  document.querySelector('.close').addEventListener('click', function() {
-    document.getElementById('cropModal').style.display = 'none';
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const imagePreview = document.getElementById(imagePreviewId);
+    imagePreview.src = e.target.result;
+
+    const modal = document.getElementById('cropModal');
+    modal.style.display = 'block';
+
+    currentImageId = imagePreviewId;
+    const imageElement = document.getElementById('imageToCrop');
+    imageElement.src = e.target.result;
+
     if (cropper) {
       cropper.destroy();
     }
-  });
+    cropper = new Cropper(imageElement, {
+      aspectRatio: NaN, // Free cropping
+      viewMode: 1,
+      autoCropArea: 1,
+    });
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function cropImage() {
+  if (!cropper) return;
+
+  const canvas = cropper.getCroppedCanvas();
+  if (!canvas) {
+    alert('Failed to crop image.');
+    return;
+  }
+
+  const croppedImageUrl = canvas.toDataURL();
+
+  const imagePreview = document.getElementById(currentImageId);
+  imagePreview.src = croppedImageUrl;
+
+  const inputField = document.querySelector(`input[name="${currentImageId}_cropped"]`);
+  if (inputField) {
+    inputField.value = croppedImageUrl;
+  } else {
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = `${currentImageId}_cropped`;
+    hiddenInput.value = croppedImageUrl;
+
+    const form = document.getElementById('productForm');
+    form.appendChild(hiddenInput);
+  }
+
+  closeModal();
+}
+
+function closeModal() {
+  const modal = document.getElementById('cropModal');
+  modal.style.display = 'none';
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
+}
+
+function submitForm(event) {
+  event.preventDefault();
+
+  const hiddenInputs = document.querySelectorAll('input[type="hidden"]');
+  
+  
+  if (hiddenInputs.length < 4) {
+    document.getElementById('errorImages').textContent = 'Please upload and crop exactly 4 images.';
+    return;
+  }
+
+  
+  const formData = new FormData(document.getElementById('productForm'));
+  console.log("Submitting form with data: ", formData); 
+
+ 
+  // fetch('/path-to-your-endpoint', {
+  //   method: 'POST',
+  //   body: formData
+  // }).then(response => response.json())
+  //   .then(data => {
+  //     console.log('Form submitted successfully:', data);
+     
+  //   })
+  //   .catch(error => {
+  //     console.error('Error submitting form:', error);
+      
+  //   });
+}
 
   function handleCategoryChange() {
   const category = document.getElementById('categoryStatus').value;

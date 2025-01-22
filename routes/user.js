@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controller/userController");
 const userauth = require("../middleware/userauth");
-const multer = require('multer');
-const upload = multer();
+const multer = require('../utils/multter');
+
 
 
 router.get("/", userauth.isBan,  userController.loadHome);
@@ -44,8 +44,12 @@ router.get("/profile/:id",userauth.checkSession,userauth.isBan,userController.lo
 router.post("/address",userController.addAddress)
 router.post("/remove-address/:id",userController.removeAdrress)
 router.post("/edit-address",userController.editAddress)
-router.post("/update-profile",  upload.single('image'), userController.editProfile)
 
+router.post("/update-profile", multer.upload.single("image"),userController.editProfile)
+
+router.get("*",(req ,res)=>{
+    res.status(404).render("user/404")
+    })
 
 
 module.exports = router;

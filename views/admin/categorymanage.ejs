@@ -52,8 +52,10 @@
         </thead>
         <tbody>
           <% categories.forEach((category, index) => { %>
+
+            <% const startIndex = (currentPage - 1) * limit  %>
             <tr id="categoryRow<%= index %>">
-              <td><%= index + 1 %></td>
+              <td><%= startIndex + index + 1 %></td>
               <td><%= category?.name %></td>
              
               <td><%= category?.status %></td>

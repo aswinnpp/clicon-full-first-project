@@ -69,7 +69,9 @@ router.get("/ordermanage" ,adminController.loadOrdermanage)
 
 router.get("/couponmanage" ,adminController.loadCouponmanage)
 
-
+router.get("*",(req ,res)=>{
+res.status(404).render("admin/404")
+})
 
 
 

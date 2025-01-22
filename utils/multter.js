@@ -32,12 +32,19 @@ const uploaded = multer({ storage, fileFilter });
 
 const uploadMultiple = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 },
+    limits: { fileSize: 5 * 1024 * 1024 }, 
 }).fields([
     { name: 'image0', maxCount: 1 },
     { name: 'image1', maxCount: 1 },
     { name: 'image2', maxCount: 1 },
     { name: 'image3', maxCount: 1 }
-]);
+], (err, req, res, next) => {
+    if (err) {
+        console.error("Multer error:", err);
+        return res.status(400).json({ message: "File upload error", error: err });
+    }
+    next();
+});
+
 
 module.exports = { upload, uploaded, uploadMultiple };

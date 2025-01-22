@@ -27,6 +27,7 @@
         <table class="table table-striped table-sm">
           <thead>
             <tr>
+              <th>no:</th>
               <th>Username</th>
               <th>Email</th>
               <th>Role</th>
@@ -36,37 +37,40 @@
               
             </tr>
           </thead>
-          <tbody>
-            <% users.forEach(user => { %>
-              <tr>
-                <td><%= user?.name %></td>
-                <td><%= user?.email %></td>
-                <td><%= user?.role %></td>
-                <td><%= user?.createdAt.toISOString().split('T')[0] %></td>
-              
-                <td >
-                  <!-- <form action="/admin/userupdate/<%= user._id %>" method="get" >
-                  <button style="display: inline" class="btn btn-warning btn-sm " value="<%= user._id %>" >Update</button>
-                </form> -->
+            <tbody>
 
-                <button 
-              class="btn btn-danger btn-sm" 
-              onclick="toggleProductStatus('<%= user?._id %>', <%= user.isBan %>  )">
-              <%= user.isBan ? 'unblock' : 'Block' %>
-            </button>
+              <% users.forEach((user, index) => { %>
 
-                </td>
-              </tr>
-            <% }) %>
-          </tbody>
+                <% const startIndex = (currentPage - 1) * limit  %>
+                <tr>
+                  <td><%= startIndex + index + 1 %></td>
+                  <td><%= user?.name %></td>
+                  <td><%= user?.email %></td>
+                  <td><%= user?.role %></td>
+                  <td><%= user?.createdAt.toISOString().split('T')[0] %></td>
+                  <td>
+                  
+                    <button 
+                    class="btn btn-danger btn-sm" 
+                    onclick="toggleProductStatus('<%= user?._id %>', <%= user.isBan %>  )">
+                    <%= user.isBan ? 'unblock' : 'Block' %>
+                  </button>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+                              
+
+
+               
         </table>
       </div>
 
 
-      <div class="d-flex justify-content-center mt-3 pagination-container " >
+      <div class="d-flex justify-content-center mt-3 pagination-container">
         <ul class="pagination">
           <!-- Previous button with left arrow -->
-          <li class="page-item <%= currentPage <= 1 ? 'disabled' : '' %>">
+          <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
             <a class="page-link" href="?page=<%= currentPage - 1 %>">←</a> <!-- Left Arrow -->
           </li>
       

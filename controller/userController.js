@@ -25,7 +25,7 @@ const loadHome= async (req,res)=>{
       const email = req.session?.details?.email
       console.log(email);
        
-      const userr = await userSchema.find({email})
+      const userr = await userSchema.findOne({email})
 
       console.log()
 
@@ -122,6 +122,10 @@ const banPage = async (req,res)=>{
     }
 };
 
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000); 
+};
+
 // ------------------ User sign up---------------
 const signUp = async (req, res) => {
   try {
@@ -137,14 +141,14 @@ const signUp = async (req, res) => {
     const otp = generateOTP();
     const timestamp = Date.now();
 
-    
+    console.log("timer",timestamp)
     req.session.otp = otp;
     req.session.type = "signup";
     req.session.timestamp = timestamp;
     req.session.details = { email, password, name };
 
     sendOtpEmail(email, otp);
-    console.log("Signup OTP created:", req.session);
+    console.log("Signup OTP created:", req.session.otp);
     console.log("OTP:", otp);
 
     return res.redirect("/otp");
@@ -167,9 +171,7 @@ const loadOtp = async (req, res) => {
 };
 
 //------------------- Generate OTP ---------------
-const generateOTP = () => {
-  return Math.floor(100000 + Math.random() * 900000); 
-};
+
 
 //------------------ send OTP to email ------------
 const sendOtpEmail = (email, otp) => {
@@ -285,7 +287,7 @@ const resendOtp = async (req, res) => {
 
     
     req.session.otp = newOtp;
-    req.session.timestamp = Date.now(); 
+    req.session.timestamp = Date.now();  
    
     
 
@@ -308,26 +310,34 @@ const resendOtp = async (req, res) => {
 const verifyOTP = async (req, res) => {
   const { otp } = req.body;
   const currentTime = Date.now();
+  console.log("OTP entered:", otp);
+  console.log("OTP in session:", req.session.otp);
 
   if (parseInt(otp) !== req.session.otp) {
+    console.log("Invalid OTP entered:", otp);
     req.flash("OTP", "Invalid OTP. Please try again.");
     return res.redirect("/otp");
   }
 
+  // Check if session data exists
   if (req.session.otp && req.session.timestamp && req.session.type) {
     const otpAge = currentTime - req.session.timestamp;
-    const isExpired = otpAge >= 30000; 
+    const isExpired = otpAge >= 60000;  
 
+    
+
+console.log("OTP expiry check:", otpAge);
+console.log("Is OTP expired:", isExpired);
 
 
     if (isExpired) {
+      console.log("OTP has expired. Age:", otpAge, "Time now:", currentTime);
       req.flash("OTP", "OTP has expired.");
       return res.redirect("/otp");
     }
 
-   
-
     const workflowType = req.session.type;
+    console.log("Session type is:", workflowType);
 
     if (workflowType === "signup") {
       const data = req.session.details;
@@ -343,7 +353,7 @@ const verifyOTP = async (req, res) => {
         await newUser.save();
 
        
-        req.session.logged = true;
+        ;
         delete req.session.otp;
         delete req.session.timestamp;
         delete req.session.details;
@@ -360,10 +370,12 @@ const verifyOTP = async (req, res) => {
       try {
         const user = await userSchema.findOne({ email: req.session.forgot });
         if (!user) {
+          console.log("User not found for email:", req.session.forgot);
           req.flash("OTP", "User not found.");
           return res.redirect("/forgot");
         }
 
+        // Clean up session OTP data after successful verification
         delete req.session.otp;
         delete req.session.timestamp;
         delete req.session.type;
@@ -375,11 +387,13 @@ const verifyOTP = async (req, res) => {
         return res.redirect("/otp");
       }
     }
+  } else {
+    console.log("Session data not available or expired OTP.");
+    req.flash("OTP", "OTP generation failed. Please try again.");
+    return res.redirect("/otp");
   }
-
-  req.flash("OTP", "OTP generation failed. Please try again.");
-  return res.redirect("/otp");
 };
+
 
 
 
@@ -480,7 +494,7 @@ const loadSignIn = async (req, res) => {
     }
   };
 
-  const signIn = async (req, res) => {
+const signIn = async (req, res) => {
     try {
      
     
@@ -506,12 +520,12 @@ const loadSignIn = async (req, res) => {
         return res.redirect("/signin");
       }
       
-      if(user.isBan === true){
+      if(user.isBan === true && user.password === ""){
         req.flash('error', 'User Banned By Admin !');
         return res.redirect("/signin");
       }
 
-      if(user.authuser === true){
+      if(user.authuser === true ){
         req.flash('error', 'You Are Only Allowed Google Auth Login');
         return res.redirect("/signin");
       }
@@ -553,8 +567,6 @@ const loadForgot = async (req, res) => {
       console.log('user forgotpassword error:', error);
     }
   };
-
-
 
 
 const forgot = async (req, res) => {
@@ -611,11 +623,7 @@ const loadReset = async (req, res) => {
     } catch (error) {
       console.log('user resetpassword error:', error);
     }
-  };
-
-  
-
-
+};
   const reset = async (req, res) => {
     try {
       const email = req.session.forgot;
@@ -650,9 +658,7 @@ const loadReset = async (req, res) => {
       console.error("Error in reset function:", error);
       res.status(500).send('Server Error');
     }
-  };
-  
-
+};
   const loadCart = async (req,res) =>{
 
     try {
@@ -666,8 +672,7 @@ const loadReset = async (req, res) => {
       
     }
 
-  }
-
+}
 const loadWhishlist = async (req,res)=>{
 
 try {
@@ -683,7 +688,7 @@ res.render("user/wishlist",{user})
 }
 
 
-  }
+}
 
 
 
@@ -694,7 +699,7 @@ try {
 
   const id = req.params.id
   // console.log("id",id)
-
+console.log(req.session)
   const user = await userSchema.findOne({_id:id})
   const address = await Address.find({userId:id})
   // console.log("user",user)
@@ -753,7 +758,7 @@ const addAddress = async (req,res)=>{
 
     res.redirect(`/profile/${userId}`)
 
-  }
+}
 
 const editAddress = async (req,res)=>{
 
@@ -778,18 +783,37 @@ res.redirect(`/profile/${userId}`)
 
 }
 
+const editProfile = async (req, res) => {
+    try {
+        const { userId, name, email, password, phone } = req.body;
+
+        console.log(phone)
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+      
+        const user = await userSchema.findById(userId);
+        console.log("user",user)
+
+       
+        const images = req.file ? '/uploads/' + req.file.filename : undefined; 
 
 
-const   editProfile = async (req, res) => {
-  const { userId,image } = req.body;
+        // Update fields
+        user.name = name || user.name;
+        user.email = email || user.email;     
+        user.password = hashedPassword|| user.password 
+        user.image = images||user.image
+        user.phone = phone|| user.phone
 
-  console.log('Incoming files:', req.files);
+      
+        // Save changes
+        await user.save();
 
-  
-  console.log("BODY", req.body); 
-  console.log("USER ID", userId); 
-  console.log("image", image); 
-   
+        res.redirect(`/profile/${userId}`)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 };
 
 
