@@ -315,41 +315,56 @@
                                    
                               
                                     <!-- Quantity -->
-                                    <div class="details-filter-row details-row-size">
-                                      <label for="qty">Qty:</label>
-                                      <div class="product-details-quantity">
-                                        <input
-                                          type="number"
-                                          id="qty"
-                                          class="form-control"
-                                          value="1"
-                                          min="1"
-                                          max="5"
-                                          step="1"
-                                          required
-                                        />
-                                      </div>
-                                    </div>
-                              
-                                    <div class="product-details-action">
-                                        <a href="<%= product[0]?.stock < 5 ? '#' : '/cart/add/' + product._id %>" 
-                                            class="btn <%= product[0]?.stock < 5 ? 'btn-warning' : 'btn-success' %>" 
-                                            role="button">
-                                            <%= product[0]?.stock < 5 ? 'Out of Stock' : 'Buy Now' %>
-                                         </a>                                      
-                                        <div class="details-action-wrapper">
+                                     <form action="/cart" method="post">
+                                        <input type="hidden" name="productId" value="<%=product[0]?._id %>">
+                                        
+                                        
                                         
 
-                                          <a href="/wishlist/add/<%= product._id %>" class="btn btn-outline-secondary" title="Add to Wishlist" aria-label="Add to Wishlist">
-                                            Add to Wishlist
-                                          </a>
-                                      
-                                          
-                                          <a href="/compare/add/<%= product._id %>" class="btn btn-outline-secondary" title="Add to Compare" aria-label="Add to Compare">
+                                        <div class="details-filter-row details-row-size">
+                                            <label for="qty">Qty:</label>
+                                            <div class="product-details-quantity">
+                                              <input
+                                                type="number"
+                                                name="quantity"
+                                                id="qty"
+                                                class="form-control"
+                                                value="1"
+                                                min="1"
+                                                max="5"
+                                                step="1"
+                                                required
+                                              />
+                                            </div>
+                                          </div>
+                                    
+                                          <div class="product-details-action">
+                                              <a href="<%= product[0]?.stock < 5 ? '#' : '/cart/add/' + product._id %>" 
+                                                  class="btn <%= product[0]?.stock < 5 ? 'btn-warning' : 'btn-success' %>" 
+                                                  role="button">
+                                                  <%= product[0]?.stock < 5 ? 'Out of Stock' : 'Buy Now' %>
+                                               </a>                                      
+                                              <div class="details-action-wrapper">
+                                              
+      
+                                                <button type="submit" class="btn btn-outline-secondary" title="Add to Wishlist" aria-label="Add to Wishlist">
+                                                  Add to Cart
+                                                </button>
+                                                
+                                                </div>
+                                              </div>
+                                     </form>
+
+                                     <div class="details-action-wrapper">
+                                        <a href="/compare/add/<%= product[0]._id %>" class="btn btn-outline-secondary" title="Add to Compare" aria-label="Add to Compare">
                                             Add to Compare
                                           </a>
-                                        </div>
-                                      </div>
+                                          </div>
+                                     </div>
+                                    
+                                      
+                                          
+                                         
                               
                                     <!-- Footer Details -->
                                     

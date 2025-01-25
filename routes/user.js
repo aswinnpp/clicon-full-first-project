@@ -38,6 +38,9 @@ router.get("/productview/:product_id",userauth.isBan, userController.productView
 router.get("/productlist" ,userauth.isBan, userController.productList)
 
 router.get("/cart",userauth.checkSession,userauth.isBan, userController.loadCart)
+router.post("/cart", userController.Carts )
+
+
 router.get("/wishlist",userauth.checkSession,userauth.isBan, userController.loadWhishlist )
 router.get("/profile/:id",userauth.checkSession,userauth.isBan,userController.loadProfile)
 

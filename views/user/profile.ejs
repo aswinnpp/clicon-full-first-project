@@ -563,9 +563,9 @@ table td a {
 
 
 
-              <!-- Modal for Adding Address -->
+      <!-- Modal for Adding Address -->
         <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+       <div class="modal-dialog modal-lg">
       <div class="modal-content shadow-lg rounded-3">
         
         <!-- Modal Header -->
@@ -573,44 +573,46 @@ table td a {
           <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        
+        <div>
+          <p style="color: red;" id="errorp"></p>
+        </div>
         <!-- Modal Body -->
         <div class="modal-body p-4">
-          <form action="/address" method="post">
+          <form action="/address" method="post" id="addAddress">
             <input type="text" name="id" value="<%= user?.id %>" hidden>
             <!-- Street Address -->
             <div class="mb-3">
               <label for="street" class="form-label fs-5 text-secondary">Street Address</label>
-              <input type="text" class="form-control p-3 border-2" name="street" id="street" placeholder="Enter street address" required>
+              <input type="text" class="form-control p-3 border-2" name="street" id="street" placeholder="Enter street address" >
             </div>
             
             <!-- City -->
             <div class="mb-3">
               <label for="city" class="form-label fs-5 text-secondary">City</label>
-              <input type="text" class="form-control p-3 border-2" name="city" id="city" placeholder="Enter city" required>
+              <input type="text" class="form-control p-3 border-2" name="city" id="city" placeholder="Enter city" >
             </div>
 
             <div class="mb-3">
                 <label for="phone" class="form-label fs-5 text-secondary">Phone no</label>
-                <input type="text" class="form-control p-3 border-2" name="phone" id="city" placeholder="Enter phone no." required>
+                <input type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')"  min="5" max="15"  class="form-control p-3 border-2" name="phone" id="phones" placeholder="Enter phone no." >
               </div>
             
             <!-- State -->
             <div class="mb-3">
               <label for="state" class="form-label fs-5 text-secondary">State</label>
-              <input type="text" class="form-control p-3 border-2" name="state" id="state" placeholder="Enter state" required>
+              <input type="text" class="form-control p-3 border-2" name="state" id="state" placeholder="Enter state" >
             </div>
             
             <!-- Country -->
             <div class="mb-3">
               <label for="country" class="form-label fs-5 text-secondary">Country</label>
-              <input type="text" class="form-control p-3 border-2" name="country" id="country" placeholder="Enter country" required>
+              <input type="text" class="form-control p-3 border-2" name="country" id="country" placeholder="Enter country" >
             </div>
             
             <!-- Postal Code -->
             <div class="mb-3">
               <label for="postalCode" class="form-label fs-5 text-secondary">Postal Code</label>
-              <input type="text" class="form-control p-3 border-2" name="postalCode" id="postalCode" placeholder="Enter postal code" required>
+              <input type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="form-control p-3 border-2" name="postalCode" id="postalCode" placeholder="Enter postal code" >
             </div>
             
             <!-- Submit and Close Buttons -->
@@ -626,6 +628,7 @@ table td a {
         </div>
 
           <!-- edit Address modal -->
+           
           <div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content" style="border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
@@ -633,9 +636,12 @@ table td a {
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
                   </div>
+                  <div>
+                    <p style="color: red;" id="error-message"></p>
+                  </div>
 
                   <div class="modal-body" style="padding: 20px; background-color: #f9f9f9;">
-                    <form action="/edit-address" method="post">
+                    <form action="/edit-address" id="edit-address" method="post">
                       <!-- Form Fields -->
 
                         <input type="text" name="adressaId" value="<%= address[0]?._id %>" hidden>
@@ -643,27 +649,27 @@ table td a {
 
                       <div class="mb-3">
                         <label for="editStreet" class="form-label">Street</label>
-                        <input type="text" id="editStreet" name="street" class="form-control" required>
+                        <input type="text" id="editStreet" name="street" class="form-control" >
                       </div>
                       <div class="mb-3">
                         <label for="editCity" class="form-label">City</label>
-                        <input type="text" id="editCity" name="city" class="form-control" required>
+                        <input type="text" id="editCity" name="city" class="form-control" >
                       </div>
                       <div class="mb-3">
                         <label for="editState" class="form-label">State</label>
-                        <input type="text" id="editState" name="state" class="form-control" required>
+                        <input type="text" id="editState" name="state" class="form-control" >
                       </div>
                       <div class="mb-3">
                         <label for="editCountry" class="form-label">Country</label>
-                        <input type="text" id="editCountry" name="Country" class="form-control" required>
+                        <input type="text" id="editCountry" name="Country" class="form-control" >
                       </div>
                       <div class="mb-3">
                         <label for="editPostalCode" class="form-label">Postal Code</label>
-                        <input type="text" id="editPostalCode" name="postalCode" class="form-control" required>
+                        <input type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')"  id="editPostalCode" name="postalCode" class="form-control" >
                       </div>
                       <div class="mb-3">
                         <label for="editPhone" class="form-label">Phone</label>
-                        <input type="text" id="editPhone" name="phone" class="form-control" required>
+                        <input type="text " oninput="this.value = this.value.replace(/[^0-9]/g, '')"  min="5" max="15"  id="editPhone" name="phone" class="form-control" >
                       </div>
                       <div class="d-flex justify-content-between">
 
@@ -729,11 +735,7 @@ table td a {
                 Edit Selected Address
               </button>
 
-              </div>
-
-            
-            
-
+            </div>
 
             </div>
   
@@ -750,6 +752,9 @@ table td a {
                     <div class="modal-header">
                       <h5 class="modal-title" id="updateProfileLabel" style="color: white;">Update Profile</h5>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      <div style="display: flex; position:absolute; left: 150px;">
+                        <P id="error" style="color: red;"  > </P>
+                      </div>
                     </div>
                     <div class="modal-body">
                       <!-- Profile Image -->
@@ -774,9 +779,7 @@ table td a {
                       />
                        
                       </div>
-                      <div style="display: flex; position:absolute; left: 150px;">
-                        <P id="error" style="color: red;"  > </P>
-                      </div>
+                     
                       
                       <!-- Name -->
                       <div class="mb-3">
@@ -791,7 +794,7 @@ table td a {
 
                       <div class="mb-3">
                         <label for="number" class="form-label">Set Primary phone no:</label>
-                        <input type="text" class="form-control" id="phone" name="phone" value="<%= user?.phone %>" >
+                        <input type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')" minlength="4" class="form-control" min="5" max="15" id="phone" name="phone"  value="<%= user?.phone %>" >
                       </div>
 
                       <div class="mb-3">
@@ -939,7 +942,7 @@ table td a {
       <div class="container">
         <p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p><!-- End .footer-copyright -->
         <figure class="footer-payments">
-          <img src="assets/images/payments.png" alt="Payment methods" width="272" height="20">
+          <img src="/assets/images/payments.png" alt="Payment methods" width="272" height="20">
         </figure><!-- End .footer-payments -->
       </div><!-- End .container -->
     </div><!-- End .footer-bottom -->
@@ -1156,6 +1159,8 @@ table td a {
 <script>
 
 
+
+
 document.getElementById('profileImage').addEventListener('change', function(event) {
   const file = event.target.files[0];
   if (file) {
@@ -1168,75 +1173,52 @@ document.getElementById('profileImage').addEventListener('change', function(even
 });
 
 
-document.getElementById('uploadForm').addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const formData = new FormData();
-  const fileInput = document.getElementById('profileImage');
-  const file = fileInput.files[0];
 
-  if (!file) {
-    alert('Please select an image to upload.');
-    return;
-  }
-
-  formData.append('image', file);
-
-  try {
-    const response = await fetch('/upload-profile', {
-      method: 'POST',
-      body: formData,
-    });
-    const result = await response.json();
-    if (response.ok) {
-      alert('Upload successful!');
-      console.log(result);
-    } else {
-      alert(`Error: ${result.error}`);
-    }
-  } catch (error) {
-    console.error('Error uploading image:', error);
-    alert('An error occurred while uploading the image.');
-  }
-});
 
 document.addEventListener("DOMContentLoaded", () => {
-  const profileEditForm = document.querySelector("#profile-edit-form");
+ 
+  
+  const profileEditForm = document.getElementById("profile-edit-form");
+  const editAddressForm = document.getElementById("edit-address");
+  const errorMsg = document.getElementById("error");
   const passwordFields = document.getElementById("passwordFields");
   const changePasswordCheckbox = document.getElementById("changePassword");
-  const errorMsg = document.getElementById("error");
 
- 
+
+
+
 
   profileEditForm.addEventListener("submit", (event) => {
-    event.preventDefault(); 
+    event.preventDefault();
 
+   
     const name = document.getElementById("profile-name").value.trim();
-    const email = document.getElementById("profile-email").value.trim();
     const phone = document.getElementById("phone").value.trim();
     const password = document.getElementById("profile-password").value.trim();
     const confirmPassword = document.getElementById("profile-confirmpassword").value.trim();
 
-    errorMsg.innerHTML = ""; 
+   
+    errorMsg.innerHTML = "";
 
+    // Validate name
     if (name === "") {
       errorMsg.innerHTML = "Name is required.";
       return;
     }
 
-   
-   
-    // Phone validation
-    if (phone === "") {
-      errorMsg.innerHTML = "Phone number is required.";
+    // Validate phone
+    const phoneRegex = /^\d{10,15}$/; // Only digits, length between 5 and 15
+    const repeatedDigitsRegex = /^(\d)\1+$/; // Detect repeated digits like "0000000"
+    if (!phoneRegex.test(phone)) {
+      errorMsg.innerHTML = "Phone number must be between 10 and 15 digits ";
       return;
     }
-    const phoneRegex = /^\d{10,15}$/;
-    if (!phoneRegex.test(phone)) {
-      errorMsg.innerHTML = "Please enter a valid phone number (only digits, 10-15 characters).";
+    if (repeatedDigitsRegex.test(phone)) {
+      errorMsg.innerHTML = `Phone number not valid.`;
       return;
     }
 
-    // Password validation (if checkbox is checked)
+    // Validate password if the checkbox is checked
     if (changePasswordCheckbox.checked) {
       if (password === "") {
         errorMsg.innerHTML = "Password is required.";
@@ -1258,7 +1240,7 @@ document.addEventListener("DOMContentLoaded", () => {
         errorMsg.innerHTML = "Password must contain at least one number.";
         return;
       }
-      if (!/(?=.*[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>\/?])/.test(password)) {
+      if (!/(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>\/?])/.test(password)) {
         errorMsg.innerHTML = "Password must contain at least one special character.";
         return;
       }
@@ -1272,10 +1254,162 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Submit the form if no errors
+    // If validation passes, submit the form
     profileEditForm.submit();
   });
+
+
+  document.getElementById("edit-address").addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    
+    const street = document.getElementById("editStreet").value.trim();
+    const city = document.getElementById("editCity").value.trim();
+    const phone = document.getElementById("editPhone").value.trim();
+    const state = document.getElementById("editState").value.trim();
+    const country = document.getElementById("editCountry").value.trim();
+    const postalCode = document.getElementById("editPostalCode").value.trim();
+
+    const errorMsg = document.getElementById("error-message");
+    errorMsg.innerHTML = ""; // Reset error messages
+
+    // Validate street
+    if (street === "") {
+        errorMsg.innerHTML = "Street address is required.";
+        return;
+    }
+    if (street.length < 3 || street.length > 100) {
+        errorMsg.innerHTML = "Street address must be between 3 and 100 characters.";
+        return;
+    }
+
+    // Validate city
+    if (city === "") {
+        errorMsg.innerHTML = "City address is required.";
+        return;
+    }
+
+    // Validate phone
+    const repeatedDigitsRegex = /^(\d)\1+$/; 
+    if (phone === "") {
+        errorMsg.innerHTML = "Phone number is required.";
+        return;
+    }
+
+    if (phone.length < 10 || phone.length > 15) {
+        errorMsg.innerHTML = "Phone number must 10 to 15 digit";
+        return;
+    }
+    if (repeatedDigitsRegex.test(phone)) {
+        errorMsg.innerHTML = "Phone number cannot contain repeated digits.";
+        return;
+    }
+
+    // Validate state
+    if (state === "") {
+        errorMsg.innerHTML = "State address is required.";
+        return;
+    }
+
+    // Validate country
+    if (country === "") {
+        errorMsg.innerHTML = "Country address is required.";
+        return;
+    }
+
+    // Validate postal code
+    const postalCodeRegex = /^\d{4,10}$/;  // Postal code length should be between 4 to 10 digits
+    if (postalCode === "") {
+        errorMsg.innerHTML = "Postal code address is required.";
+        return;
+    }
+    if (!postalCodeRegex.test(postalCode)) {
+        errorMsg.innerHTML = "Postal code must be between 4 and 10 digits.";
+        return;
+    }
+
+    // If all validations pass, submit the form
+    document.getElementById("edit-address").submit();
 });
+
+document.getElementById("addAddress").addEventListener("submit", (event) => {
+    event.preventDefault(); 
+
+    console.log("sssssssssssssssssssssssss");
+    
+    const street = document.getElementById("street").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const phone = document.getElementById("phones").value.trim();
+    const state = document.getElementById("state").value.trim();
+    const country = document.getElementById("country").value.trim();
+    const postalCode = document.getElementById("postalCode").value.trim();
+
+    const errorMsg = document.getElementById("errorp"); // Make sure to have an element with this id for error messages
+    errorMsg.innerHTML = ""; // Reset error messages
+
+    // Validate street address
+    if (street === "") {
+        errorMsg.innerHTML = "Street address is required.";
+        return;
+    }
+    if (street.length < 3 || street.length > 100) {
+        errorMsg.innerHTML = "Street address must be between 3 and 100 characters.";
+        return;
+    }
+
+    // Validate city
+    if (city === "") {
+        errorMsg.innerHTML = "City is required.";
+        return;
+    }
+
+    // Validate phone number
+    
+    const repeatedDigitsRegex = /^(\d)\1+$/; // Detect repeated digits like "0000000"
+    if (phone === "" ) {
+        errorMsg.innerHTML = "Phone number is required.";
+        return;
+    }
+    if (phone.length < 10 || phone.length > 15) {
+        errorMsg.innerHTML = "Phone number must 10 to 15 digit";
+        return;
+    }
+    
+    if (repeatedDigitsRegex.test(phone)) {
+        errorMsg.innerHTML = "Phone number cannot contain repeated digits.";
+        return;
+    }
+
+    // Validate state
+    if (state === "") {
+        errorMsg.innerHTML = "State is required.";
+        return;
+    }
+
+    // Validate country
+    if (country === "") {
+        errorMsg.innerHTML = "Country is required.";
+        return;
+    }
+
+    // Validate postal code
+    const postalCodeRegex = /^\d{4,10}$/; // Postal code length should be between 4 to 10 digits
+    if (postalCode === "") {
+        errorMsg.innerHTML = "Postal code is required.";
+        return;
+    }
+    if (!postalCodeRegex.test(postalCode)) {
+        errorMsg.innerHTML = "Postal code must be between 4 and 10 digits.";
+        return;
+    }
+
+    // If all validations pass, submit the form
+    event.target.submit();
+});
+
+
+});
+
 
 function togglePasswordFields() {
   const changePasswordCheckbox = document.getElementById('changePassword');
@@ -1288,6 +1422,7 @@ function togglePasswordFields() {
   }
 }
 
+// ============= Address Delete ===================
 function populateModal(event) {
   
   event.preventDefault();
@@ -1321,8 +1456,8 @@ function populateModal(event) {
   const modal = new bootstrap.Modal(document.getElementById('editAddressModal'));
   modal.show();
 }
+// ==============================================
 </script>
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>

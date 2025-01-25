@@ -1,5 +1,6 @@
 const userSchema = require("../models/usermodel");
 const Product = require("../models/productmodel");
+const Cart = require("../models/cartpagemodel")
 const Address = require("../models/addressmodel")
 const Category = require("../models/categorymodel")
 const bcrypt = require("bcrypt");
@@ -9,6 +10,8 @@ const fs = require ('fs');
 const mongoose = require("mongoose")
 const dotenv = require('dotenv');
 const session = require("express-session");
+const { request } = require("http");
+const { log } = require("util");
 const saltround =10
 dotenv.config();
 
@@ -667,20 +670,111 @@ const loadReset = async (req, res) => {
       res.status(500).send('Server Error');
     }
 };
-  const loadCart = async (req,res) =>{
 
+
+const loadCart = async (req, res) => {
+  try {
+    const email = req.session?.details.email;
+
+    // console.log("email..........",email)
+    if (!email) return res.redirect('/login');
+
+    const user = await userSchema.findOne({ email });
+
+    // console.log("ffffffffffff", user._id);
+
+
+    ;
+    
+    if (!user) return res.redirect('/login');
+
+    const cart = await Cart.findOne({ userId: user._id }).populate({
+      path: 'items.productId', 
+      model: 'Product',       });
+    // console.log('ssssssssssssssssss',cart)
+
+    res.render('user/cart', { cart });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+};
+
+
+
+const Carts = async (req,res)=>{
     try {
+    
+    console.log( req.body)
+    const email = req.session?.details?.email
+    const user = await userSchema.findOne({ email });
+    const userId = user?._id
+       const { productId,quantity } = req.body
 
-      const user = req.session?.details 
+      //  console.log("useridvvvvvvvvvvvvvv",userId)
+    
+       let cart = await Cart.findOne({ userId }).populate('items.productId');
+
+       console.log("caaaaaaa",cart);
+       
+
+       const product = await Product.findById({_id:productId})
+    
+       
+       console.log("cart",cart);
+       
+    
+       if (!cart) {
+         
+         cart = new Cart({
+           userId,
+           items: [{ productId, quantity }]
+         });
+         
+         await cart.save();
+        res.redirect('/cart')
+       } else {
+        
+        let track = false
 
 
-      res.render("user/cart",{user})
+      for(let i=0; i<cart.items.length; i++){
+        
+      console.log('looooooop',cart.items[i].productId == productId);
+      
+        if(cart.items[i].productId == productId ){
+          if(cart.items[i].quantity <=5){
+            track = true
+            cart.items[i].quantity +=  Number(quantity)
+            break;
+          }
+
+          console.log("limit exxed")
+          
+         }
+      }
+
+      if(!track) {
+         cart.items.push({ productId, quantity })
+      }
+         
+    
+         await cart.save();
+         res.redirect('/cart')
+       }
+    
+      
     } catch (error) {
+    
       console.log(error)
       
     }
-
+    
+    
+    
 }
+
+
 const loadWhishlist = async (req,res)=>{
 
 try {
@@ -859,6 +953,7 @@ const editProfile = async (req, res) => {
     addAddress,
     removeAdrress,
     editAddress,
-    editProfile
+    editProfile,
+    Carts
 
   }

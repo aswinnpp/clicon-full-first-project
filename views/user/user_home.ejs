@@ -464,7 +464,13 @@
                                         </div><!-- End .product-action -->
     
                                         <div class="product-action">
-                                            <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
+                                            <form action="/cart" method="post">
+                                                <input type="hidden" name="productId" value="<%=product?._id %>">
+                                                <input type="hidden" name="quantity" value="1">
+                                              
+                                                <button type="submit" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></button>
+                                            </form>
+                                           
                                             <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
                                         </div><!-- End .product-action -->
                                     </figure><!-- End .product-media -->
