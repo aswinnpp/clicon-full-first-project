@@ -381,8 +381,8 @@ table td a {
                                         <a href="#">USD</a>
                                         <div class="header-menu">
                                             <ul>
-                                                <li><a href="#">Eur</a></li>
-                                                <li><a href="#">Usd</a></li>
+                                                <!-- <li><a href="#">Eur</a></li>
+                                                <li><a href="#">Usd</a></li> -->
                                             </ul>
                                         </div><!-- End .header-menu -->
                                     </div>
@@ -392,9 +392,9 @@ table td a {
                                         <a href="#">English</a>
                                         <div class="header-menu">
                                             <ul>
-                                                <li><a href="#">English</a></li>
+                                                <!-- <li><a href="#">English</a></li>
                                                 <li><a href="#">French</a></li>
-                                                <li><a href="#">Spanish</a></li>
+                                                <li><a href="#">Spanish</a></li> -->
                                             </ul>
                                         </div><!-- End .header-menu -->
                                     </div>
@@ -473,16 +473,16 @@ table td a {
                     <nav class="main-nav" style="display: flex; align-items: center;">
                         <ul class="menu" style="list-style: none; display: flex; align-items: center; margin: 0; padding: 0; width: 100%;">
                             <li class="megamenu-container active" style="margin: 0 10px;">
-                                <a href="/" class="sf-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Home</a>
+                                <a href="/" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Home</a>
                             </li>
                             <li style="margin: 0 10px;">
-                                <a href="/productlist" class="sf-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Shop</a>
+                                <a href="/productlist" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Shop</a>
                             </li>
                             <li style="margin: 0 10px;">
-                                <a href="blog.html" class="sf-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">About</a>
+                                <a href="blog.html" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">About</a>
                             </li>
                             <li style="margin: 0 10px;">
-                                <a href="elements-list.html" class="sf-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Contact</a>
+                                <a href="elements-list.html" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Contact</a>
                             </li>
                         </ul>
                     </nav>
@@ -766,38 +766,37 @@ table td a {
                         />
                         <!-- File Input -->
                         <input
-                          type="file"
-                          id="profileImage"
-                          name="image"
-                          accept="image/*"
-                          style="opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer;"
-                          
-                        />
+                        type="file"
+                        id="profileImage"
+                        name="image"
+                        accept="image/*"
+                        style="opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer;"
+                      />
                        
                       </div>
                       <div style="display: flex; position:absolute; left: 150px;">
-                        <P id="error" style="color: red;"   > </P>
+                        <P id="error" style="color: red;"  > </P>
                       </div>
                       
                       <!-- Name -->
                       <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="profile-name" name="name" value="<%= user.name %>" required>
+                        <input type="text" class="form-control" id="profile-name" name="name" value="<%= user?.name %>" required>
                       </div>
                       <!-- Email -->
-                      <div class="mb-3">
+                      <!-- <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="profile-email" name="email" value="<%= user.email %>" required>
-                      </div>
+                        <input type="email" class="form-control" id="profile-email" name="email" value="<%= user?.email %>" >
+                      </div> -->
 
                       <div class="mb-3">
                         <label for="number" class="form-label">Set Primary phone no:</label>
-                        <input type="text" class="form-control" id="phone" name="phone" value="<%= user.phone %>" >
+                        <input type="text" class="form-control" id="phone" name="phone" value="<%= user?.phone %>" >
                       </div>
 
                       <div class="mb-3">
                         <label for="changePassword" class="form-label">Set New Password</label>
-                        <input type="checkbox" id="changePassword" name="changePassword">
+                        <input type="checkbox" id="changePassword" name="changePassword" onchange="togglePasswordFields()">
                       </div>
                       
                       <!-- New Password and Confirm Password (Initially hidden) -->
@@ -1168,92 +1167,126 @@ document.getElementById('profileImage').addEventListener('change', function(even
   }
 });
 
+
+document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const formData = new FormData();
+  const fileInput = document.getElementById('profileImage');
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert('Please select an image to upload.');
+    return;
+  }
+
+  formData.append('image', file);
+
+  try {
+    const response = await fetch('/upload-profile', {
+      method: 'POST',
+      body: formData,
+    });
+    const result = await response.json();
+    if (response.ok) {
+      alert('Upload successful!');
+      console.log(result);
+    } else {
+      alert(`Error: ${result.error}`);
+    }
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    alert('An error occurred while uploading the image.');
+  }
+});
+
 document.addEventListener("DOMContentLoaded", () => {
-  const signUpForm = document.querySelector("#profile-edit-form");
-  const changePasswordCheckbox = document.getElementById("changePassword");
+  const profileEditForm = document.querySelector("#profile-edit-form");
   const passwordFields = document.getElementById("passwordFields");
+  const changePasswordCheckbox = document.getElementById("changePassword");
   const errorMsg = document.getElementById("error");
 
-  changePasswordCheckbox.addEventListener("change", () => {
-    if (changePasswordCheckbox.checked) {
-      passwordFields.style.display = "block"; 
-    } else {
-      passwordFields.style.display = "none"; 
-    }
-  });
+ 
 
-  signUpForm.addEventListener("submit", (event) => {
-    event.preventDefault();
+  profileEditForm.addEventListener("submit", (event) => {
+    event.preventDefault(); 
 
+    const name = document.getElementById("profile-name").value.trim();
+    const email = document.getElementById("profile-email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
     const password = document.getElementById("profile-password").value.trim();
     const confirmPassword = document.getElementById("profile-confirmpassword").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    
-    errorMsg.innerHTML = ''; 
-   
-    let hasError = false;
 
-   
-    if (changePasswordCheckbox.checked) {
-      if (password === "") {
-        errorMsg.innerHTML = "Password is required.";
-        hasError = true;
-      } else if (password.length < 6) {
-        errorMsg.innerHTML = "Password must be at least 6 characters.";
-        hasError = true;
-      } else if (!/(?=.*[a-z])/.test(password)) {
-        errorMsg.innerHTML = "Password must contain at least one lowercase letter.";
-        hasError = true;
-      } else if (!/(?=.*[A-Z])/.test(password)) {
-        errorMsg.innerHTML = "Password must contain at least one uppercase letter.";
-        hasError = true;
-      } else if (!/(?=.*[0-9])/.test(password)) {
-        errorMsg.innerHTML = "Password must contain at least one number.";
-        hasError = true;
-      } else if (!/(?=.*[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>\/?])/.test(password)) {
-        errorMsg.innerHTML = "Password must contain at least one special character.";
-        hasError = true;
-      }
+    errorMsg.innerHTML = ""; 
 
-      if (confirmPassword === "") {
-        errorMsg.innerHTML = "Confirm password is required.";
-        hasError = true;
-      } else if (password !== confirmPassword) {
-        errorMsg.innerHTML = "Passwords do not match.";
-        hasError = true;
-      }
-    }
-
-    
-    if (phone === "") {
-      errorMsg.innerHTML = "Phone number is required.";
-      hasError = true;
-    } else if (!/^\d{10,15}$/.test(phone)) {
-      errorMsg.innerHTML = "Please enter a valid phone number (only digits, 10-15 characters).";
-      hasError = true;
-    }
-
-    
-    if (hasError) {
+    if (name === "") {
+      errorMsg.innerHTML = "Name is required.";
       return;
     }
 
-  
-    signUpForm.submit();
+   
+   
+    // Phone validation
+    if (phone === "") {
+      errorMsg.innerHTML = "Phone number is required.";
+      return;
+    }
+    const phoneRegex = /^\d{10,15}$/;
+    if (!phoneRegex.test(phone)) {
+      errorMsg.innerHTML = "Please enter a valid phone number (only digits, 10-15 characters).";
+      return;
+    }
+
+    // Password validation (if checkbox is checked)
+    if (changePasswordCheckbox.checked) {
+      if (password === "") {
+        errorMsg.innerHTML = "Password is required.";
+        return;
+      }
+      if (password.length < 6) {
+        errorMsg.innerHTML = "Password must be at least 6 characters.";
+        return;
+      }
+      if (!/(?=.*[a-z])/.test(password)) {
+        errorMsg.innerHTML = "Password must contain at least one lowercase letter.";
+        return;
+      }
+      if (!/(?=.*[A-Z])/.test(password)) {
+        errorMsg.innerHTML = "Password must contain at least one uppercase letter.";
+        return;
+      }
+      if (!/(?=.*[0-9])/.test(password)) {
+        errorMsg.innerHTML = "Password must contain at least one number.";
+        return;
+      }
+      if (!/(?=.*[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>\/?])/.test(password)) {
+        errorMsg.innerHTML = "Password must contain at least one special character.";
+        return;
+      }
+      if (confirmPassword === "") {
+        errorMsg.innerHTML = "Confirm password is required.";
+        return;
+      }
+      if (password !== confirmPassword) {
+        errorMsg.innerHTML = "Passwords do not match.";
+        return;
+      }
+    }
+
+    // Submit the form if no errors
+    profileEditForm.submit();
   });
 });
 
-function selectAddress(selectedCheckbox) {
-
-      const checkboxes = document.querySelectorAll('.address-checkbox');
-      
-      checkboxes.forEach(checkbox => {
-
-        if (checkbox !== selectedCheckbox) {
-          checkbox.checked = false;
-        }
-      });
-    }
+function togglePasswordFields() {
+  const changePasswordCheckbox = document.getElementById('changePassword');
+  const passwordFields = document.getElementById('passwordFields');
+  
+  if (changePasswordCheckbox.checked) {
+    passwordFields.style.display = 'block'; // Show the password fields
+  } else {
+    passwordFields.style.display = 'none'; // Hide the password fields
+  }
+}
 
 function populateModal(event) {
   
@@ -1288,7 +1321,7 @@ function populateModal(event) {
   const modal = new bootstrap.Modal(document.getElementById('editAddressModal'));
   modal.show();
 }
-  </script>
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

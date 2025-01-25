@@ -50,11 +50,12 @@
                   <td><%= user?.createdAt.toISOString().split('T')[0] %></td>
                   <td>
                   
-                    <button 
-                    class="btn btn-danger btn-sm" 
-                    onclick="toggleProductStatus('<%= user?._id %>', <%= user.isBan %>  )">
-                    <%= user.isBan ? 'unblock' : 'Block' %>
-                  </button>
+                          <button 
+                        class="btn <%= user?.isDeleted ? 'btn-secondary' : user?.isBan ? 'btn-success' : 'btn-danger' %> btn-sm" 
+                        onclick="toggleProductStatus('<%= user?._id %>', <%= user.isBan %>)">
+                        <%= user.isBan ? 'Unblock' : 'Block' %>
+                      </button>
+
                   </td>
                 </tr>
               <% }); %>

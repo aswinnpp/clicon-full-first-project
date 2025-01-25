@@ -34,7 +34,7 @@
     <link rel="stylesheet" href="assets/css/plugins/magnific-popup/magnific-popup.css">
     <link rel="stylesheet" href="assets/css/plugins/jquery.countdown.css">
     <!-- Main CSS File -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="assets/css/skins/skin-demo-4.css">
     <link rel="stylesheet" href="assets/css/demos/demo-4.css">
     <style>
@@ -58,21 +58,21 @@
   object-fit: cover; 
 }
 
-
     </style>
 </head>
 
 <body>
     <div class="page-wrapper">
+        
         <header class="header header-intro-clearance header-4">
             <div class="header-top">
                 <div class="container">
                     <div class="header-left">
                         <a href="tel:#"><i class="icon-phone"></i>Call: +0123 456 789</a>
                     </div><!-- End .header-left -->
-
+        
                     <div class="header-right">
-
+        
                         <ul class="top-menu">
                             <li>
                                 <a href="#">Links</a>
@@ -100,7 +100,7 @@
                                             </div><!-- End .header-menu -->
                                         </div>
                                     </li>
-
+        
                                     <% if(user){%>
                                         <li><a href="/logout">Logout</a></li>
                                   <%  }else{%>
@@ -110,14 +110,14 @@
                                 </ul>
                             </li>
                         </ul><!-- End .top-menu -->
-
+        
                        
-
+        
                     </div><!-- End .header-right -->
                     
                 </div><!-- End .container -->
             </div><!-- End .header-top -->
-
+        
             <div class="header-middle">
                 <div class="container">
                     <div class="header-left">
@@ -132,7 +132,7 @@
                               </h2>
                         </a>
                     </div><!-- End .header-left -->
-
+        
                     <div class="header-center">
                         <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
                             <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
@@ -145,7 +145,7 @@
                             </form>
                         </div><!-- End .header-search -->
                     </div>
-
+        
                     <div class="header-right">
                         <div class="compare-dropdown">
                             <a href="#" title="Compare Products" aria-label="Compare Products">
@@ -156,7 +156,7 @@
                             </a>
                         </div>
                         <!-- End .compare-dropdown -->
-
+        
                         <div class="wishlist">
                             <a href="/wishlist" title="Wishlist">
                                 <div class="icon">
@@ -166,7 +166,7 @@
                                 <p>Wishlist</p>
                             </a>
                         </div><!-- End .compare-dropdown -->
-
+        
                         <div class="cart-dropdown">
                             <a href="/cart" class="dropdown-toggle" role="button" data-display="static">
                                 <div class="icon">
@@ -177,52 +177,54 @@
                         </div><!-- End .cart-dropdown -->
                         
                        
-                        <div style="margin-left: 30px; height: 50px; width: 50px; " class="profile-container">
-
+                        <div style="margin-left: 30px; height: 50px; width: 50px;" class="profile-container">
                             <a href="<%= userr?._id ? `/profile/${userr._id}` : '/signin' %>" id="userProfileLink">
                                 <% if (userr && userr.image) { %>
-                                    
-                                    <img style=" border-radius: 50%;" src="<%= userr.image %>" alt="Profile Image">
-                                  <% } else { %>
-                                   
-                                    <img style=" border-radius: 50%;" src="/images/profile.avif" alt="Default Profile Image">
-                                  <% } %>
-                                  
-                                  
+                                  <img 
+                                    style="border-radius: 50%; width: 50px; height: 50px; object-fit: cover;" 
+                                    src="<%- userr.image %>" 
+                                    alt="Profile Image" 
+                                    onerror="console.error('Error loading image:', this.src); this.src='/images/profile.avif';">
+                                <% } else { %>
+                                  <img 
+                                    style="border-radius: 50%; width: 50px; height: 50px; object-fit: cover;" 
+                                    src="/images/profile.avif" 
+                                    alt="Default Profile Image">
+                                <% } %>
                               </a>
                               
-                           
+                              
                         </div>
                         
-
+        
                          
-
+        
                     </div><!-- End .header-right -->
-
-
+        
+        
                     
                 </div><!-- End .container -->
-
-
+        
+        
                 
             </div><!-- End .header-middle -->
-
+        
             <div class="header-bottom sticky-header">
                 <div class="container">
-
+        
                     <div class="header-left">
                         <div class="dropdown category-dropdown">
                             <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Browse Categories">
                                 Browse Categories <i class="icon-angle-down"></i>
                             </a>
-
+        
                             <div class="dropdown-menu">
                                 <nav class="side-nav">
                                     <% category.forEach(Categories =>{%>
                                         <ul class="menu-vertical sf-arrows">
                                             <li class="item-lead"><a href="#"><%= Categories?.name %></a></li>
                                             </ul>
-
+        
                                    <% })%>
                                     
                                
@@ -232,27 +234,27 @@
                         </div>
                         
                     </div>
-
+        
                     <div class="header-center">
-
+        
                         <nav class="main-nav" style="display: flex; align-items: center;">
                             <ul class="menu" style="list-style: none; display: flex; align-items: center; margin: 0; padding: 0; width: 100%;">
                                 <li class="megamenu-container active" style="margin: 0 10px;">
-                                    <a href="/" class="sf-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Home</a>
+                                    <a href="/" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Home</a>
                                 </li>
                                 <li style="margin: 0 10px;">
-                                    <a href="/productlist" class="sf-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Shop</a>
+                                    <a href="/productlist" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Shop</a>
                                 </li>
                                 <li style="margin: 0 10px;">
-                                    <a href="blog.html" class="sf-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">About</a>
+                                    <a href="blog.html" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">About</a>
                                 </li>
                                 <li style="margin: 0 10px;">
-                                    <a href="elements-list.html" class="sf-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Contact</a>
+                                    <a href="elements-list.html" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Contact</a>
                                 </li>
                               
                             </ul>
                         </nav>
-
+        
                     </div>
                     <!-- End .header-center -->
                     
@@ -261,11 +263,12 @@
                     </div>
                 </div><!-- End .container -->
             </div><!-- End .header-bottom -->
-
-
-
-
-        </header><!-- End .header -->
+        
+        
+        
+        
+        </header>
+        <!-- End .header -->
 
         <main class="main">
             <div class="intro-slider-container mb-5">
@@ -273,6 +276,8 @@
                     data-owl-options='{
                         "dots": true,
                         "nav": false, 
+                        "autoplay": true,
+                        "autoplayTimeout": 3000,
                         "responsive": {
                             "1200": {
                                 "nav": true,
@@ -605,44 +610,59 @@
                             <% product.forEach(product=> {%>
                                 <% if (product.category && product.category.toLowerCase() === 'audio') { %>
 
-                                    <div class="product product-2">
+                                    <div class="product product-2 d-flex flex-column">
                                         <figure class="product-media">
                                             <span class="product-label label-circle label-top">Top</span>
                                             <a href="http://localhost:3000/productview/<%= product._id %>">
-                                                <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
+                                                <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image img-fluid">
                                             </a>
-        
+                                    
                                             <div class="product-action-vertical">
                                                 <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
                                             </div><!-- End .product-action -->
-        
+                                    
                                             <div class="product-action">
                                                 <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
                                                 <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
                                             </div><!-- End .product-action -->
                                         </figure><!-- End .product-media -->
-        
-                                        <div class="product-body">
-                                            <div class="product-cat">
-                                                <a href="#"><%= product.category %></a>
-                                            </div><!-- End .product-cat -->
-                                            <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
-                                            <div class="product-price">
-                                               <%= product.price %>
-                                            </div><!-- End .product-price -->
-    
-                                            <div class="product-price">
-                                                <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
-                                             </div>
-    
-                                            <div class="ratings-container">
+                                    
+                                        <!-- Product Body -->
+                                        <div class="product-body d-flex flex-column justify-content-between" >
+                                            <!-- Top Section -->
+                                            <div>
+                                                <!-- Category -->
+                                                <div class="product-cat">
+                                                    <a href="#"><%= product.category %></a>
+                                                </div><!-- End .product-cat -->
+                                    
+                                                <!-- Title -->
+                                                <h3 class="product-title">
+                                                    <a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a>
+                                                </h3><!-- End .product-title -->
+                                            </div>
+                                    
+                                            <!-- Middle Section: Prices -->
+                                            <div>
+                                                <div class="product-price">
+                                                    <%= product.price %>
+                                                </div><!-- End .product-price -->
+                                    
+                                                <div class="product-price">
+                                                    <%= product.offer %> <p style="color: green; font-size: larger;">Off</p>
+                                                </div>
+                                            </div>
+                                    
+                                            <!-- Bottom Section: Ratings -->
+                                            <div class="ratings-container mt-auto">
                                                 <div class="ratings">
                                                     <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
                                                 </div><!-- End .ratings -->
                                                 <span class="ratings-text"><%= product.rating %></span>
-                                            </div><!-- End .rating-container -->
+                                            </div><!-- End .ratings-container -->
                                         </div><!-- End .product-body -->
                                     </div>
+                                    
                                <% } %>
                                 
                             

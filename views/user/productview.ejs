@@ -199,28 +199,25 @@
                         <!-- </div>End .category-dropdown -->
                     </div><!-- End .header-left -->
                     <div class="header-center">
+
                         <nav class="main-nav" style="display: flex; align-items: center;">
                             <ul class="menu" style="list-style: none; display: flex; align-items: center; margin: 0; padding: 0; width: 100%;">
-                                <li class="megamenu-container active" style="margin: 0 10px;">
-                                    <a href="/" class="sf-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Home</a>
+                                <li  style="margin: 0 10px;">
+                                    <a href="/" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Home</a>
+                                </li>
+                                <li style="margin: 0 10px;" class="megamenu-container active">
+                                    <a href="/productlist" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Shop</a>
                                 </li>
                                 <li style="margin: 0 10px;">
-                                    <a href="/productlist" class="sf-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Shop</a>
+                                    <a href="blog.html" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">About</a>
                                 </li>
                                 <li style="margin: 0 10px;">
-                                    <a href="blog.html" class="sf-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">About</a>
+                                    <a href="elements-list.html" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Contact</a>
                                 </li>
-                                <li style="margin: 0 10px;">
-                                    <a href="elements-list.html" class="sf-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Contact</a>
-                                </li>
-                                <!-- Icon item -->
-                                <!-- <li class="icon-item" style="margin-left: auto;">
-                                    <a href="/profile" style="text-decoration: none; color: #000;">
-                                        <i class="bi bi-person-circle" style="font-size: 24px; color: #030303; cursor: pointer;"></i>
-                                    </a>
-                                </li> -->
+                              
                             </ul>
                         </nav>
+
                     </div>
 
                     <div class="header-right">
@@ -304,17 +301,14 @@
                               
                                     <!-- Color Options -->
                                     <div class="details-filter-row details-row-size">
-                                      <label>Color:</label>
-                                      <div class="filter-colors">
-                                        <a href="#" style="background: #b87145;"><span class="sr-only">Color Name</span></a>
-                                        <a href="#" style="background: #f0c04a;"><span class="sr-only">Color Name</span></a>
-                                        <a href="#" style="background: #333333;"><span class="sr-only">Color Name</span></a>
-                                        <a href="#" class="selected" style="background: #cc3333;"><span class="sr-only">Color Name</span></a>
-                                        <a href="#" style="background: #3399cc;"><span class="sr-only">Color Name</span></a>
-                                        <a href="#" style="background: #669933;"><span class="sr-only">Color Name</span></a>
-                                        <a href="#" style="background: #f2719c;"><span class="sr-only">Color Name</span></a>
-                                        <a href="#" style="background: #ebebeb;"><span class="sr-only">Color Name</span></a>
-                                    </div>
+                                         <span>Available Color:</span>
+                                        <div  class="filter-colors">
+                                          <% for (let i = 0; i < product[0].color.length; i++) { %>
+                                            <a href="#" style="background: <%= product[0].color[i].toLowerCase() %>;">
+                                              <span  class="sr-only"><%= product[0].color[i] %></span>
+                                            </a>
+                                          <% } %>
+                                        </div>
                                       </div>
                                     </div>
                               

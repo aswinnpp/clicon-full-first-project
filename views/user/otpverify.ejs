@@ -51,7 +51,7 @@
         <form action="/otp" method="POST" id="otpForm">
           <!-- OTP Input -->
           <div class="mb-3">
-            <p style="color: red">
+            <p  style="color: red">
               <%= typeof OTP !== 'undefined' ? OTP : '' %>
             </p>
             <label for="otp" class="form-label">Enter OTP</label>
@@ -61,7 +61,7 @@
               id="otp"
               name="otp"
               placeholder="Enter 6-digit OTP"
-              maxlength="6"
+              maxlength="10"
             />
           </div>
 
@@ -80,7 +80,7 @@
               id="timer"
               style="position: relative; left: 170px; color: blue"
             >
-              30
+              60
             </div>
           </div>
         </form>
@@ -99,10 +99,13 @@
           </button>
         </form>
 
-        
+        <p style="color: black; font-size: 16px; opacity: 0.5; text-align: center; margin: 10px 0;">
+          Resend the button after the timer ends.
+        </p>
       </div>
     </div>
   </div>
+  
 </div>
 
 <script>
@@ -113,15 +116,15 @@
     button.disabled = true;
     setTimeout(function () {
       button.disabled = false;
-    }, 32000);
+    }, 62000);
   }
 
   setTimeout(function () {
     button.disabled = false;
-  }, 32000);
+  }, 62000);
 
   function startTimer() {
-    let timeLeft = 30;
+    let timeLeft = 60;
 
     const interval = setInterval(function () {
       timerDisplay.textContent = timeLeft;

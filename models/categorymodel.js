@@ -12,7 +12,12 @@ const categorySchema = new Schema({
       enum: ['active', 'inactive'],
       default: 'active',
     },
-   
+    description:{
+      type:String,
+
+
+    }
+   ,
     isDeleted: {
       type: Boolean,
       default: false, 

@@ -15,15 +15,23 @@
     <h1 class="h2">Update Product Category</h1>
   </div>
 
+  
+
   <form action="/admin/categoryupdate" method="POST">
     
     <div class="mb-3">
 
-        <input type="hidden" name="id" value="<%= category?._id %>">
+        <input type="hidden" name="id" value="<%= category[0]?._id %>">
+        
         
       <label for="categoryName" class="form-label">Category Name</label>
-      <input type="text" class="form-control" id="categoryName" name="name" value="<%= category?.name %>" required>
+      <input type="text" class="form-control" id="categoryName" name="name" value="<%= category?.name %>" >
     </div>
+
+     <!-- <div>
+    <label for="categoryName" class="form-label">Description </label>
+      <input type="text" class="form-control" id="categoryName"  name="description" value="<%= category?.description %>" >
+    </div> -->
 
    
 

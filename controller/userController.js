@@ -4,6 +4,8 @@ const Address = require("../models/addressmodel")
 const Category = require("../models/categorymodel")
 const bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer');
+const path = require('path')
+const fs = require ('fs');
 const mongoose = require("mongoose")
 const dotenv = require('dotenv');
 const session = require("express-session");
@@ -27,7 +29,7 @@ const loadHome= async (req,res)=>{
        
       const userr = await userSchema.findOne({email})
 
-      console.log()
+      
 
      
      res.render('user/user_home',{ product, category,user,userr })
@@ -52,6 +54,10 @@ try {
 
   const id = req.params.product_id
   const objectId = new mongoose.Types.ObjectId(id);
+
+  if (!mongoose.Types.ObjectId.isValid(objectId)) {
+    return res.status(400).send('Invalid Product ID');
+}
 
 const allproduct =await Product.find({})
   const product = await Product.find({_id:objectId})
@@ -278,7 +284,7 @@ const transporter = nodemailer.createTransport({
 const resendOtp = async (req, res) => {
 
   try {
-    const  email  = req.session.details.email
+    const  email  = req.session.details?.email
    
     let newOtp;
     do {
@@ -290,7 +296,7 @@ const resendOtp = async (req, res) => {
     req.session.timestamp = Date.now();  
    
     
-
+console.log("resend otp",newOtp)
     
     await transporter.sendMail({
       from: process.env.GMAIL_USER,
@@ -302,7 +308,8 @@ const resendOtp = async (req, res) => {
    
   } catch (error) {
     console.error('Error resending OTP:', error);
-    res.status(500).json({ error: 'Failed to resend OTP. Try again.' });
+    req.flash("OTP","Enter email Again")
+    res.status(500).redirect("/otp");
   }
 };
 
@@ -447,6 +454,7 @@ const authsignin = async (req,res)=>{
   const data = req.body.data
   const email=data.email
   const user = await userSchema.findOne({email});
+  
   console.log(user);
 
   
@@ -520,7 +528,7 @@ const signIn = async (req, res) => {
         return res.redirect("/signin");
       }
       
-      if(user.isBan === true && user.password === ""){
+      if(user.isBan === true ){
         req.flash('error', 'User Banned By Admin !');
         return res.redirect("/signin");
       }
@@ -785,17 +793,25 @@ res.redirect(`/profile/${userId}`)
 
 const editProfile = async (req, res) => {
     try {
-        const { userId, name, email, password, phone } = req.body;
+        const { userId, name, email, password, phone, } = req.body;
 
-        console.log(phone)
+        console.log("00000000000000 ",req.file)
 
+
+                 
         const hashedPassword = await bcrypt.hash(password, 10);
       
         const user = await userSchema.findById(userId);
         console.log("user",user)
 
        
-        const images = req.file ? '/uploads/' + req.file.filename : undefined; 
+        let images;
+        if (req.file) {
+          const uploadPath = path.join(__dirname, '../uploads/', req.file.originalname);
+          fs.writeFileSync(uploadPath, req.file.buffer); 
+          images = '/uploads/' + req.file.originalname;  
+        }
+     
 
 
         // Update fields

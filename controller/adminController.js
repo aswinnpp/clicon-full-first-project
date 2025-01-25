@@ -5,6 +5,7 @@ const Category = require("../models/categorymodel")
 const path = require('path')
 const fs = require ('fs');
 const mongoose =require("mongoose")
+const { v4: uuidv4 } = require('uuid');
 const router = require("../routes/admin");
 
 
@@ -73,17 +74,17 @@ const loadUserManage = async (req, res) => {
 
     const message = req.flash("success");
     const page = parseInt(req.query.page) || 1;
-    const limit = 5;
+    const limit = 10;
     const skip = (page - 1) * limit; 
 
   
     const users = await User.find({role:'user'}).skip(skip).limit(limit);
-    const totalUsers = await Category.countDocuments();
+    const totalUsers = await User.countDocuments();
 
     const totalPages = Math.ceil(totalUsers / limit);
 
     
-
+console.log(totalPages)
   
     res.render("admin/usermanage", {
       users,
@@ -192,7 +193,7 @@ const loadProductManage = async (req, res) => {
   try {
     const message = req.flash("success");
     const page = parseInt(req.query.page) || 1;
-    const limit = 3;
+    const limit = 4;
     const skip = (page - 1) * limit; 
 
   
@@ -293,6 +294,8 @@ const productUpdate = async (req, res) => {
       images[u] = file.filename;
     }
 
+    let newcolor = color.split(',').map(c => c.trim())
+
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
       {
@@ -303,7 +306,7 @@ const productUpdate = async (req, res) => {
         price,
         stock,
         warranty,
-        color,
+        color:newcolor,
         description,
         rating,
         image: images,
@@ -337,6 +340,7 @@ const loadProductcreate = async (req, res) => {
     res.status(500).send("server error");
   }
 };
+
 const Productcreate = async (req, res) => {
   try {
     const { 
@@ -360,26 +364,32 @@ const Productcreate = async (req, res) => {
       isDeleted: false,
     });
 
+
+
    
-
-    let images = [];
-
-  
-
-
+  let images =[] 
     Object.keys(req.body).forEach((key) => {
       if (key.includes('_cropped')) {
         const base64Image = req.body[key];
-        const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, ''); 
-        const buffer = Buffer.from(base64Data, 'base64');
-        const filename = `image_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.png`;
-        const filepath = path.join(__dirname, '../uploads/', filename);
-        fs.writeFileSync(filepath, buffer);
-        images.push(filename); 
+    
+        
+        if (base64Image.startsWith('data:image/')) {
+          const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, '');
+          const buffer = Buffer.from(base64Data, 'base64');
+    
+          
+          const filename = `image_${uuidv4()}.png`;
+          const filepath = path.join(__dirname, '../uploads/', filename);
+    
+          fs.writeFileSync(filepath, buffer);
+    
+          images.push(filename);
+        }
       }
     });
 
-    
+    let newcolor = color.split(',').map(c => c.trim())
+
     const newProduct = new Product({
       productname,
       category,
@@ -389,7 +399,7 @@ const Productcreate = async (req, res) => {
       price,
       stock,
       warranty,
-      color,
+      color:newcolor,
       description,
       rating,
       ram,
@@ -457,7 +467,7 @@ const loadCategoryManage = async (req, res) => {
 
     const message = req.flash("success");
     const page = parseInt(req.query.page) || 1; 
-    const limit = 3; 
+    const limit = 4; 
     const skip = (page - 1) * limit; 
 
     const categories = await Category.find({}).skip(skip).limit(limit);
@@ -505,7 +515,7 @@ try {
 const categoryCreate = async (req,res)=>{
 try {
   
-const {id,name , status , count } = req.body 
+const {id,name , status , description } = req.body 
   
 const checkExist = await Category.find({ name: { $regex: new RegExp('^' + name + '$', 'i') } });
 
@@ -525,6 +535,7 @@ console.log(name,status,count,id)
 const newCategory = new Category({
   name, 
   status,
+  description
   
 });
 
@@ -569,20 +580,33 @@ const CategoryUpdate = async (req, res)=>{
 
 
 try {
-  const { name, status,  id } = req.body;
+  const { name, status,  id, description} = req.body;
+
 
   if (!id  || !mongoose.Types.ObjectId.isValid(id )) { 
     return res.status(404).render('admin/404')
    }
-    const updatedCategory = await Category.findOneAndUpdate(
+
+const exists = await Category.findOne({ name: { $regex: new RegExp('^' + name + '$', 'i') }})
+
+
+if (exists) {
+  // If a category with the same name exists, show a flash message
+  req.flash("success", "Category name already exists.");
+  return res.redirect('/admin/categorymanage');
+}
+
+
+const updatedCategory = await Category.findOneAndUpdate(
       { _id: id },  
-      { name, status },  
+      { name, status,description },  
       { new: true } 
     )
+
     if (!updatedCategory) {
-      return res.status(404).send("Category not found");
+      req.flash("success", "Category not  found");
+        return res.redirect('/admin/categorymanage')
     }
-    
     res.redirect('/admin/categorymanage')
 } catch (error) {
   

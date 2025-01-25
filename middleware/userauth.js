@@ -25,6 +25,7 @@ const checkSession = (req, res, next) => {
     try {
       
       if(req.session.details){
+        console.log("jjjjjjjjjjjjjjjjjjjjj",req.session.details)
         const email = req.session.details.email
         const user = await User.findOne({ email })
         if(user?.isBan===true){

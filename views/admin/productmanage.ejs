@@ -37,22 +37,15 @@
 
   <!-- Make the table responsive -->
   <div class="table-responsive">
-    <table class="table table-dark table-striped table-hover">
+    <table class="table table-white table-striped table-hover">
       <thead>
         <tr>
-          <th>no:</th>
-          <th>Category</th>
+          <th>no:</th>         
           <th>Name</th>
-          <!-- <th>Brand</th> -->
           <th>Offer</th>
           <th>Price</th>
-          <th>Stock</th>
           <th>Warranty</th>
           <th>Color</th>
-          <th>Ram</th>
-          <th>Storage</th>
-          <th>Description</th>
-          <th>Rating</th>
           <th>Images</th>
           <th>Actions</th>
         </tr>
@@ -60,22 +53,19 @@
       <tbody>
         <% if (products && products.length > 0) { %> <% for (let i = 0; i < products.length; i++) { %>
           <% const startIndex = (currentPage - 1) * limit  %>
-        <tr>
+        <tr  >
           <td><%= startIndex + i + 1 %></td>
-          <td><%= products[i]?.category %></td>
+       
           <td><%= products[i]?.productname %></td>
-          <!-- <td><%= products[i]?.brand %></td> -->
+        
           <td><%= products[i]?.offer %></td>
-          <td><%= products[i]?.price %></td>     
-          <td><%= products[i]?.stock %></td>
+          <td><%= products[i]?.price %></td>
+         
           <td><%= products[i]?.warranty %></td>
           <td><%= products[i]?.color %></td>
-          <td><%= products[i]?.ram %></td>
-          <td><%= products[i]?.storage %></td>
-          <td><%= products[i]?.description %></td>
-          <td><%= products[i]?.rating %></td>
+         
           <td>
-
+          
             <div class="d-flex flex-wrap gap-2">
               <% if (products[i]?.image && products[i]?.image?.length > 0) { %>
                 <img
@@ -128,6 +118,7 @@
   <div class="d-flex justify-content-center mt-3 pagination-container">
     <ul class="pagination">
       <!-- Previous button with left arrow -->
+       
       <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
         <a class="page-link" href="?page=<%= currentPage - 1 %>">←</a> <!-- Left Arrow -->
       </li>

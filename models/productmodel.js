@@ -12,11 +12,11 @@ const productSchema = new mongoose.Schema({
     trim: true,
   },
   ram: {
-    type: String, 
+    type: [String], 
     default:'nill'
   },
   storage: {
-    type: String,
+    type: [String],
     default:'nill' 
   },
   categoryId: {
@@ -55,7 +55,8 @@ const productSchema = new mongoose.Schema({
   },
   image: {
     type:[String]
-  }, isDeleted: {
+  },
+  isDeleted: {
     type: Boolean,
     default: false, 
   },
