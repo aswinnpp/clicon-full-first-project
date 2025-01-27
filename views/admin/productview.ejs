@@ -48,12 +48,12 @@
           <img
             id="mainProductImage"
             src="/uploads/<%= product[0]?.image[0] %>"
-            alt="<%= product[0].productname %>"
+            alt="<%= product[0]?.productname %>"
             class="product-img"
             style="width: 300px; height: 300px; object-fit: cover"
           />
         </div>
-        <h2><%= product[0].productname %></h2>
+        <h2><%= product[0]?.productname %></h2>
         <div class="product-info">
           <p><strong>Category:</strong> <%= product[0]?.category %></p>
           <p><strong>Price:</strong> ₹<%= product[0]?.price %></p>

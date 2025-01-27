@@ -391,39 +391,36 @@
 
             <div class="mb-3"></div><!-- End .mb-5 -->
 
+
             <div class="container new-arrivals">
                 <div class="heading heading-flex mb-3">
                     <div class="heading-left">
-                        <h2 class="title">New Arrivals</h2><!-- End .title -->
-                    </div><!-- End .heading-left -->
-
-                   <div class="heading-right">
+                        <h2 class="title">New Arrivals</h2>
+                    </div>
+            
+                    <!-- Dynamically Render Category Tabs -->
+                    <div class="heading-right">
                         <ul class="nav nav-pills nav-border-anim justify-content-center" role="tablist">
+                            <!-- Default 'All' Tab -->
                             <li class="nav-item">
                                 <a class="nav-link active" id="new-all-link" data-toggle="tab" href="#new-all-tab" role="tab" aria-controls="new-all-tab" aria-selected="true">All</a>
                             </li>
                             
-                            <li class="nav-item">
-                                <a class="nav-link" id="new-computers-link" data-toggle="tab" href="#new-computers-tab" role="tab" aria-controls="new-computers-tab" aria-selected="false">Computers</a>
-                            </li>
-                            
-                            <li class="nav-item">
-                                <a class="nav-link" id="new-watches-link" data-toggle="tab" href="#new-watches-tab" role="tab" aria-controls="new-watches-tab" aria-selected="false">Audio</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="new-acc-link" data-toggle="tab" href="#new-acc-tab" role="tab" aria-controls="new-acc-tab" aria-selected="false">Gaming</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link" id="new-phones-link" data-toggle="tab" href="#new-phones-tab" role="tab" aria-controls="new-phones-tab" aria-selected="false">Mobiles</a>
-                            </li>
-
+                            <!-- Dynamic Tabs for Categories -->
+                            <% category.forEach(category => { %>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="<%= category.id %>-link" data-toggle="tab" href="#<%= category.id %>-tab" role="tab" aria-controls="<%= category.id %>-tab" aria-selected="false">
+                                        <%= category.name %>
+                                    </a>
+                                </li>
+                            <% }); %>
                         </ul>
-                   </div><!-- End .heading-right -->
-                </div><!-- End .heading -->
-
+                    </div>
+                </div>
+            
+                <!-- Tab Content -->
                 <div class="tab-content tab-content-carousel just-action-icons-sm">
-                    <!-- All -->
+                    <!-- 'All' Products Tab -->
                     <div class="tab-pane p-0 fade show active" id="new-all-tab" role="tabpanel" aria-labelledby="new-all-link">
                         <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
                             data-owl-options='{
@@ -432,421 +429,126 @@
                                 "margin": 20,
                                 "loop": false,
                                 "responsive": {
-                                    "0": {
-                                        "items":2
-                                    },
-                                    "480": {
-                                        "items":2
-                                    },
-                                    "768": {
-                                        "items":3
-                                    },
-                                    "992": {
-                                        "items":4
-                                    },
-                                    "1200": {
-                                        "items":5
-                                    }
+                                    "0": { "items": 2 },
+                                    "480": { "items": 2 },
+                                    "768": { "items": 3 },
+                                    "992": { "items": 4 },
+                                    "1200": { "items": 5 }
                                 }
                             }'>
-
-                            <% product.forEach(product=> {%>
-                               
+                            <% product.forEach(product => { %>
                                 <div class="product product-2">
                                     <figure class="product-media">
                                         <span class="product-label label-circle label-top">Top</span>
                                         <a href="/productview/<%= product._id %>">
                                             <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
                                         </a>
-    
                                         <div class="product-action-vertical">
                                             <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
-                                        </div><!-- End .product-action -->
-    
+                                        </div>
                                         <div class="product-action">
                                             <form action="/cart" method="post">
-                                                <input type="hidden" name="productId" value="<%=product?._id %>">
+                                                <input type="hidden" name="productId" value="<%= product._id %>">
                                                 <input type="hidden" name="quantity" value="1">
-                                              
-                                                <button type="submit" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></button>
+                                                <button type="submit" class="btn-product btn-cart" style="width: 225px; border: none;" title="Add to cart">
+                                                    <span>Add to Cart</span>
+                                                </button>
                                             </form>
-                                           
-                                            <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                        </div><!-- End .product-action -->
-                                    </figure><!-- End .product-media -->
-    
+                                        </div>
+                                    </figure>
                                     <div class="product-body">
                                         <div class="product-cat">
                                             <a href="#"><%= product.category %></a>
-                                        </div><!-- End .product-cat -->
-                                        <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
+                                        </div>
+                                        <h3 class="product-title"><a href="/productview/<%= product._id %>"><%= product.productname %></a></h3>
                                         <div class="product-price">
-                                           <%= product.price %>
-                                        </div><!-- End .product-price -->
-
+                                            $<%= product.price %>
+                                        </div>
                                         <div class="product-price">
-                                            <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
-                                         </div>
-
-                                        
-
-
+                                            <%= product.offer %> <p style="color: green; font-size: larger;">Off</p>
+                                        </div>
                                         <div class="ratings-container">
                                             <div class="ratings">
-                                                <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                            </div><!-- End .ratings -->
-                                            <span class="ratings-text"><%= product.rating %></span>
-                                        </div><!-- End .rating-container -->
-                                    </div><!-- End .product-body -->
-                                </div>
-                            
-                            
-                            <%})%>
-                            <!-- End .product -->
-
-                        </div><!-- End .owl-carousel -->
-                    </div><!-- .End .tab-pane -->
-
-                
-                           <!-- computer -->
-                    <div class="tab-pane p-0 fade" id="new-computers-tab" role="tabpanel" aria-labelledby="new-computers-link">
-                        <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
-                            data-owl-options='{
-                                "nav": true, 
-                                "dots": true,
-                                "margin": 20,
-                                "loop": false,
-                                "responsive": {
-                                    "0": {
-                                        "items":2
-                                    },
-                                    "480": {
-                                        "items":2
-                                    },
-                                    "768": {
-                                        "items":3
-                                    },
-                                    "992": {
-                                        "items":4
-                                    },
-                                    "1200": {
-                                        "items":5
-                                    }
-                                }
-                            }'>
-                              <% product.forEach(product=> {%>
-                                <% if (product.category && product.category.toLowerCase() === 'computers') { %>
-
-                                    <div class="product product-2">
-                                        <figure class="product-media">
-                                            <span class="product-label label-circle label-top">Top</span>
-                                            <a href="http://localhost:3000/productview/<%= product._id %>">
-                                                <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
-                                            </a>
-        
-                                            <div class="product-action-vertical">
-                                                <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
-                                            </div><!-- End .product-action -->
-        
-                                            <div class="product-action">
-                                                <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                            </div><!-- End .product-action -->
-                                        </figure><!-- End .product-media -->
-        
-                                        <div class="product-body">
-                                            <div class="product-cat">
-                                                <a href="#"><%= product.category %></a>
-                                            </div><!-- End .product-cat -->
-                                            <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
-                                            <div class="product-price">
-                                               <%= product.price %>
-                                            </div><!-- End .product-price -->
-    
-                                            <div class="product-price">
-                                                <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
-                                             </div>
-    
-                                            <div class="ratings-container">
-                                                <div class="ratings">
-                                                    <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                                </div><!-- End .ratings -->
-                                                <span class="ratings-text"><%= product.rating %></span>
-                                            </div><!-- End .rating-container -->
-                                        </div><!-- End .product-body -->
+                                                <div class="ratings-val" style="width: <%= product.rating * 20 %>%;"></div>
+                                            </div>
+                                            <span class="ratings-text"><%= product.rating %> </span>
+                                        </div>
                                     </div>
-                               <% } %>
-                                
-                            
-                            
-                            <%})%>
-
-                            
-                        </div><!-- End .owl-carousel -->
-                    </div><!-- .End .tab-pane -->
-                   
-
-                    <!-- audio -->
-                    <div class="tab-pane p-0 fade" id="new-watches-tab" role="tabpanel" aria-labelledby="new-watches-link">
-                        <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
-                            data-owl-options='{
-                                "nav": true, 
-                                "dots": true,
-                                "margin": 20,
-                                "loop": false,
-                                "responsive": {
-                                    "0": {
-                                        "items":2
-                                    },
-                                    "480": {
-                                        "items":2
-                                    },
-                                    "768": {
-                                        "items":3
-                                    },
-                                    "992": {
-                                        "items":4
-                                    },
-                                    "1200": {
-                                        "items":5
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+            
+                    <!-- Dynamic Category-Specific Tabs -->
+                    <% category.forEach(category => { %>
+                        
+                        <div class="tab-pane p-0 fade" id="<%= category.id %>-tab" role="tabpanel" aria-labelledby="<%= category.id %>-link">
+                            <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
+                                data-owl-options='{
+                                    "nav": true, 
+                                    "dots": true,
+                                    "margin": 20,
+                                    "loop": false,
+                                    "responsive": {
+                                        "0": { "items": 2 },
+                                        "480": { "items": 2 },
+                                        "768": { "items": 3 },
+                                        "992": { "items": 4 },
+                                        "1200": { "items": 5 }
                                     }
-                                }
-                            }'>
-
-                            <% product.forEach(product=> {%>
-                                <% if (product.category && product.category.toLowerCase() === 'audio') { %>
-
-                                    <div class="product product-2 d-flex flex-column">
-                                        <figure class="product-media">
-                                            <span class="product-label label-circle label-top">Top</span>
-                                            <a href="http://localhost:3000/productview/<%= product._id %>">
-                                                <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image img-fluid">
-                                            </a>
-                                    
-                                            <div class="product-action-vertical">
-                                                <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
-                                            </div><!-- End .product-action -->
-                                    
-                                            <div class="product-action">
-                                                <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                            </div><!-- End .product-action -->
-                                        </figure><!-- End .product-media -->
-                                    
-                                        <!-- Product Body -->
-                                        <div class="product-body d-flex flex-column justify-content-between" >
-                                            <!-- Top Section -->
-                                            <div>
-                                                <!-- Category -->
+                                }'>
+                                
+                                <% product.forEach((product, ind) => { %>
+                                    <% if (product.category && product.category.toLowerCase() === category.name.toLowerCase()) { %>
+                                         
+                                        
+                                        <div class="product product-2">
+                                            <figure class="product-media">
+                                                <span class="product-label label-circle label-top">Top</span>
+                                                <a href="/productview/<%= product._id %>">
+                                                    <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
+                                                </a>
+                                                <div class="product-action-vertical">
+                                                    <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
+                                                </div>
+                                                <div class="product-action">
+                                                    <form action="/cart" method="post">
+                                                        <input type="hidden" name="productId" value="<%= product._id %>">
+                                                        <input type="hidden" name="quantity" value="1">
+                                                        <button type="submit" class="btn-product btn-cart" style="width: 225px; border: none;" title="Add to cart">
+                                                            <span>Add to Cart</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </figure>
+                                            <div class="product-body">
                                                 <div class="product-cat">
                                                     <a href="#"><%= product.category %></a>
-                                                </div><!-- End .product-cat -->
-                                    
-                                                <!-- Title -->
-                                                <h3 class="product-title">
-                                                    <a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a>
-                                                </h3><!-- End .product-title -->
-                                            </div>
-                                    
-                                            <!-- Middle Section: Prices -->
-                                            <div>
+                                                </div>
+                                                <h3 class="product-title"><a href="/productview/<%= product._id %>"><%= product.productname %></a></h3>
                                                 <div class="product-price">
-                                                    <%= product.price %>
-                                                </div><!-- End .product-price -->
-                                    
+                                                    $<%= product.price %>
+                                                </div>
                                                 <div class="product-price">
                                                     <%= product.offer %> <p style="color: green; font-size: larger;">Off</p>
                                                 </div>
+                                                <div class="ratings-container">
+                                                    <div class="ratings">
+                                                        <div class="ratings-val" style="width: <%= product.rating * 20 %>%;"></div>
+                                                    </div>
+                                                    <span class="ratings-text"><%= product.rating %> </span>
+                                                </div>
                                             </div>
-                                    
-                                            <!-- Bottom Section: Ratings -->
-                                            <div class="ratings-container mt-auto">
-                                                <div class="ratings">
-                                                    <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                                </div><!-- End .ratings -->
-                                                <span class="ratings-text"><%= product.rating %></span>
-                                            </div><!-- End .ratings-container -->
-                                        </div><!-- End .product-body -->
-                                    </div>
-                                    
-                               <% } %>
-                                
-                            
-                            
-                            <%})%>
-                         
-                        </div><!-- End .owl-carousel -->
-                    </div><!-- .End .tab-pane -->
-
-                      <!-- Gaming -->
-
-                    <div class="tab-pane p-0 fade" id="new-acc-tab" role="tabpanel" aria-labelledby="new-acc-link">
-        <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
-            data-owl-options='{
-                "nav": true, 
-                "dots": true,
-                "margin": 20,
-                "loop": false,
-                "responsive": {
-                    "0": {
-                        "items":2
-                    },
-                    "480": {
-                        "items":2
-                    },
-                    "768": {
-                        "items":3
-                    },
-                    "992": {
-                        "items":4
-                    },
-                    "1200": {
-                        "items":5
-                    }
-                }
-            }'>
-
-
-            <% product.forEach(product=> {%>
-                <% if (product.category && product.category.toLowerCase() === 'gaming') { %>
-
-                    <div class="product product-2">
-                        <figure class="product-media">
-                            <span class="product-label label-circle label-top">Top</span>
-                            <a href="http://localhost:3000/productview/<%= product._id %>">
-                                <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
-                            </a>
-
-                            <div class="product-action-vertical">
-                                <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
-                            </div><!-- End .product-action -->
-
-                            <div class="product-action">
-                                <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                            </div><!-- End .product-action -->
-                        </figure><!-- End .product-media -->
-
-                        <div class="product-body">
-                            <div class="product-cat">
-                                <a href="#"><%= product.category %></a>
-                            </div><!-- End .product-cat -->
-                            <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
-                            <div class="product-price">
-                               <%= product.price %>
-                            </div><!-- End .product-price -->
-
-                            <div class="product-price">
-                                <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
-                             </div>
-
-                            <div class="ratings-container">
-                                <div class="ratings">
-                                    <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                </div><!-- End .ratings -->
-                                <span class="ratings-text"><%= product.rating %></span>
-                            </div><!-- End .rating-container -->
-                        </div><!-- End .product-body -->
-                    </div>
-               <% } %>
-                
+                                        </div>
+                                    <% } %>
+                                <% }); %>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
             
             
-            <%})%>
-           
-        </div><!-- End .owl-carousel -->
-                    </div><!-- .End .tab-pane -->
-
-
-
-
-
-
-
-
-                    <div class="tab-pane p-0 fade" id="new-phones-tab" role="tabpanel" aria-labelledby="new-phones-link">
-                        <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
-                            data-owl-options='{
-                                "nav": true, 
-                                "dots": true,
-                                "margin": 20,
-                                "loop": false,
-                                "responsive": {
-                                    "0": {
-                                        "items":2
-                                    },
-                                    "480": {
-                                        "items":2
-                                    },
-                                    "768": {
-                                        "items":3
-                                    },
-                                    "992": {
-                                        "items":4
-                                    },
-                                    "1200": {
-                                        "items":5
-                                    }
-                                }
-                            }'>
-
-                            <% product.forEach(product=> {%>
-                                <% if (product.category && product.category.toLowerCase() === 'mobiles') { %>
-
-                                    <div class="product product-2">
-                                        <figure class="product-media">
-                                            <span class="product-label label-circle label-top">Top</span>
-                                            <a href="http://localhost:3000/productview/<%= product._id %>">
-                                                <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
-                                            </a>
-        
-                                            <div class="product-action-vertical">
-                                                <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
-                                            </div><!-- End .product-action -->
-        
-                                            <div class="product-action">
-                                                <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                            </div><!-- End .product-action -->
-                                        </figure><!-- End .product-media -->
-        
-                                        <div class="product-body">
-                                            <div class="product-cat">
-                                                <a href="#"><%= product.category %></a>
-                                            </div><!-- End .product-cat -->
-                                            <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
-                                            <div class="product-price">
-                                               <%= product.price %>
-                                            </div><!-- End .product-price -->
-    
-                                            <div class="product-price">
-                                                <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
-                                             </div>
-    
-                                            <div class="ratings-container">
-                                                <div class="ratings">
-                                                    <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                                </div><!-- End .ratings -->
-                                                <span class="ratings-text"><%= product.rating %></span>
-                                            </div><!-- End .rating-container -->
-                                        </div><!-- End .product-body -->
-                                    </div>
-                               <% } %>
-                                
-                            
-                            
-                            <%})%>
-
-
-                           
-                        </div><!-- End .owl-carousel -->
-                    </div><!-- .End .tab-pane -->
-
-
-                 
-
-                </div><!-- End .tab-content -->
-            </div><!-- End .container -->
 
             <div class="mb-6"></div><!-- End .mb-6 -->
 
@@ -1010,8 +712,14 @@
                                     </div><!-- End .product-action -->
 
                                     <div class="product-action">
-                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                                        <form action="/cart" method="post" id="addToCartForm" >
+                                            <input type="hidden" name="productId" value="<%=product?._id %>">
+                                            <input type="hidden" name="quantity" value="1">
+                                          
+                                            <button type="submit" class="btn-product btn-cart " style="width: 275px; border: none;" title="Add to cart"><span>add to cart</span></button>
+                                        </form>
+                                       
+                                       
                                     </div><!-- End .product-action -->
                                 </figure><!-- End .product-media -->
 
@@ -1029,12 +737,13 @@
                                         <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
                                      </div>
                                      
-                                    <div class="ratings-container">
+                                     <div class="ratings-container">
                                         <div class="ratings">
-                                            <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                        </div><!-- End .ratings -->
-                                        <span class="ratings-text"><%= product.rating %></span>
-                                    </div><!-- End .rating-container -->
+                                            <div class="ratings-val" style="width: <%= product.rating * 20 %>%;"></div>
+                                        </div>
+                                        <span class="ratings-text"><%= product.rating %> </span>
+                                    </div>
+
                                 </div><!-- End .product-body -->
 
 

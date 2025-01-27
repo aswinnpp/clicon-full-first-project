@@ -14,7 +14,7 @@
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Update Product</h1>
   </div>
-  <p id="valid"></p>
+  <p id="valid" style="color: red;">...</p>
   <form action="/admin/productupdate" method="POST" id="productForm" enctype="multipart/form-data">
 
    
@@ -35,11 +35,7 @@
     
     
    
-    <!-- <div class="mb-3">
-      <label for="brand" class="form-label">Brand</label>     
-      <input type="text" class="form-control" id="brand" name="brand"  value="<%=products?.brand%>"  required>
-    </div> -->
-
+   
     <div class="mb-3">
       <label for="offer" class="form-label">Offer</label>     
       <input type="text" class="form-control" id="brand" name="offer" value="<%=products?.offer%>"  required>
@@ -65,19 +61,19 @@
       <label for="categoryStatus" class="form-label">Category</label>
       <select class="form-control" id="categoryStatus" name="category" required onchange="handleCategoryChange()">
         <option value="" disabled>Select Category</option>
-        <% categories.forEach(category => { %>
+        <% categories?.forEach(category => { %>
           <!-- Pre-select the category based on the current product's category -->
-          <option value="<%= category?.name %>" <%= products.category === category?.name ? 'selected' : '' %>><%= category.name %></option>
+          <option value="<%= category?.name %>" <%= products?.category === category?.name ? 'selected' : '' %>><%= category?.name %></option>
         <% }) %>
       </select>
     </div>
     
-    <div class="mb-3" id="ramField" style="<%= products.category === 'Mobile' || products.category === 'Computer' ? '' : 'display: none;' %>;">
+    <div class="mb-3" id="ramField" style="<%= products?.category === 'Mobile' || products?.category === 'Computer' ? '' : 'display: none;' %>;">
       <label for="ram" class="form-label">RAM</label>
       <input type="text" class="form-control" id="ram" name="ram" placeholder="Enter RAM size" value="<%= products?.ram || '' %>">
     </div>
     
-    <div class="mb-3" id="storageField" style="<%= products.category === 'Mobile' || products.category === 'Computer' ? '' : 'display: none;' %>;">
+    <div class="mb-3" id="storageField" style="<%= products?.category === 'Mobile' || products?.category === 'Computer' ? '' : 'display: none;' %>;">
       <label for="storage" class="form-label">Storage</label>
       <input type="text" class="form-control" id="storage" name="storage" placeholder="Enter Storage size" value="<%= products?.storage || '' %>">
     </div>
@@ -101,25 +97,25 @@
         <div class="col-md-4 mb-3">
           <div class="image-card">
             <img src="/uploads/<%= products?.image[0] %>" alt="Placeholder Image" id="imagePreview1" required>
-            <input value="<%= products.image[0] %>" type="file" name="image0" accept="image/*"  required onchange="handleImageUpload(event, 'imagePreview1')">
+            <input value="<%= products?.image[0] %>" type="file" name="image0" accept="image/*"  required onchange="handleImageUpload(event, 'imagePreview1')">
           </div>
         </div>
         <div class="col-md-4 mb-3">
           <div class="image-card">
             <img src="/uploads/<%= products?.image[1] %>" alt="Placeholder Image" id="imagePreview2" required>
-            <input   value="<%= products.image[1] %>" type="file" name="image1" accept="image/*" required  onchange="handleImageUpload(event, 'imagePreview2')">
+            <input   value="<%= products?.image[1] %>" type="file" name="image1" accept="image/*" required  onchange="handleImageUpload(event, 'imagePreview2')">
           </div>
         </div>
         <div class="col-md-4 mb-3">
           <div class="image-card">
             <img src="/uploads/<%= products?.image[2] %>" alt="Placeholder Image" id="imagePreview3" required >
-            <input  value="<%= products.image[2] %>" type="file" name="image2" accept="image/*"  required onchange="handleImageUpload(event, 'imagePreview3')">
+            <input  value="<%= products?.image[2] %>" type="file" name="image2" accept="image/*"  required onchange="handleImageUpload(event, 'imagePreview3')">
          </div>
          </div>
          <div class="col-md-4 mb-3">
           <div class="image-card">
             <img src="/uploads/<%= products?.image[3] %>" alt="Placeholder Image" id="imagePreview4" required>
-            <input  value="<%= products.image[3] %>" type="file" name="image3" accept="image/*" required  onchange="handleImageUpload(event, 'imagePreview4')">
+            <input  value="<%= products?.image[3] %>" type="file" name="image3" accept="image/*" required  onchange="handleImageUpload(event, 'imagePreview4')">
          </div>
          </div>
       </div>
@@ -140,7 +136,7 @@
     <small class="form-text text-muted">You must upload exactly 4 images.</small>
     <div class="text-danger" id="errorImages"></div>
 
-    <button type="submit" onclick="form.submit()" class="btn btn-primary" >Update</button>
+    <button type="submit"  id="sub" class="btn btn-primary" >Update</button>
 
   </form>
 </main>
@@ -253,31 +249,107 @@
 
 <script>
 
-document.addEventListener('DOMContentLoaded', (event) => {
+
+document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('productForm');
+    const button = document.getElementById('sub');
+
+    button.addEventListener("click", (event) => {
+        event.preventDefault(); 
+        const errorMsg = document.getElementById('valid');
+        errorMsg.innerHTML = '';
+
+        let isValid = true; 
+        
+        const productName = document.getElementById('productname').value.trim();
+        if (productName === "") {
+            isValid = false;
+            displayError("Product name is required.");
+        }
+
+        const description = document.getElementById('description').value.trim();
+        if (description === "") {
+            isValid = false;
+            displayError("Description is required.");
+        }
 
 
-form.addEventListener('submit', async (event) => {
-   event.preventDefault();
-   const formData = new FormData(form);
-   const files = formData.getAll('images');
-   const maxSize = 5 * 1024 * 1024; 
+        const offer = document.getElementById('brand').value.trim();
+        if (offer === "") {
+            isValid = false;
+            displayError("Offer is required.");
+        }
 
-   for (const file of files) {
-       if (file.size > maxSize) {
-           Swal.fire({
-               icon: 'error',
-               title: 'Image Size Error',
-               text: 'Each image must be less than 5MB.',
-           });
-           return;
-       }
-   }
+
+        const stock = document.getElementById('stock').value.trim();
+        if (stock === "" || isNaN(stock) || stock < 0) {
+            isValid = false;
+            displayError("Stock must be a non-negative number.");
+        }
+
+      
+        const warranty = document.getElementById('warranty').value.trim();
+        if (warranty === "") {
+            isValid = false;
+            displayError("Warranty is required.");
+        }
+
+    
+        const color = document.getElementById('color').value.trim();
+        if (color === "") {
+            isValid = false;
+            displayError("Color is required.");
+        }
+
+       
+        const category = document.getElementById('categoryStatus').value.trim();
+        if (category === "") {
+            isValid = false;
+            displayError("Category is required.");
+        }
+
+        
+        if (category === "Mobile" || category === "Computer") {
+            const ram = document.getElementById('ram').value.trim();
+            if (ram === "") {
+                isValid = false;
+                displayError("RAM is required for Mobile or Computer category.");
+            }
+
+            const storage = document.getElementById('storage').value.trim();
+            if (storage === "") {
+                isValid = false;
+                displayError("Storage is required for Mobile or Computer category.");
+            }
+        }
+
+           const price = parseFloat(document.getElementById('price').value.trim());
+        if (isNaN(price) || price <= 0) {
+            isValid = false;
+            displayError("Price must be a positive number.");
+        }
+
+     
+        const rating = parseFloat(document.getElementById('rating').value.trim());
+        if (isNaN(rating) || rating < 0 || rating > 5) {
+            isValid = false;
+            displayError("Rating must be between 0 and 5.");
+        }
+
+        
+
+       
+        if (isValid) {
+            form.submit();
+        }
+    });
+
+    function displayError(message) {
+        const errorMsg = document.getElementById('valid');
+        errorMsg.innerHTML = `<p>${message}</p>`;
+        
+    }
 });
-
-});
-
-
 
 
 let cropper;

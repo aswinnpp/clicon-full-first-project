@@ -303,7 +303,14 @@
                                                     </div><!-- End .product-action-vertical -->
     
                                                     <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                                      <form action="/cart" method="post" id="addToCartForm">
+                                                            <input type="hidden" name="productId" value="<%=product?._id %>">
+                                                            <input type="hidden" name="quantity" value="1">
+                                                          
+                                                            <button type="submit"  class="btn-product btn-cart" style="width: 225px; border: none;" title="Add to cart"><span>add to cart</span></button>
+                                                        </form>
+                                                       
+            
                                                     </div><!-- End .product-action -->
                                                 </figure><!-- End .product-media -->
     

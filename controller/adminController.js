@@ -7,6 +7,7 @@ const fs = require ('fs');
 const mongoose =require("mongoose")
 const { v4: uuidv4 } = require('uuid');
 const router = require("../routes/admin");
+const { log } = require("console");
 
 
 const loadLogin = async (req, res) => {
@@ -271,6 +272,8 @@ const productUpdate = async (req, res) => {
       color,
       description,
       rating,
+      ram,
+      storage
     } = req.body;
 
     const categoryId = await Category.findOne({
@@ -295,6 +298,7 @@ const productUpdate = async (req, res) => {
     }
 
     let newcolor = color.split(',').map(c => c.trim())
+    
 
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
@@ -309,6 +313,8 @@ const productUpdate = async (req, res) => {
         color:newcolor,
         description,
         rating,
+        ram:ram.split(',').map(c => c.trim()),
+        storage:storage.split(',').map(c => c.trim()),
         image: images,
       },
       { new: true }
@@ -634,6 +640,12 @@ if (!categoryId  || !mongoose.Types.ObjectId.isValid(categoryId )) {
  }
 
   await Category.findByIdAndUpdate(categoryId, { isDeleted });
+  await Product.updateMany({ categoryId: categoryId }, { isDeleted });
+
+
+
+  
+
 
   res.json({ success: true });
 } catch (error) {

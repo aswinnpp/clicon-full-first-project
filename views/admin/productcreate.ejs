@@ -46,10 +46,10 @@
       <input type="text" class="form-control" id="ram" name="ram" placeholder="Enter RAM size">
     </div>
     
-    <div class="mb-3" id="storageField" style="display: none;">
-      <label for="storage" class="form-label">Storage</label>
-      <input type="text" class="form-control" id="storage" name="storage" placeholder="Enter Storage size">
-    </div>
+      <div class="mb-3" id="storageField" style="display: none;">
+        <label for="storage" class="form-label">Storage</label>
+        <input type="text" class="form-control" id="storage" name="storage" placeholder="Enter Storage size">
+      </div>
 
        
     <!-- <div class="mb-3">
@@ -85,10 +85,7 @@
       <input type="text" class="form-control" id="ram" name="ram" placeholder="Enter RAM size" >
     </div>
     
-    <div class="mb-3" id="storageField"  style="display: none;">
-      <label for="storage" class="form-label">Storage</label>
-      <input type="text" class="form-control" id="storage" name="storage" placeholder="Enter Storage size">
-    </div>
+ 
 
   
     <div class="mb-3">
@@ -310,25 +307,25 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     const offer = document.getElementById('offer').value;
     if (offer === '') {
-      errorMsg.innerHTML = "Description  is required";
+      errorMsg.innerHTML = "offer  is required";
       return; 
     }
 
     const stock = document.getElementById('stock').value;
     if (stock === '') {
-      errorMsg.innerHTML = "Description  is required";
+      errorMsg.innerHTML = "stock  is required";
       return; 
     }
 
     const warranty = document.getElementById('warranty').value;
     if (warranty === '') {
-      errorMsg.innerHTML = "Description  is required";
+      errorMsg.innerHTML = "warranty  is required";
       return; 
     }
 
     const color = document.getElementById('color').value;
     if (color === '') {
-      errorMsg.innerHTML = "Description  is required";
+      errorMsg.innerHTML = "color  is required";
       return; 
     }
 
@@ -380,6 +377,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     
     });
 });
+
+
 
 let cropper;
 let currentImageId = '';

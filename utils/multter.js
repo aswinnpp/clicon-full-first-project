@@ -30,7 +30,8 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 100 * 1024 * 1024, // 100MB for file uploads
+    fieldSize: 10 * 1024 * 1024,},
   fileFilter,
 });
 ;
@@ -41,7 +42,8 @@ const upload = multer({
 
 const uploadMultiple = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, 
+    limits: { fileSize: 100 * 1024 * 1024, // 100MB for file uploads
+      fieldSize: 10 * 1024 * 1024, }, 
 }).fields([
     { name: 'image0', maxCount: 1 },
     { name: 'image1', maxCount: 1 },

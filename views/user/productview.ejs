@@ -71,8 +71,7 @@
                                             <a href="#">USD</a>
                                             <div class="header-menu">
                                                 <ul>
-                                                    <li><a href="#">Eur</a></li>
-                                                    <li><a href="#">Usd</a></li>
+                                                    
                                                 </ul>
                                             </div><!-- End .header-menu -->
                                         </div>
@@ -82,9 +81,7 @@
                                             <a href="#">English</a>
                                             <div class="header-menu">
                                                 <ul>
-                                                    <li><a href="#">English</a></li>
-                                                    <li><a href="#">French</a></li>
-                                                    <li><a href="#">Spanish</a></li>
+                                                   
                                                 </ul>
                                             </div><!-- End .header-menu -->
                                         </div>
@@ -283,7 +280,7 @@
                                         ></div>
                                       </div>
                                       <a class="ratings-text" href="#product-review-link" id="review-link">
-                                        ( <%= product[0].reviews %> )
+                                        ( <%= product[0].rating %> )
                                       </a>
                                     </div>
                               
@@ -309,8 +306,34 @@
                                             </a>
                                           <% } %>
                                         </div>
+                                        
                                       </div>
                                     </div>
+                                    <div class="product-cat">
+                                     <strong><span>Category:</span></strong>   
+                                        <a href="#"><%= product[0].category %></a>
+                                    </div>
+                                    <div class="product-cat">
+                                       <strong><span>warranty:</span></strong> 
+                                        <a href="#"><%= product[0].warranty %></a>
+                                    </div> 
+                                    <div class="product-cat mb-4">
+                                        <strong><span>Specifications:</span></strong>
+                                        <div style="margin-top: 5px;">
+                                          <span style="font-weight: bold; display: inline-block; width: 100px;">Ram:</span>
+                                          <% for (let i = 0; i < product[0].ram.length; i++) { %>
+                                            <a href="#" style="margin-right: 5px; text-decoration: none; color: #000000;"><%= product[0]?.ram[i] %></a>
+                                          <% } %>
+                                        </div>
+                                        <div style="margin-top: 5px;">
+                                          <span style="font-weight: bold; display: inline-block; width: 100px;">Storage:</span>
+                                          <% for (let i = 0; i < product[0].storage.length; i++) { %>
+                                            <a href="#" style="margin-right: 5px; text-decoration: none; color: #000000;"><%= product[0]?.storage[i] %></a>
+                                          <% } %>
+                                        </div>
+                                      </div>
+                                      
+                                    
                               
                                    
                               
@@ -339,19 +362,23 @@
                                           </div>
                                     
                                           <div class="product-details-action">
-                                              <a href="<%= product[0]?.stock < 5 ? '#' : '/cart/add/' + product._id %>" 
+                                              <a href="<%= product[0]?.stock < 5 ? '#' : '/checkout'  %>" 
                                                   class="btn <%= product[0]?.stock < 5 ? 'btn-warning' : 'btn-success' %>" 
                                                   role="button">
                                                   <%= product[0]?.stock < 5 ? 'Out of Stock' : 'Buy Now' %>
                                                </a>                                      
-                                              <div class="details-action-wrapper">
-                                              
-      
-                                                <button type="submit" class="btn btn-outline-secondary" title="Add to Wishlist" aria-label="Add to Wishlist">
+                                               <div class="details-action-wrapper">
+                                                <button 
+                                                  type="submit" 
+                                                  class="btn btn-outline-secondary" 
+                                                  title="Add to Wishlist" 
+                                                  aria-label="Add to Wishlist"
+                                                  style="<%= product[0]?.stock > 5 ? '' : 'display:none;' %>">
                                                   Add to Cart
                                                 </button>
-                                                
-                                                </div>
+                                              </div>
+                                              
+                                              
                                               </div>
                                      </form>
 
@@ -368,18 +395,6 @@
                               
                                     <!-- Footer Details -->
                                     
-                                        <div class="product-cat">
-                                            <span>Category:</span>
-                                            <a href="#"><%= product[0].category %></a>
-                                        </div>
-                                        <div class="product-cat">
-                                            <span>warranty:</span>
-                                            <a href="#"><%= product[0].warranty %></a>
-                                        </div> 
-                                        <div class="product-cat mb-4">
-                                            <span>color:</span>
-                                            <a href="#"><%= product[0].color %></a>
-                                        </div>
                                         
                                        
                                
@@ -415,110 +430,12 @@
                     </div><!-- End .product-details-top -->
 
                     <div class="product-details-tab">
-                        <ul class="nav nav-pills justify-content-center" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="product-desc-link" data-toggle="tab" href="#product-desc-tab" role="tab" aria-controls="product-desc-tab" aria-selected="true">Description</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="product-info-link" data-toggle="tab" href="#product-info-tab" role="tab" aria-controls="product-info-tab" aria-selected="false">Additional information</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="product-shipping-link" data-toggle="tab" href="#product-shipping-tab" role="tab" aria-controls="product-shipping-tab" aria-selected="false">Shipping & Returns</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="product-review-link" data-toggle="tab" href="#product-review-tab" role="tab" aria-controls="product-review-tab" aria-selected="false">Reviews (2)</a>
-                            </li>
-                        </ul>
+                       
                         <div class="tab-content">
-                            <div class="tab-pane fade show active" id="product-desc-tab" role="tabpanel" aria-labelledby="product-desc-link">
-                                <div class="product-desc-content">
-                                    <h3>Product Information</h3>
-                                    <ul>
-                                      
-
-                                </div><!-- End .product-desc-content -->
-                            </div><!-- .End .tab-pane -->
-                            <div class="tab-pane fade" id="product-info-tab" role="tabpanel" aria-labelledby="product-info-link">
-                                <div class="product-desc-content">
-                                    <h3>Information</h3>
-
-                                    <h3>Fabric & care</h3>
-                                    <ul>
-                                        <li>Faux suede fabric</li>
-                                        <li>Gold tone metal hoop handles.</li>
-                                        <li>RI branding</li>
-                                        <li>Snake print trim interior </li>
-                                        <li>Adjustable cross body strap</li>
-                                        <li> Height: 31cm; Width: 32cm; Depth: 12cm; Handle Drop: 61cm</li>
-                                    </ul>
-
-                                    <h3>Size</h3>
-                                    <p>one size</p>
-                                </div><!-- End .product-desc-content -->
-                            </div><!-- .End .tab-pane -->
-                            <div class="tab-pane fade" id="product-shipping-tab" role="tabpanel" aria-labelledby="product-shipping-link">
-                                <div class="product-desc-content">
-                                    <h3>Delivery & returns</h3>
-                                    <p>We deliver to over 100 countries around the world. For full details of the delivery options we offer, please view our <a href="#">Delivery information</a><br>
-                                    We hope you’ll love every purchase, but if you ever need to return an item you can do so within a month of receipt. For full details of how to make a return, please view our <a href="#">Returns information</a></p>
-                                </div><!-- End .product-desc-content -->
-                            </div><!-- .End .tab-pane -->
-                            <div class="tab-pane fade" id="product-review-tab" role="tabpanel" aria-labelledby="product-review-link">
-                                <div class="reviews">
-                                    <h3>Reviews (2)</h3>
-                                    <div class="review">
-                                        <div class="row no-gutters">
-                                            <div class="col-auto">
-                                                <h4><a href="#">Samanta J.</a></h4>
-                                                <div class="ratings-container">
-                                                    <div class="ratings">
-                                                        <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
-                                                    </div><!-- End .ratings -->
-                                                </div><!-- End .rating-container -->
-                                                <span class="review-date">6 days ago</span>
-                                            </div><!-- End .col -->
-                                            <div class="col">
-                                                <h4>Good, perfect size</h4>
-
-                                                <div class="review-content">
-                                                </div><!-- End .review-content -->
-
-                                                <div class="review-action">
-                                                    <a href="#"><i class="icon-thumbs-up"></i>Helpful (2)</a>
-                                                    <a href="#"><i class="icon-thumbs-down"></i>Unhelpful (0)</a>
-                                                </div><!-- End .review-action -->
-                                            </div><!-- End .col-auto -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .review -->
-
-                                    <div class="review">
-                                        <div class="row no-gutters">
-                                            <div class="col-auto">
-                                                <h4><a href="#">John Doe</a></h4>
-                                                <div class="ratings-container">
-                                                    <div class="ratings">
-                                                        <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                                    </div><!-- End .ratings -->
-                                                </div><!-- End .rating-container -->
-                                                <span class="review-date">5 days ago</span>
-                                            </div><!-- End .col -->
-                                            <div class="col">
-                                                <h4>Very good</h4>
-
-                                                <div class="review-content">
-                                                </div><!-- End .review-content -->
-
-                                                <div class="review-action">
-                                                    <a href="#"><i class="icon-thumbs-up"></i>Helpful (0)</a>
-                                                    <a href="#"><i class="icon-thumbs-down"></i>Unhelpful (0)</a>
-                                                </div><!-- End .review-action -->
-                                            </div><!-- End .col-auto -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .review -->
-                                </div><!-- End .reviews -->
-                            </div><!-- .End .tab-pane -->
+                           
+                            
                         </div><!-- End .tab-content -->
-                    </div><!-- End .product-details-tab -->
+                    </div>
 
 
                     <h2 class="title text-center mb-4">You May Also Like</h2><!-- End .title text-center -->
@@ -551,8 +468,8 @@
                         }'>
                         
                         <% allproduct.forEach((product, index) => { %>
-                            <div  class="product product-7 text-center">
-                                <figure style="width: 400px;" class="product-media">
+                            <div  class="product product-7 text-center" >
+                                <figure style="width: 100%;" class="product-media">
                                     <a href="http://localhost:3000/productview/<%= product._id %>">
                                         <img src="/uploads/<%= product.image && product.image[0] ? product.image[0] : 'default.jpg' %>" alt="Product image" class="product-image">
                                     </a>
@@ -570,7 +487,13 @@
                                     </div>
                     
                                     <div class="product-action">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                        <form action="/cart" method="post" id="addToCartForm">
+                                            <input type="hidden" name="productId" value="<%=product?._id %>">
+                                            <input type="hidden" name="quantity" value="1">
+                                          
+                                            <button type="submit"  style="width: 420px; border: none;" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></button>
+                                        </form>
+                                       
                                     </div>
                                 </figure><!-- End .product-media -->
                     
@@ -592,12 +515,12 @@
                                         <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
                                      </div>
                     
-                                    <div class="ratings-container">
+                                     <div class="ratings-container">
                                         <div class="ratings">
-                                            <div class="ratings-val" style=""></div><!-- End .ratings-val -->
-                                        </div><!-- End .ratings -->
-                                        <span class="ratings-text"><%= product.rating || 'No Rating' %></span>
-                                    </div><!-- End .rating-container -->
+                                            <div class="ratings-val" style="width: <%= product.rating * 20 %>%;"></div>
+                                        </div>
+                                        <span class="ratings-text"><%= product.rating %> </span>
+                                    </div>
                     
                                     <!-- End .product-nav -->
                                 </div><!-- End .product-body -->

@@ -23,6 +23,9 @@ const loadHome= async (req,res)=>{
 
     const product = await Product.find({
       isDeleted:false})
+
+
+
     const category = await Category.find({
       isDeleted:false})
 
@@ -347,6 +350,7 @@ console.log("Is OTP expired:", isExpired);
     }
 
     const workflowType = req.session.type;
+    
     console.log("Session type is:", workflowType);
 
     if (workflowType === "signup") {
@@ -403,9 +407,6 @@ console.log("Is OTP expired:", isExpired);
     return res.redirect("/otp");
   }
 };
-
-
-
 
 // ===============================================
 // ===============================================
@@ -503,7 +504,7 @@ const loadSignIn = async (req, res) => {
     } catch (error) {
       console.log('user signin error:', error);
     }
-  };
+};
 
 const signIn = async (req, res) => {
     try {
@@ -559,7 +560,7 @@ const signIn = async (req, res) => {
       req.flash('error', 'Something went wrong!');
       res.redirect("/signin");
     }
-  };
+};
   
 // =============================================
 // =============================================
@@ -568,7 +569,9 @@ const signIn = async (req, res) => {
 
 
 
-
+// ==============================================
+// ================ Forgot Password =============
+// ==============================================
 const loadForgot = async (req, res) => {
     try {
       const message = req.flash("message")
@@ -577,9 +580,7 @@ const loadForgot = async (req, res) => {
     } catch (error) {
       console.log('user forgotpassword error:', error);
     }
-  };
-
-
+};
 const forgot = async (req, res) => {
     try {
       const { email } = req.body;
@@ -617,13 +618,7 @@ const forgot = async (req, res) => {
       req.flash("message", "An error occurred. Please try again.");
       return res.redirect("/forgot");
     }
-  };
-  
-
-
-
-
-
+};
 const loadReset = async (req, res) => {
     try {
           
@@ -670,37 +665,61 @@ const loadReset = async (req, res) => {
       res.status(500).send('Server Error');
     }
 };
+// ===============================================
+// ===============================================
+// ===============================================
 
 
 const loadCart = async (req, res) => {
   try {
-    const email = req.session?.details.email;
-
-    // console.log("email..........",email)
+    const email = req.session?.details?.email;
     if (!email) return res.redirect('/login');
 
     const user = await userSchema.findOne({ email });
-
-    // console.log("ffffffffffff", user._id);
-
-
-    ;
-    
     if (!user) return res.redirect('/login');
 
-    const cart = await Cart.findOne({ userId: user._id }).populate({
-      path: 'items.productId', 
-      model: 'Product',       });
-    // console.log('ssssssssssssssssss',cart)
+    const page = parseInt(req.query.page) || 1; // Current page
+    const limit = 4; // Items per page
+    const skip = (page - 1) * limit;
 
-    res.render('user/cart', { cart });
+    
+    const cart = await Cart.findOne({ userId: user._id }).populate({
+      path: 'items.productId',
+      model: 'Product',
+    });
+
+    if (!cart || !cart.items.length) {
+      return res.render('user/cart', {
+        items: [],
+        currentPage: 0,
+        totalPages: 0,
+        totalItems: 0,
+      });
+    }
+
+    const totalItems = cart.items?.length; // Total number of items
+    const paginatedItems = cart.items?.slice(skip, skip + limit); // Items for current page
+    const totalPages = Math.ceil(totalItems / limit); // Total pages
+
+
+    const totalValue = cart.items.reduce((sum, item) => {
+      const price = parseFloat(item.productId?.price.replace(/,/g, '')); // Convert price to a number
+      return sum + price * item?.quantity;
+    }, 0);
+
+    res.render('user/cart', {
+      items: paginatedItems,
+      user,
+      currentPage: page,
+      totalPages,
+      totalItems,
+      totalValue:totalValue.toFixed(2)
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("Server Error");
   }
 };
-
-
 
 const Carts = async (req,res)=>{
     try {
@@ -773,6 +792,36 @@ const Carts = async (req,res)=>{
     
     
 }
+
+const cartDelete = async (req,res)=>{
+
+try {
+
+  const { userid, productid } = req.query;
+
+  const productId = new  mongoose.Types.ObjectId(productid)
+
+  console.log("pppppppppppppppppp",productId)
+
+   const newcart = await Cart.findOneAndUpdate(
+    { userId: userid }, 
+    { $pull: { items: { productId: productid } } }, 
+    { new: true } 
+  );
+
+  console.log("newcaaart",newcart )
+
+  res.redirect("/cart")
+  
+} catch (error) {
+
+  console.log(error)
+  
+}
+
+}
+
+
 
 
 const loadWhishlist = async (req,res)=>{
@@ -928,6 +977,43 @@ const editProfile = async (req, res) => {
 
 
 
+
+const loadCheckout = async (req,res)=>{
+
+
+  try {
+
+    const email = req.session?.details?.email;
+    if (!email) return res.redirect('/login');
+
+    const user = await userSchema.findOne({ email });
+    if (!user) return res.redirect('/login');
+
+
+    const address = await Address.find({userId:user._id})
+
+    console.log("adress/////////////",address)
+
+    const cart = await Cart.findOne({ userId: user._id }).populate({
+      path: 'items.productId',
+      model: 'Product',
+    });
+    const totalItems = cart?.items.length; 
+    const totalValue = cart?.items.reduce((sum, item) => {
+      const price = parseFloat(item.productId.price.replace(/,/g, '')); // Convert price to a number
+      return sum + price * item.quantity;
+    }, 0);
+
+    res.render("user/checkout",{totalItems,totalValue,address})
+    
+  } catch (error) {
+
+    console.log(error)
+    
+  }
+}
+
+
   module.exports={
     authsignup,
     authsignin,
@@ -954,6 +1040,8 @@ const editProfile = async (req, res) => {
     removeAdrress,
     editAddress,
     editProfile,
-    Carts
+    Carts,
+    loadCheckout,
+    cartDelete
 
   }

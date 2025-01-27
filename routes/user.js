@@ -38,7 +38,8 @@ router.get("/productview/:product_id",userauth.isBan, userController.productView
 router.get("/productlist" ,userauth.isBan, userController.productList)
 
 router.get("/cart",userauth.checkSession,userauth.isBan, userController.loadCart)
-router.post("/cart", userController.Carts )
+router.post("/cart",userauth.checkSession, userController.Carts )
+router.get("/cartdelete",userController.cartDelete)
 
 
 router.get("/wishlist",userauth.checkSession,userauth.isBan, userController.loadWhishlist )
@@ -47,8 +48,13 @@ router.get("/profile/:id",userauth.checkSession,userauth.isBan,userController.lo
 router.post("/address",userController.addAddress)
 router.post("/remove-address/:id",userController.removeAdrress)
 router.post("/edit-address",userController.editAddress)
-
 router.post("/update-profile", multer.upload.single("image"),userController.editProfile)
+
+
+
+router.get("/checkout",userauth.checkSession,userauth.isBan, userController.loadCheckout)
+
+
 
 router.get("*",(req ,res)=>{
     res.status(404).render("user/404")
