@@ -41,6 +41,8 @@ router.get("/cart",userauth.checkSession,userauth.isBan, userController.loadCart
 router.post("/cart",userauth.checkSession, userController.Carts )
 router.get("/cartdelete",userController.cartDelete)
 
+router.get("/buynow/:id",userController.buyNow)
+
 
 router.get("/wishlist",userauth.checkSession,userauth.isBan, userController.loadWhishlist )
 router.get("/profile/:id",userauth.checkSession,userauth.isBan,userController.loadProfile)
@@ -53,6 +55,7 @@ router.post("/update-profile", multer.upload.single("image"),userController.edit
 
 
 router.get("/checkout",userauth.checkSession,userauth.isBan, userController.loadCheckout)
+router.post("/checkout", userController.CheckOut)
 
 
 

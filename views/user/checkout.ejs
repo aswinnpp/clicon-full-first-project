@@ -12,21 +12,21 @@
     <meta name="description" content="Molla - Bootstrap eCommerce Template">
     <meta name="author" content="p-themes">
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/icons/favicon-16x16.png">
-    <link rel="manifest" href="assets/images/icons/site.html">
-    <link rel="mask-icon" href="assets/images/icons/safari-pinned-tab.svg" color="#666666">
-    <link rel="shortcut icon" href="assets/images/icons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/icons/favicon-16x16.png">
+    <link rel="manifest" href="/assets/images/icons/site.html">
+    <link rel="mask-icon" href="/assets/images/icons/safari-pinned-tab.svg" color="#666666">
+    <link rel="shortcut icon" href="/assets/images/icons/favicon.ico">
     <meta name="apple-mobile-web-app-title" content="Molla">
     <meta name="application-name" content="Molla">
     <meta name="msapplication-TileColor" content="#cc9966">
-    <meta name="msapplication-config" content="assets/images/icons/browserconfig.xml">
+    <meta name="msapplication-config" content="/assets/images/icons/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
     <!-- Plugins CSS File -->
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
     <!-- Main CSS File -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 
 <body>
@@ -189,19 +189,36 @@
             					<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
             				</form>
             			</div><!-- End .checkout-discount -->
-            			<form action="#">
+
+                       
+                        
+            			<form action="/checkout" method="post">
+
+                            <input type="hidden" class="form-control" name="customerId" value=" <%= user?._id %>">
+                            <% if (cartItems && cartItems.items) { %>
+                                <% cartItems.items.forEach((item, index) => { %>
+                                    <!-- Hidden fields to pass productId and quantity -->
+                                    <input type="hidden" value="<%= item.productId._id %>" name="cartid">
+                                    <input type="hidden" value="<%= item.quantity %>" name="catqty">
+                                <% }) %>
+                            <% } else if (product) { %>
+                                <!-- For a single product -->
+                                <input type="hidden" value="<%= product._id %>" name="cartid">
+                                <input type="hidden" value="<%= product.quantity %>" name="catqty">
+                            <% } %>
+                            
 		                	<div class="row">
 		                		<div class="col-lg-9">
 		                			<h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
 		                				<div class="row">
-		                					<div class="col-sm-6">
+		                					<!-- <div class="col-sm-6">
 		                						<label>First Name *</label>
 		                						<input type="text" class="form-control" required>
-		                					</div><!-- End .col-sm-6 -->
+		                					</div>End .col-sm-6 -->
 
 		                					<div class="col-sm-6">
-		                						<label>Last Name *</label>
-		                						<input type="text" class="form-control" required>
+		                						<label> Name *</label>
+		                						<input type="text" class="form-control" name="name" required>
 		                					</div><!-- End .col-sm-6 -->
 		                				</div><!-- End .row -->
 
@@ -209,33 +226,32 @@
 	            						<input type="text" class="form-control"> -->
 
 	            						<label>Country *</label>
-	            						<input type="text" class="form-control" required>
+	            						<input type="text" class="form-control" name="country" required>
 
 	            						<label>Street address *</label>
-	            						<input type="text" class="form-control" placeholder="House number and Street name" required>
-	            						<input type="text" class="form-control" placeholder="Appartments, suite, unit etc ..." required>
+	            						<input type="text" class="form-control" name="street" placeholder="House number and Street name" required>
 
 	            						<div class="row">
 		                					<div class="col-sm-6">
 		                						<label>Town / City *</label>
-		                						<input type="text" class="form-control" required>
+		                						<input type="text" class="form-control" name="city" required>
 		                					</div><!-- End .col-sm-6 -->
 
 		                					<div class="col-sm-6">
 		                						<label>State / County *</label>
-		                						<input type="text" class="form-control" required>
+		                						<input type="text" class="form-control" name="state" required>
 		                					</div><!-- End .col-sm-6 -->
 		                				</div><!-- End .row -->
 
 		                				<div class="row">
 		                					<div class="col-sm-6">
 		                						<label>Postcode / ZIP *</label>
-		                						<input type="text" class="form-control" required>
+		                						<input type="text" class="form-control" name="postcode" required>
 		                					</div><!-- End .col-sm-6 -->
 
 		                					<div class="col-sm-6">
 		                						<label>Phone *</label>
-		                						<input type="tel" class="form-control" required>
+		                						<input type="tel" class="form-control" name="phone" required>
 		                					</div><!-- End .col-sm-6 -->
 		                				</div><!-- End .row -->
 
@@ -248,15 +264,23 @@
                                             <span>Ship to a different address?</span>
                                             
                                             <div id="addressContainer" class="address-list" style="display: none;">
-                                                <h3><%= address.length > 0 ? 'Select Your Addresses' : 'No Adrress Available' %></h3>
+                                                <h3><%= address.length > 0 ? 'Select Your Addresses' : 'No Address Available' %></h3>
                                                 <% address.forEach(address => { %>
                                                 <label>
-                                                  <input type="checkbox" name="addresses" value="<%= address %>">
-                                                  <%= address.street %>,<%= address.city %>,<%= address.state %>,<%= address.country %>,<%= address.postalCode %>,<%= address.phone %>
+                                                    <input type="radio" name="addresses" 
+                                                        onclick="fillAddress(
+                                                            '<%= address.street %>',
+                                                            '<%= address.city %>',
+                                                            '<%= address.state %>',
+                                                            '<%= address.country %>',
+                                                            '<%= address.postalCode %>',
+                                                            '<%= address.phone %>'
+                                                        )">
+                                                    <%= address.street %>, <%= address.city %>, <%= address.state %>, <%= address.country %>, <%= address.postalCode %>, <%= address.phone %>
                                                 </label><br>
-                                              <% }) %>
+                                                <% }) %>
                                             </div>
-                                          </div>
+                                        </div>
                                           
                                        
 
@@ -281,84 +305,36 @@
                                                     <td>Total:(<%= totalItems %> products)</td>
                                                     
                                                     <td><%= totalValue %></td></td>
+                                                    <input type="hidden" value="<%= totalValue %>" name="totalValue">
                                                   </tr>
 		                					</tbody>
 		                				</table><!-- End .table table-summary -->
 
 		                				<div class="accordion-summary" id="accordion-payment">
-										    <div class="card">
-										        <div class="card-header" id="heading-1">
-										            <h2 class="card-title">
-										                <a role="button" data-toggle="collapse" href="#collapse-1" aria-expanded="true" aria-controls="collapse-1">
-										                    Direct bank transfer
-										                </a>
-										            </h2>
-										        </div><!-- End .card-header -->
-										        <div id="collapse-1" class="collapse show" aria-labelledby="heading-1" data-parent="#accordion-payment">
-										            <div class="card-body">
-										                Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.
-										            </div><!-- End .card-body -->
-										        </div><!-- End .collapse -->
-										    </div><!-- End .card -->
 
-										    <div class="card">
-										        <div class="card-header" id="heading-2">
-										            <h2 class="card-title">
-										                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-2" aria-expanded="false" aria-controls="collapse-2">
-										                    Check payments
-										                </a>
-										            </h2>
-										        </div><!-- End .card-header -->
-										        <div id="collapse-2" class="collapse" aria-labelledby="heading-2" data-parent="#accordion-payment">
-										            <div class="card-body">
-										                Ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. 
-										            </div><!-- End .card-body -->
-										        </div><!-- End .collapse -->
-										    </div><!-- End .card -->
+										     <div class="card-header">
+                                                <h2 class="card-title">
+                                                    <input type="radio" name="paymentMethod" value="Cash on Delivery"> Cash on delivery
+                                                </h2>
+                                            </div>
+                                        </div>
 
-										    <div class="card">
-										        <div class="card-header" id="heading-3">
-										            <h2 class="card-title">
-										                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-3" aria-expanded="false" aria-controls="collapse-3">
-										                    Cash on delivery
-										                </a>
-										            </h2>
-										        </div><!-- End .card-header -->
-										        <div id="collapse-3" class="collapse" aria-labelledby="heading-3" data-parent="#accordion-payment">
-										            <div class="card-body">Quisque volutpat mattis eros. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. 
-										            </div><!-- End .card-body -->
-										        </div><!-- End .collapse -->
-										    </div><!-- End .card -->
+                                       <div class="accordion-summary"> 
+                                            <div class="card-header">
+                                                <h2 class="card-title">
+                                                    <input type="radio" name="paymentMethod" value="PayPal"> PayPal
+                                                </h2>
+                                            </div>
+                                        </div>
 
-										    <div class="card">
-										        <div class="card-header" id="heading-4">
-										            <h2 class="card-title">
-										                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-4" aria-expanded="false" aria-controls="collapse-4">
-										                    PayPal <small class="float-right paypal-link">What is PayPal?</small>
-										                </a>
-										            </h2>
-										        </div><!-- End .card-header -->
-										        <div id="collapse-4" class="collapse" aria-labelledby="heading-4" data-parent="#accordion-payment">
-										            <div class="card-body">
-										                Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis fermentum.
-										            </div><!-- End .card-body -->
-										        </div><!-- End .collapse -->
-										    </div><!-- End .card -->
+                                        <div class="accordion-summary">
+                                            <div class="card-header">
+                                                <h2 class="card-title">
+                                                    <input type="radio" name="paymentMethod" value="Credit Card (Stripe)"> Credit Card (Stripe)
+                                                </h2>
+                                            </div>
+                                        </div>
 
-										    <div class="card">
-										        <div class="card-header" id="heading-5">
-										            <h2 class="card-title">
-										                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-5" aria-expanded="false" aria-controls="collapse-5">
-										                    Credit Card (Stripe)
-										                    <img src="assets/images/payments-summary.png" alt="payments cards">
-										                </a>
-										            </h2>
-										        </div><!-- End .card-header -->
-										        <div id="collapse-5" class="collapse" aria-labelledby="heading-5" data-parent="#accordion-payment">
-										            <div class="card-body"> Donec nec justo eget felis facilisis fermentum.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Lorem ipsum dolor sit ame.
-										            </div><!-- End .card-body -->
-										        </div><!-- End .collapse -->
-										    </div><!-- End .card -->
 										</div><!-- End .accordion -->
 
 		                				<button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
@@ -741,12 +717,12 @@
     </div><!-- End .modal -->
 
     <!-- Plugins JS File -->
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/jquery.hoverIntent.min.js"></script>
-    <script src="assets/js/jquery.waypoints.min.js"></script>
-    <script src="assets/js/superfish.min.js"></script>
-    <script src="assets/js/owl.carousel.min.js"></script>
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/jquery.hoverIntent.min.js"></script>
+    <script src="/assets/js/jquery.waypoints.min.js"></script>
+    <script src="/assets/js/superfish.min.js"></script>
+    <script src="/assets/js/owl.carousel.min.js"></script>
     <!-- Main JS File -->
     <script src="assets/js/main.js"></script>
 
@@ -763,9 +739,31 @@ const enableCheckbox = document.getElementById('multyaddress');
       addressContainer.style.display = 'none';
     }
   });
+
+  // Show/hide address container
+document.getElementById('multyaddress').onchange = function() {
+    document.getElementById('addressContainer').style.display = this.checked ? 'block' : 'none';
+}
+
+// Function to fill address details
+function fillAddress(street, city, state, country, postalCode, phone) {
+    const inputs = document.getElementsByClassName('form-control');
+    
+    // Loop through all form-control inputs and set values based on their labels
+    Array.from(inputs).forEach(input => {
+        const label = input.previousElementSibling?.textContent.toLowerCase() || '';
+        
+        if (label.includes('street')) input.value = street;
+        if (label.includes('city')) input.value = city;
+        if (label.includes('state')) input.value = state;
+        if (label.includes('country')) input.value = country;
+        if (label.includes('postcode') || label.includes('zip')) input.value = postalCode;
+        if (label.includes('phone')) input.value = phone;
+    });
+}
   </script>
 
-    </script>
+    
 </body>
 
 

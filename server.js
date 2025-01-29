@@ -43,6 +43,10 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/admin", adminRoute);
 app.use("/", userRoute);
+
+
+
+
 app.listen(process.env.PORT, () => {
   console.log("PORT connected");
 });

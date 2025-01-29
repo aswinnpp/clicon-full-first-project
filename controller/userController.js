@@ -3,6 +3,7 @@ const Product = require("../models/productmodel");
 const Cart = require("../models/cartpagemodel")
 const Address = require("../models/addressmodel")
 const Category = require("../models/categorymodel")
+const Orders  = require("../models/orderdetails")
 const bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer');
 const path = require('path')
@@ -12,7 +13,7 @@ const dotenv = require('dotenv');
 const session = require("express-session");
 const { request } = require("http");
 const { log } = require("util");
-const saltround =10
+
 dotenv.config();
 
 
@@ -36,9 +37,14 @@ const loadHome= async (req,res)=>{
       const userr = await userSchema.findOne({email})
 
       
-
+      console.log('Fetched Products:', product);
      
      res.render('user/user_home',{ product, category,user,userr })
+
+
+    
+     console.log("category",category)
+     
   } catch (error) {
     console.log('user home error:', error);
   }
@@ -581,6 +587,7 @@ const loadForgot = async (req, res) => {
       console.log('user forgotpassword error:', error);
     }
 };
+
 const forgot = async (req, res) => {
     try {
       const { email } = req.body;
@@ -619,6 +626,7 @@ const forgot = async (req, res) => {
       return res.redirect("/forgot");
     }
 };
+
 const loadReset = async (req, res) => {
     try {
           
@@ -630,6 +638,7 @@ const loadReset = async (req, res) => {
       console.log('user resetpassword error:', error);
     }
 };
+
   const reset = async (req, res) => {
     try {
       const email = req.session.forgot;
@@ -665,6 +674,7 @@ const loadReset = async (req, res) => {
       res.status(500).send('Server Error');
     }
 };
+
 // ===============================================
 // ===============================================
 // ===============================================
@@ -682,7 +692,6 @@ const loadCart = async (req, res) => {
     const limit = 4; // Items per page
     const skip = (page - 1) * limit;
 
-    
     const cart = await Cart.findOne({ userId: user._id }).populate({
       path: 'items.productId',
       model: 'Product',
@@ -697,10 +706,11 @@ const loadCart = async (req, res) => {
       });
     }
 
+    req.session.buyCheck = "Cart";
+
     const totalItems = cart.items?.length; // Total number of items
     const paginatedItems = cart.items?.slice(skip, skip + limit); // Items for current page
     const totalPages = Math.ceil(totalItems / limit); // Total pages
-
 
     const totalValue = cart.items.reduce((sum, item) => {
       const price = parseFloat(item.productId?.price.replace(/,/g, '')); // Convert price to a number
@@ -713,7 +723,7 @@ const loadCart = async (req, res) => {
       currentPage: page,
       totalPages,
       totalItems,
-      totalValue:totalValue.toFixed(2)
+      totalValue: totalValue.toFixed(2),
     });
   } catch (error) {
     console.error(error);
@@ -721,77 +731,68 @@ const loadCart = async (req, res) => {
   }
 };
 
-const Carts = async (req,res)=>{
-    try {
-    
-    console.log( req.body)
-    const email = req.session?.details?.email
+
+const Carts = async (req, res) => {
+  try {
+    const email = req.session?.details?.email;
     const user = await userSchema.findOne({ email });
-    const userId = user?._id
-       const { productId,quantity } = req.body
+    const userId = user?._id;
+    const { productId, quantity } = req.body;
 
-      //  console.log("useridvvvvvvvvvvvvvv",userId)
-    
-       let cart = await Cart.findOne({ userId }).populate('items.productId');
-
-       console.log("caaaaaaa",cart);
-       
-
-       const product = await Product.findById({_id:productId})
-    
-       
-       console.log("cart",cart);
-       
-    
-       if (!cart) {
-         
-         cart = new Cart({
-           userId,
-           items: [{ productId, quantity }]
-         });
-         
-         await cart.save();
-        res.redirect('/cart')
-       } else {
-        
-        let track = false
-
-
-      for(let i=0; i<cart.items.length; i++){
-        
-      console.log('looooooop',cart.items[i].productId == productId);
-      
-        if(cart.items[i].productId == productId ){
-          if(cart.items[i].quantity <=5){
-            track = true
-            cart.items[i].quantity +=  Number(quantity)
-            break;
-          }
-
-          console.log("limit exxed")
-          
-         }
-      }
-
-      if(!track) {
-         cart.items.push({ productId, quantity })
-      }
-         
-    
-         await cart.save();
-         res.redirect('/cart')
-       }
-    
-      
-    } catch (error) {
-    
-      console.log(error)
-      
+    // Fetch the product details
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).send("Product not found.");
     }
+
+    let cart = await Cart.findOne({ userId }).populate('items.productId');
     
+    if (!cart) {
+      // If no cart exists, create a new one with the product
+      cart = new Cart({
+        userId,
+        items: [{ productId, quantity }],
+      });
+      await cart.save();
+      return res.redirect('/cart');
+    }
+
+    let itemFound = false;
+
+    // Loop through the cart items to check if the product is already in the cart
+    for (let i = 0; i < cart.items.length; i++) {
+      if (cart.items[i].productId.toString() === productId) {
+        // Check if the quantity exceeds the limit (5 items max)
+        if (cart.items[i].quantity + quantity <= 5) {
+          cart.items[i].quantity += quantity;
+          itemFound = true;
+        } else {
+          return res.status(400).send("You cannot add more than 5 items of this product.");
+        }
+        break;
+      }
+    }
+
+    // If the product was not found in the cart, add it
+    if (!itemFound) {
+      if (quantity > 5) {
+        return res.status(400).send("You cannot add more than 5 items of this product.");
+      }
+      cart.items.push({ productId, quantity });
+    }
+
+    // Save the updated cart
+    await cart.save();
+    req.session.buyCheck = "Cart";  // Track session state
+    return res.redirect('/cart');
     
-    
-}
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+};
+
+
 
 const cartDelete = async (req,res)=>{
 
@@ -818,7 +819,6 @@ try {
   console.log(error)
   
 }
-
 }
 
 
@@ -840,9 +840,6 @@ res.render("user/wishlist",{user})
 
 
 }
-
-
-
   
 const loadProfile = async (req,res)=>{
 
@@ -899,7 +896,7 @@ const addAddress = async (req,res)=>{
 
 }
 
-  const removeAdrress = async (req,res)=>{
+const removeAdrress = async (req,res)=>{
 
     const userId = req.params.id; 
     const addressId =req.query.address;
@@ -975,36 +972,103 @@ const editProfile = async (req, res) => {
     }
 };
 
+const buyNow = async (req, res) => {
+  try {
+    req.session.buyCheck = "buyNow";
+    const id = req.params.id;
+    const { qty } = req.query;
 
+    const email = req.session?.details?.email;
+    if (!email) return res.redirect('/signin');
 
+    const product = await Product.findById({ _id: id });
+    const user = await userSchema.findOne({ email });
+    if (!user) return res.redirect('/signin');
+
+    const address = await Address.find({ userId: user._id });
+    const totalItems = 1;
+    const productPrice = parseFloat(product.price.replace(/,/g, ''));
+    const quantity = parseFloat(qty);
+    const totalValue = productPrice * quantity;
+
+    // Here you should pass an array of cartItems or just the single product
+    const cartItems = [{ productId: product, quantity: qty, }];
+    
+    res.render("user/checkout", {
+      address,
+      product,
+      totalValue,
+      totalItems,
+      user,
+      cartItems // Pass cartItems instead of product
+    });
+
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const loadCheckout = async (req,res)=>{
 
 
   try {
 
-    const email = req.session?.details?.email;
-    if (!email) return res.redirect('/login');
+    const check = req.session.buyCheck
 
-    const user = await userSchema.findOne({ email });
-    if (!user) return res.redirect('/login');
+    console.log("////////check",check);
+    
 
+    if(check ==="Cart"){
 
-    const address = await Address.find({userId:user._id})
+      const email = req.session?.details?.email;
+      if (!email) return res.redirect('/login');
+  
+      const user = await userSchema.findOne({ email });
+      if (!user) return res.redirect('/login');
+  
+  
+      const address = await Address.find({userId:user._id})
+      
+      console.log("adress/////////////",address)
+  
+      const cartItems = await Cart.findOne({ userId: user._id }).populate({
+        path: 'items.productId',
+        model: 'Product',
+      });
 
-    console.log("adress/////////////",address)
+      console.log("sssssssss",cartItems)
+      const totalItems = cartItems?.items.length; 
+      const totalValue = cartItems?.items.reduce((sum, item) => {
+        const price = parseFloat(item.productId.price.replace(/,/g, ''));
+        const quantity = Number(item.quantity); // Convert to a number
+        return sum + price * quantity;
+      }, 0);
+  
+      res.render("user/checkout",{totalItems,cartItems,totalValue,address,user,product:cartItems})
 
-    const cart = await Cart.findOne({ userId: user._id }).populate({
-      path: 'items.productId',
-      model: 'Product',
-    });
-    const totalItems = cart?.items.length; 
-    const totalValue = cart?.items.reduce((sum, item) => {
-      const price = parseFloat(item.productId.price.replace(/,/g, '')); // Convert price to a number
-      return sum + price * item.quantity;
-    }, 0);
+    }
 
-    res.render("user/checkout",{totalItems,totalValue,address})
+    if(check === "buyNow"){
+      const email = req.session?.details?.email;
+      if (!email) return res.redirect('/login');
+  
+      const user = await userSchema.findOne({ email });
+      if (!user) return res.redirect('/login');
+  
+  
+      const address = await Address.find({userId:user._id})
+  
+      console.log("check/////////////",check)
+  
+      const cart = await Cart.findOne({ userId: user._id }).populate({
+        path: 'items.productId',
+        model: 'Product',
+      });
+
+      res.render("user/checkout",{address,user,})
+    }
+
+   
     
   } catch (error) {
 
@@ -1012,6 +1076,68 @@ const loadCheckout = async (req,res)=>{
     
   }
 }
+
+const CheckOut = async (req, res) => {
+  try {
+    const { customerId, totalValue, paymentMethod,catqty,cartid, country,name, street, city, state, postcode, phone } = req.body;
+
+    console.log("lll",catqty);
+    
+    
+
+    
+    const formattedCustomerId = customerId.trim();
+
+    if (!mongoose.Types.ObjectId.isValid(formattedCustomerId)) {
+      return res.status(400).json({ error: "Invalid customerId format" });
+    }
+
+
+    if (!totalValue) {
+      return res.status(400).json({ error: "Total amount is required" });
+    }
+
+    let items = [];
+
+    
+    if (catqty && catqty.length > 0) {
+      items = catqty.map((quantity, index) => ({
+        productId: new mongoose.Types.ObjectId(cartid[index]), 
+        quantity: quantity
+      }));
+    } 
+    
+    else {
+     //
+      items = [{
+        productId: new mongoose.Types.ObjectId(cartid), 
+        quantity: catqty 
+     }];
+    }
+    
+    
+
+    const billingAddress = { country, street, city, state, postcode, phone,name };
+
+    const newOrder = new Orders({
+      customerId: formattedCustomerId,
+      totalAmount: totalValue,
+      paymentMethod: paymentMethod || "Cash on Delivery",
+      billingAddress,
+      items
+    })
+
+    await newOrder.save();
+    res.status(201).json({ message: "Order placed successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+}
+
+
+
+
 
 
   module.exports={
@@ -1042,6 +1168,8 @@ const loadCheckout = async (req,res)=>{
     editProfile,
     Carts,
     loadCheckout,
-    cartDelete
+    cartDelete,
+    buyNow,
+    CheckOut
 
   }
