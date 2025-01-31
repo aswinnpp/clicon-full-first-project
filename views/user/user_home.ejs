@@ -57,6 +57,31 @@
   height: 100%; 
   object-fit: cover; 
 }
+/* Popup message styling */
+.popup-message {
+    display: none; /* Initially hidden */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f44336; /* Red background */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, bottom 0.5s ease-in-out;
+    z-index: 9999;
+}
+
+/* Show the popup */
+.popup-message.show {
+    display: block;
+    opacity: 1;
+    bottom: 30px; /* Adjust position to appear above the bottom */
+}
+
 
     </style>
 </head>
@@ -139,7 +164,7 @@
                             <form action="#" method="get">
                                 <div class="header-search-wrapper search-wrapper-wide">
                                     <label for="q" class="sr-only">Search</label>
-                                    <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+                                    <button class="btn btn-outline-dark-2" type="submit"><i class="icon-search"></i></button>
                                     <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
                                 </div><!-- End .header-search-wrapper -->
                             </form>
@@ -269,6 +294,9 @@
         
         </header>
         <!-- End .header -->
+
+        <p id="cartlimit" class="popup-message"><%= message !== 'undefined' ? message : '' %></p>
+
 
         <main class="main" >
             <div class="intro-slider-container mb-5">
@@ -1135,6 +1163,45 @@
     <!-- Main JS File -->
     <script src="assets/js/main.js"></script>
     <script src="assets/js/demos/demo-4.js"></script>
+
+    <script>
+  
+// search=====================
+
+const searchInput = document.getElementById("q"); // Search input field
+    const productCards = document.querySelectorAll(".product-card"); // All product items
+    const productList = document.getElementById("product-list"); // The container of product items
+
+    searchInput.addEventListener("input", function () {
+        const searchTerm = searchInput.value.trim().toLowerCase(); // Convert to lowercase
+        let filteredProducts = [];
+
+        productCards.forEach(card => {
+            const productName = card.dataset.name.trim().toLowerCase(); // Get product name & lowercase
+            if (productName.includes(searchTerm)) {
+                filteredProducts.push(card);
+            } else {
+                card.style.display = "none"; // Hide non-matching products
+            }
+        });
+
+        // Sort alphabetically (case-insensitive)
+        filteredProducts.sort((a, b) => {
+            let nameA = a.dataset.name.toLowerCase();
+            let nameB = b.dataset.name.toLowerCase();
+            return nameA.localeCompare(nameB); // Proper case-insensitive sorting
+        });
+
+        // Clear and re-append sorted items
+        productList.innerHTML = "";
+        filteredProducts.forEach(card => {
+            card.style.display = "block";
+            productList.appendChild(card);
+        });
+    });
+    // ============================================     
+
+</script>
     
     
 </body>

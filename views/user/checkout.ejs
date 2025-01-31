@@ -164,6 +164,8 @@
             
         </header><!-- End .header -->
 
+        
+
         <main class="main">
         	<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
         		<div class="container">
@@ -314,7 +316,7 @@
 
 										     <div class="card-header">
                                                 <h2 class="card-title">
-                                                    <input type="radio" name="paymentMethod" value="Cash on Delivery"> Cash on delivery
+                                                    <input type="radio" name="paymentMethod" required value="Cash on Delivery"> Cash on delivery
                                                 </h2>
                                             </div>
                                         </div>
@@ -322,7 +324,7 @@
                                        <div class="accordion-summary"> 
                                             <div class="card-header">
                                                 <h2 class="card-title">
-                                                    <input type="radio" name="paymentMethod" value="PayPal"> PayPal
+                                                    <input type="radio" name="paymentMethod" required value="PayPal"> PayPal
                                                 </h2>
                                             </div>
                                         </div>
@@ -330,7 +332,7 @@
                                         <div class="accordion-summary">
                                             <div class="card-header">
                                                 <h2 class="card-title">
-                                                    <input type="radio" name="paymentMethod" value="Credit Card (Stripe)"> Credit Card (Stripe)
+                                                    <input type="radio" name="paymentMethod" required value="Credit Card (Stripe)"> Credit Card (Stripe)
                                                 </h2>
                                             </div>
                                         </div>
@@ -761,6 +763,13 @@ function fillAddress(street, city, state, country, postalCode, phone) {
         if (label.includes('phone')) input.value = phone;
     });
 }
+
+
+
+
+
+
+
   </script>
 
     

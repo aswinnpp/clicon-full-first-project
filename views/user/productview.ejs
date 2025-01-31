@@ -50,6 +50,39 @@
     width: 100%;
 }
 
+.custom-notification {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease-out;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .custom-notification.active {
+            bottom: 20px;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .custom-notification::before {
+            content: '✓';
+            font-weight: bold;
+            font-size: 18px;
+        }
+
 </style>
 
 
@@ -117,18 +150,7 @@
                         </a>
                     </div><!-- End .header-left -->
 
-                    <div class="header-center">
-                        <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
-                            <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                            <form action="#" method="get">
-                                <div class="header-search-wrapper ">
-                                    <label for="q" class="sr-only">Search</label>
-                                    <button class="btn btn-white  btn-round" type="submit"><i class="icon-search"></i></button>
-                                    <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
-                                </div><!-- End .header-search-wrapper -->
-                            </form>
-                        </div><!-- End .header-search -->
-                    </div>
+                    
 
                     <div class="header-right">
                         <div class="compare-dropdown">
@@ -351,30 +373,33 @@
                                         <div class="details-filter-row details-row-size">
                                             <label for="qty">Qty:</label>
                                             <div class="product-details-quantity">
-                                              <input
-                                                type="number"
-                                                name="quantity"
-                                                id="qty"
-                                                class="form-control"
-                                                value="1"
-                                                min="1"
-                                                max="5"
-                                                step="1"
-                                                required
-                                              />
+                                                <input
+                                                    type="number"
+                                                    name="quantity"
+                                                    id="qty"
+                                                    class="form-control"
+                                                    value="1"
+                                                    min="1"
+                                                    max="5"
+                                                    step="1"
+                                                    required
+                                                />
                                             </div>
-                                          </div>
+                                        </div>
+                                        
+                                        <!-- Notification Box -->
+                                        <div class="custom-notification" id="customNotification">
+                                            <span class="notification-message"></span>
+                                        </div>
+
+
                                           <div class="product-details-action">
                                             <a onclick="buy('<%=product[0].stock%>','<%=product[0]._id%>')"
-                                                  class="btn <%= product[0]?.stock < 5 ? 'btn-warning' : 'btn-success' %>" 
+                                                  class="btn <%= product[0]?.stock < 1 ? 'btn-warning' : 'btn-success' %>" 
                                                   role="button">
-                                                  <%= product[0]?.stock < 5 ? 'Out of Stock' : 'Buy Now' %>
+                                                  <%= product[0]?.stock < 1 ? 'Out of Stock' : 'Buy Now' %>
                                                </a>                                      
                                               
-                                              
-                                              
-                                              </div>
-                                         
                                                <div class="details-action-wrapper">
                                                 <button 
                                                   type="submit" 
@@ -385,14 +410,18 @@
                                                   Add to Cart
                                                 </button>
                                               </div>
+                                              
+                                              </div>
+                                         
+                                              
                                      </form>
 
-                                     <div class="details-action-wrapper">
+                                     <!-- <div class="details-action-wrapper">
                                         <a href="/compare/add/<%= product[0]._id %>" class="btn btn-outline-secondary" title="Add to Compare" aria-label="Add to Compare">
                                             Add to Compare
                                           </a>
                                           </div>
-                                     </div>
+                                     </div> -->
                                     
                                       
                                           
@@ -630,11 +659,8 @@
         <div class="mobile-menu-wrapper">
             <span class="mobile-menu-close"><i class="icon-close"></i></span>
 
-            <form action="#" method="get" class="mobile-search">
-                <label for="mobile-search" class="sr-only">Search</label>
-                <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Search in..." required>
-                
-            </form>
+           
+            
             
             <nav class="mobile-nav">
                 <ul class="mobile-menu">
@@ -723,13 +749,48 @@
 
     <script>
         function buy(stock,id){
-            if(stock<5){
+            if(stock<1){
                 return
             }
             const qty = document.getElementById('qty').value
             window.location.href=`  /buynow/${id}?qty=${qty}`
         
         }
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+    const qtyInput = document.getElementById("qty");
+
+    function checkMaxLimit() {
+        const maxQty = parseInt(qtyInput.getAttribute("max"), 10); // Dynamically get max value
+        const currentQty = parseInt(qtyInput.value, 10);
+
+        if (currentQty >= maxQty) {
+            qtyInput.value = maxQty; // Set to max if exceeded
+            showCustomAlert(`Maximum quantity allowed is ${maxQty}`);
+        } else if (currentQty === 5) {
+            showCustomAlert("Quantity is exactly 5");
+        }
+    }
+
+    // Trigger when value changes (typing or clicking + button)
+    qtyInput.addEventListener("input", checkMaxLimit);
+    qtyInput.addEventListener("change", checkMaxLimit);
+});
+
+function showCustomAlert(message) {
+    const notification = document.getElementById("customNotification");
+    const messageElement = notification.querySelector(".notification-message");
+
+    messageElement.textContent = message;
+    notification.classList.add("active");
+
+    setTimeout(() => {
+        notification.classList.remove("active");
+    }, 3000);  // Hide after 3 seconds
+}
+
+
     </script>
 </body>
 

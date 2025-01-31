@@ -57,7 +57,7 @@ router.get("/orderview/:orderId/:productId",userController.OrderView)
 
 
 router.get("/update-order-status", userController.cancellOrder )
-        
+router.get("/ordersuccess",userController.orderSuccess)     
         
         
         

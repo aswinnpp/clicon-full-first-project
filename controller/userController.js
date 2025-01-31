@@ -26,7 +26,7 @@ const loadHome= async (req,res)=>{
     const product = await Product.find({
       isDeleted:false})
 
-
+const message = req.flash("cart")
 
     const category = await Category.find({
       isDeleted:false})
@@ -40,7 +40,7 @@ const loadHome= async (req,res)=>{
       
       console.log('Fetched Products:', product);
      
-     res.render('user/user_home',{ product, category,user,userr })
+     res.render('user/user_home',{ product, category,user,userr , message })
 
 
     
@@ -95,14 +95,14 @@ const productList = async (req,res)=>{
 try {
 
   
-
+            const message =  req.flash("count")
 
   const product = await Product.find({isDeleted:false})
   const category = await Category.find({
     isDeleted:false})
     const user = await userSchema.find({})
   console.log(product.length)
-  res.render('user/productlist',{product,category,user} )
+  res.render('user/productlist',{product,category,user ,message} )
 } catch (error) {
   console.log('user productList error:', error);
 }
@@ -732,7 +732,6 @@ const loadCart = async (req, res) => {
   }
 };
 
-
 const Carts = async (req, res) => {
   try {
     const email = req.session?.details?.email;
@@ -760,12 +759,16 @@ const Carts = async (req, res) => {
 
     let itemFound = false;
 
+    // Check each item in the cart
     for (let i = 0; i < cart.items.length; i++) {
       if (cart.items[i].productId.toString() === productId) {
-        if (cart.items[i].quantity + parsedQuantity > 5) {
-          return res.status(200).send("You cannot add more than 5 items of this product.");
+        const newQuantity = cart.items[i].quantity + parsedQuantity;
+
+        if (newQuantity > 5) {
+          req.flash("cart","You cannot add more than 5 items of this product.")
+          return res.redirect('/');
         } else {
-          cart.items[i].quantity += parsedQuantity; 
+          cart.items[i].quantity = newQuantity;
           itemFound = true;
         }
         break;
@@ -774,12 +777,12 @@ const Carts = async (req, res) => {
 
     if (!itemFound) {
       if (parsedQuantity > 5) {
-        return res.status(200).send("You cannot add more than 5 items of this product.");
+        req.flash("cart","You cannot add more than 5 items of this product.")
+        return res.redirect('/');
       }
       cart.items.push({ productId, quantity: parsedQuantity });
     }
 
- 
     await cart.save();
     req.session.buyCheck = "Cart";  
     return res.redirect('/cart');
@@ -789,7 +792,6 @@ const Carts = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
-
 
 const cartDelete = async (req,res)=>{
 
@@ -817,9 +819,6 @@ try {
   
 }
 }
-
-
-
 
 const loadWhishlist = async (req,res)=>{
 
@@ -994,12 +993,15 @@ const buyNow = async (req, res) => {
     const quantity = parseFloat(qty);
     const totalValue = productPrice * quantity;
 
+    const message = req.flash('count')
+
     // Here you should pass an array of cartItems or just the single product
     const cartItems = [{ productId: product, quantity: qty, }];
     
     res.render("user/checkout", {
       address,
       product,
+      message,
       totalValue,
       totalItems,
       user,
@@ -1018,6 +1020,7 @@ const loadCheckout = async (req,res)=>{
   try {
 
     const check = req.session?.buyCheck
+    const message = req.flash('count')
 
     if(!check){
       res.redirect("/")  
@@ -1052,7 +1055,7 @@ const loadCheckout = async (req,res)=>{
         return sum + price * quantity;
       }, 0);
   
-      res.render("user/checkout",{totalItems,cartItems,totalValue,address,user,product:cartItems})
+      res.render("user/checkout",{totalItems,cartItems,totalValue,address,user,product:cartItems,message})
 
     }
 
@@ -1073,7 +1076,7 @@ const loadCheckout = async (req,res)=>{
         model: 'Product',
       });
 
-      res.render("user/checkout",{address,user,})
+      res.render("user/checkout",{address,user,message})
     }
 
    
@@ -1121,7 +1124,21 @@ const CheckOut = async (req, res) => {
 
     }
     
+    for (const item of items) {
+      const product = await Product.findById(item.productId); 
+      if (product) {
+        if (product.stock > item.quantity) {
+          product.stock -= item.quantity; 
+          await product.save();
+        } else {
 
+          req.flash("count","Not enough stock for this product")
+         res.redirect("/productlist")
+        }
+      } else {
+        return res.status(404).json({ error: `Product with ID ${item.productId} not found` });
+      }
+    }
     
 
     const billingAddress = { country, street, city, state, postcode, phone,name };
@@ -1135,13 +1152,17 @@ const CheckOut = async (req, res) => {
     })
 
     await newOrder.save();
-    res.status(201).json({ message: "Order placed successfully" });
+
+    console.log("customerId",customerId);
+    
+
+
+    res.render("/ordersuccess",{ userid: customerId.trim() })
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
   }
 }
-
 
 const OrderView = async (req, res) => {
   try {
@@ -1231,6 +1252,18 @@ const cancellOrder = async (req, res) => {
   }
 };
 
+const orderSuccess = async(req,res)=>{
+
+  try {
+
+    res.render('user/ordersuccess')
+    
+  } catch (error) {
+    console.log(error)
+    
+  }
+} 
+
   
 
 
@@ -1271,6 +1304,7 @@ const cancellOrder = async (req, res) => {
     buyNow,
     CheckOut,
     OrderView,
-    cancellOrder
+    cancellOrder,
+    orderSuccess
 
   }

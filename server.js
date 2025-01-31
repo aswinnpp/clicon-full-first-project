@@ -13,7 +13,7 @@ const env = require("dotenv").config();
 const flash = require("connect-flash");
 const bodyParser = require('body-parser')
 const cors = require('cors');
-const morgan = require('morgan')
+// const morgan = require('morgan')
 
 
 
@@ -23,7 +23,7 @@ app.use(nocache());
 
 app.use(nocache());
 
-app.use(morgan('dev'))
+// app.use(morgan('dev'))
 app.use(cors());
 app.use(flash());
 
