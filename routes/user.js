@@ -52,10 +52,22 @@ router.post("/remove-address/:id",userController.removeAdrress)
 router.post("/edit-address",userController.editAddress)
 router.post("/update-profile", multer.upload.single("image"),userController.editProfile)
 
+router.get("/orderview/:orderId/:productId",userController.OrderView)
 
+
+
+router.get("/update-order-status", userController.cancellOrder )
+        
+        
+        
+        
+  
+    
 
 router.get("/checkout",userauth.checkSession,userauth.isBan, userController.loadCheckout)
 router.post("/checkout", userController.CheckOut)
+
+
 
 
 

@@ -1,0 +1,63 @@
+<%- include('../partials/admin/header') %>
+
+<link rel="stylesheet" href="../../css/styles/orderview.css">
+
+<!-- Main Content -->
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">Order Details</h1>
+    </div>
+  
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Order ID: <%= order._id %></h5>
+     
+        <p class="card-text"><strong>Order Date:</strong> <%= new Date(order.orderDate).toLocaleDateString() %></p>
+        <p class="card-text"><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+        <p class="card-text"><strong>Payment Status:</strong> <%= order.paymentStatus %></p>
+      </div>
+    </div>
+  
+    <!-- Billing Address Section -->
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Billing Address</h5>
+        <p class="card-text"><strong>Name:</strong> <%= order.billingAddress.name %></p>
+        <p class="card-text"><strong>Street:</strong> <%= order.billingAddress.street %></p>
+        <p class="card-text"><strong>City:</strong> <%= order.billingAddress.city %></p>
+        <p class="card-text"><strong>State:</strong> <%= order.billingAddress.state %></p>
+        <p class="card-text"><strong>Country:</strong> <%= order.billingAddress.country %></p>
+        <p class="card-text"><strong>Postcode:</strong> <%= order.billingAddress.postcode %></p>
+        <p class="card-text"><strong>Phone:</strong> <%= order.billingAddress.phone %></p>
+      </div>
+    </div>
+  
+    <!-- Product Details Section -->
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Product Details</h5>
+        <p class="card-text"><strong>Product Name:</strong> <%= item.productId.productname %></p>
+        <p class="card-text"><strong>Quantity:</strong> <%= item.quantity %></p>
+        <p class="card-text"><strong>Price:</strong> <%= item.productId.price %></p>
+        <p class="card-text"><strong>Total Amount:</strong> <%= (item.quantity * parseFloat(item.productId.price.replace(/,/g, ''))).toFixed(2) %></p>
+        <p class="card-text"><strong>Status:</strong> <%= item.shippingDetails.status %></p>
+      </div>
+    </div>
+  
+    <!-- Shipping Details Section -->
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Shipping Details</h5>
+        <p class="card-text"><strong>Origin:</strong> <%= item.shippingDetails.origin %></p>
+        <p class="card-text"><strong>Estimated Arrival:</strong> <%= new Date(item.shippingDetails.estimatedArrival).toLocaleDateString() %></p>
+        <p class="card-text"><strong>Status:</strong> <%= item.shippingDetails.status %></p>
+      </div>
+    </div>
+  
+    <div class="mt-4">
+      <a href="/admin/ordermanage" class="btn btn-secondary">Back to Orders</a>
+    </div>
+  </main>
+  
+
+<%- include('../partials/admin/footer') %>

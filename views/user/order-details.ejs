@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <!-- Main CSS File -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/plugins/owl-carousel/owl.carousel.css">
+    <link rel="stylesheet" href="/assets/css/plugins/magnific-popup/magnific-popup.css">
+    <link rel="stylesheet" href="/assets/css/plugins/nouislider/nouislider.css">
+
+    <style>
+        :root {
+            --primary-color: #8187a8;
+            --success-color: #0abf53;
+            --text-color: #1f2937;
+            --border-radius: 12px;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: var(--text-color);
+        }
+
+        .order-header {
+            background: linear-gradient(135deg, #c6bebe 0%, #edecf0 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .product-image {
+            border-radius: var(--border-radius);
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .price-tag {
+            background-color: #f3f4f6;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .shipping-card, .product-card {
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            background: white;
+        }
+
+        .timeline {
+            display: flex;
+            list-style: none;
+            padding-left: 0;
+            margin-top: 20px;
+            position: relative;
+            justify-content: space-between;
+        }
+
+        .timeline-item {
+            position: relative;
+            width: 18%;
+            opacity: 0.6;
+            transition: opacity 0.5s ease;
+            text-align: center;
+        }
+
+        .timeline-item.active {
+            opacity: 1;
+        }
+
+        .timeline-item .timeline-icon {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: -20px;
+            width: 30px;
+            height: 30px;
+            background-color: #ddd;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+        }
+
+        .timeline-item .timeline-content {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .timeline-item .timeline-content p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .timeline-item .timeline-content strong {
+            font-weight: bold;
+        }
+
+        /* Active step styles */
+        .timeline-item.active .timeline-icon {
+            background-color: #28a745;
+        }
+
+        .timeline-item.active .timeline-content {
+            background-color: #e9f7ef;
+        }
+
+        .timeline-item .timeline-icon.bg-secondary {
+            background-color: #ddd;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn-cancel, .btn-return {
+            margin: 5px;
+        }
+
+        .btn-return:disabled {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header header-intro-clearance header-4">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-left">
+                    <a href="tel:#"><i class="icon-phone"></i>Call: +0123 456 789</a>
+                </div><!-- End .header-left -->
+
+                <div class="header-right">
+
+                    <ul class="top-menu">
+                        <li>
+                            <a href="#">Links</a>
+                            <ul>
+                                <li>
+                                    <div class="header-dropdown">
+                                        <a href="#">USD</a>
+                                        <div class="header-menu">
+                                            <ul>
+                                                <!-- <li><a href="#">Eur</a></li>
+                                                <li><a href="#">Usd</a></li> -->
+                                            </ul>
+                                        </div><!-- End .header-menu -->
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="header-dropdown">
+                                        <a href="#">English</a>
+                                        <div class="header-menu">
+                                            <ul>
+                                                <!-- <li><a href="#">English</a></li>
+                                                <li><a href="#">French</a></li>
+                                                <li><a href="#">Spanish</a></li> -->
+                                            </ul>
+                                        </div><!-- End .header-menu -->
+                                    </div>
+                                </li>
+                                <!-- <% if(user){%>
+
+                                    <li><a href="/logout">Logout</a></li>
+                              <%  }else{%>
+
+                                <li><a href="http://localhost:3000/signin">Sign in / Sign up</a></li>
+                            <%  } %> -->
+                            </ul>
+                        </li>
+                    </ul><!-- End .top-menu -->
+                </div><!-- End .header-right -->
+
+            </div><!-- End .container -->
+        </div><!-- End .header-top -->
+
+        <div class="header-middle">
+            <div class="container">
+                <div class="header-left">
+                    <button class="mobile-menu-toggler">
+                        <span class="sr-only">Toggle mobile menu</span>
+                        <i class="icon-bars"></i>
+                    </button>
+                    
+                    <a href="index.html" class="logo">
+                       <h1>Clicon</h1>
+                    </a>
+                </div><!-- End .header-left -->
+
+                <div class="header-center">
+                    <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
+                        <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
+                        <form action="#" method="get">
+                            <div class="header-search-wrapper search-wrapper-wide">
+                                <label for="q" class="sr-only">Search</label>
+                                <button class="btn btn-outline-dark-2" type="submit"><i class="icon-search"></i></button>
+                                <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
+                            </div><!-- End .header-search-wrapper -->
+                        </form>
+                    </div><!-- End .header-search -->
+                </div>
+
+                 <div class="header-right">
+                    <div class="compare-dropdown">
+                        <a href="#" title="Compare Products" aria-label="Compare Products">
+                            <div class="icon">
+                                <i class="icon-random" style="font-size: 24px;"></i>
+                            </div>
+                            <p>Compare</p>
+                        </a>
+                    </div>
+                    <!-- End .compare-dropdown -->
+
+                    <div class="wishlist">
+                        <a href="/wishlist" title="Wishlist">
+                            <div class="icon">
+                                <i class="icon-heart-o"></i>
+                                
+                            </div>
+                            <p>Wishlist</p>
+                        </a>
+                    </div><!-- End .compare-dropdown -->
+
+                    <div class="cart-dropdown">
+                        <a href="/cart" class="dropdown-toggle" role="button" data-display="static">
+                            <div class="icon">
+                                <i class="icon-shopping-cart"></i>
+                            </div>
+                            <p>Cart</p>
+                        </a>
+                    </div><!-- End .cart-dropdown -->
+                    
+
+
+                   
+                     
+
+                </div>
+
+
+            </div><!-- End .container -->
+        </div><!-- End .header-middle -->
+
+        <div class="header-bottom sticky-header">
+            <div class="container">
+                <div class="header-left">
+                    
+                </div>
+
+                <div class="header-center">
+                    <nav class="main-nav" style="display: flex; align-items: center;">
+                        <ul class="menu" style="list-style: none; display: flex; align-items: center; margin: 0; padding: 0; width: 100%;">
+                            <li  style="margin: 0 10px;">
+                                <a href="/" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Home</a>
+                            </li>
+                            <li style="margin: 0 10px;" class="megamenu-container active">
+                                <a href="/productlist" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Shop</a>
+                            </li>
+                            <li style="margin: 0 10px;">
+                                <a href="blog.html" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">About</a>
+                            </li>
+                            <li style="margin: 0 10px;">
+                                <a href="elements-list.html" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Contact</a>
+                            </li>
+                           
+                        </ul>
+                    </nav>
+                </div>
+
+                
+                <div class="header-right">
+                    <i class="la la-lightbulb-o"></i><p>Clearance<span class="highlight">&nbsp;Up to 30% Off</span></p>
+                </div>
+            </div><!-- End .container -->
+        </div><!-- End .header-bottom -->
+    </header>
+
+<div class="container py-5">
+    <!-- Order Header -->
+    <div class="order-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h4 class="mb-2">Order #<%= order._id %></h4>
+                <p class="mb-0">Placed on <%= order.createdAt.toDateString() %></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Status Timeline -->
+    <div class="order-timeline">
+        <ul class="timeline">
+            <!-- Pending Status -->
+            <li class="timeline-item <%= item.shippingDetails.status === 'Pending' ? 'active' : '' %>">
+                <span class="timeline-icon <%= item.shippingDetails.status === 'Pending' ? 'bg-success' : 'bg-secondary' %>">
+                    <i class="fas fa-hourglass-half"></i>
+                </span>
+                <div class="timeline-content">
+                    <strong>Pending</strong>
+                    <p><%= order.createdAt.toDateString() %></p>
+                </div>
+            </li>
+
+            <!-- Processing Status -->
+            <li class="timeline-item <%= item.shippingDetails.status === 'Processing' ? 'active' : '' %>">
+                <span class="timeline-icon <%= item.shippingDetails.status === 'Processing' ? 'bg-success' : 'bg-secondary' %>">
+                    <i class="fas fa-cogs"></i>
+                </span>
+                <div class="timeline-content">
+                    <strong>Processing</strong>
+                    <p><%= item.shippingDetails.processingDate %></p>
+                </div>
+            </li>
+
+            <!-- Shipped Status -->
+            <li class="timeline-item <%= item.shippingDetails.status === 'Shipped' ? 'active' : '' %>">
+                <span class="timeline-icon <%= item.shippingDetails.status === 'Shipped' ? 'bg-success' : 'bg-secondary' %>">
+                    <i class="fas fa-truck"></i>
+                </span>
+                <div class="timeline-content">
+                    <strong>Shipped</strong>
+                    <p><%= item.shippingDetails.shippedDate %></p>
+                </div>
+            </li>
+
+            <!-- Delivered Status -->
+            <li class="timeline-item <%= item.shippingDetails.status === 'Delivered' ? 'active' : '' %>">
+                <span class="timeline-icon <%= item.shippingDetails.status === 'Delivered' ? 'bg-success' : 'bg-secondary' %>">
+                    <i class="fas fa-check-circle"></i>
+                </span>
+                <div class="timeline-content">
+                    <strong>Delivered</strong>
+                    <p><%= item.shippingDetails.deliveryDate %></p>
+                </div>
+            </li>
+
+            <!-- Cancelled Status -->
+            <li class="timeline-item <%= item.shippingDetails.status === 'Cancelled' ? 'active' : '' %>">
+                <span class="timeline-icon <%= item.shippingDetails.status === 'Cancelled' ? 'bg-danger' : 'bg-danger' %>">
+                    <i class="fas fa-times-circle"></i>
+                </span>
+                <div class="timeline-content">
+                    <strong>Cancelled</strong>
+                    <p><%= item.shippingDetails.cancelledDate %></p>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="row">
+        <!-- Product Details -->
+        <div class="col-lg-8">
+            <div class="product-card mb-4">
+                <h5 class="mb-4">Product Details</h5>
+                <div class="d-flex align-items-center">
+                    <img src="/uploads/<%= item.productId.image[0] %>" class="product-image me-4" alt="Product">
+
+                    <div>
+                        <h5 class="mb-2"><%= item.productId.productname %></h5>
+                        <p class="text-muted"><%= item.productId.description %></p>
+                        <span class="price-tag">₹<%= item.productId.price %></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipping Details -->
+        <div class="col-lg-4">
+            <div class="shipping-card">
+                <h5 class="mb-3">Shipping Details</h5>
+                <h6><%= order.customerId.name %></h6>
+
+                <p class="text-muted">
+                    <% if (order.billingAddress) { %>
+                        <%= order.billingAddress.street %><br>
+                        <%= order.billingAddress.city %>, <%= order.billingAddress.state %> - <%= order.billingAddress.postcode %>
+                    <% } else { %>
+                        <span class="text-danger">Billing address not available</span>
+                    <% } %>
+                </p>
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-phone-alt me-2 text-primary"></i>
+                    <span><%= order.billingAddress.phone %></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="button-container">
+        <% if (item.shippingDetails.status === "Cancelled") { %>
+            <button class="btn btn-secondary btn-cancelled" disabled>Cancelled</button>
+        <% } else if (item.shippingDetails.status != "Delivered") { %>
+            <button class="btn btn-danger btn-cancel" onclick="confirmCancel('<%= order._id %>', '<%= item.productId._id %>')">Cancel</button>
+        <% } else if (item.shippingDetails.status === 'Delivered') { %>
+            <button class="btn btn-warning btn-return" 
+                <% 
+                    let deliveryDate = new Date(item.shippingDetails.deliveryDate);
+                    let currentDate = new Date();
+                    if ((currentDate - deliveryDate) > 7 * 24 * 60 * 60 * 1000) { 
+                %> disabled <% } %>>Return</button>
+        <% } %>
+    </div>
+    
+    
+    <div class="text-center mt-4">
+        <a href="/profile/<%= user._id %>" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Orders
+        </a>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmCancel(orderId, productId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You are about to cancel this order. This action cannot be undone!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, cancel it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Redirect to cancel order URL
+                window.location.href = `/update-order-status?orderId=${orderId}&productId=${productId}&newStatus=Cancelled`;
+            }
+        });
+    }
+</script>
+</body>
+</html>

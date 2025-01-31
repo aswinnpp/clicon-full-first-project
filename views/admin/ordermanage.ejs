@@ -1,61 +1,123 @@
 <%- include('../partials/admin/header') %>
 
 <link rel="stylesheet" href="../../css/styles/categorymanage.css">
-    <!-- Main Content -->
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 d-md-none">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">Category Management</a>
-          <button class="navbar-toggler custom-toggler" id="menuBtn" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-        </div>
-      </nav>
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Category Status</h1>
+<!-- Main Content -->
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 d-md-none">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Category Management</a>
+      <button class="navbar-toggler custom-toggler" id="menuBtn" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </nav>
+  
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Category Status</h1>
+  </div>
+
+  <div class="row mb-3" style="margin-top:80px;">
+    <div class="col">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Search categories...">
+        <button class="btn btn-primary" type="button">Search</button>
       </div>
+    </div>
+  </div>
 
-      <div class="d-flex justify-content-between mb-3" style="position: absolute; right: 30px;">
-        <form action="" method="get">
-          <button class="btn btn-warning mt-3">Create</button>
-        </form>
-      </div>
-
-
-
-      <div class="row mb-3 " style="margin-top:80px;">
-        <div class="col">
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search categories...">
-            <button class="btn btn-primary" type="button">Search</button>
-          </div>
-        </div>
-      </div>
-
-    
-
-      <div class="table-responsive">
-        <table class="table table-striped table-sm">
-          <thead>
+  <div class="table-responsive">
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th>Customer Name</th>
+          <th>Product Name</th>
+          <th>Order Date</th>
+          <!-- <th>Quantity</th>
+          <th>Price</th> -->
+          <th>Total Amount</th>
+          <!-- <th>Payment Method</th> -->
+          <th>Order Status</th>
+          <th>Change Order Status</th>
+          <th>Change Payment Status</th> <!-- Added Payment Status column -->
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(order => { %>
+          <% order.items.forEach(item => { %>
             <tr>
-              <th>Order ID</th>
-              <th>Customer Name</th>
-              <th>Order Date</th>
-              <th>Total Amount</th>
-              <th>Payment Status</th>
-              <th>Order Status</th>
-              <th>Updated At</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-        </table>
-      </div>
-        <tbody>
-
-            
-        </tbody>
-         
+              <td><%= order.customerId.email %></td>
+              <td><%= item.productId.productname %></td>
+              <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+              <!-- <td><%= item.quantity %></td>
+              <td><%= item.productId.price %></td> -->
+              <td><%= (item.quantity * parseFloat(item.productId.price.replace(/,/g, ''))).toFixed(2) %></td>
+              <!-- <td><%= order.paymentMethod %></td> -->
     
-  </main>
+              <!-- Display Current Order Status -->
+              <td>
+                <strong>Status:</strong> <%= item.shippingDetails.status %>
+              </td>
+    
+              <td>
+                <!-- Order Status Dropdown for individual product -->
+                <form action="/admin/update-product-status/<%= order._id %>/<%= item._id %>" method="POST">
+                  <select name="status" onchange="this.form.submit()">
+                    <% ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].forEach(statusOption => { %>
+                      <option value="<%= statusOption %>" <%= item.shippingDetails.status === statusOption ? 'selected' : '' %> >
+                        <%= statusOption %>
+                      </option>
+                    <% }); %>
+                  </select>
+                </form>
+              </td>
+    
+              <td>
+                <form action="/admin/update-product-status/<%= order._id %>/<%= item._id %>" method="POST">
+                  <select name="paymentStatus" onchange="this.form.submit()">
+                    <% ['Pending', 'Paid', 'Failed'].forEach(statusOption => { %>
+                      <option value="<%= statusOption %>" <%= item.paymentStatus === statusOption ? 'selected' : '' %>>
+                        <%= statusOption %>
+                      </option>
+                    <% }); %>
+                  </select>
+                </form>
+              </td>
+    
+              <td>
+                <!-- View Button for each product in the order -->
+                <a href="/admin/orderview/<%= order._id %>/<%= item.productId._id %>" class="btn btn-info">View</a>
+              </td>
+            </tr>
+          <% }); %>
+        <% }); %>
+      </tbody>
+    </table>
+    
+  </div>
 
-  <%- include('../partials/admin/footer') %>
+  <!-- Pagination Controls -->
+  <nav aria-label="Order pagination">
+    <ul class="pagination">
+      <!-- Previous Button -->
+      <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+        <a class="page-link" href="/admin/ordermanage?page=<%= currentPage - 1 %>">Previous</a>
+      </li>
+
+      <!-- Page Numbers -->
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+          <a class="page-link" href="/admin/ordermanage?page=<%= i %>"><%= i %></a>
+        </li>
+      <% } %>
+
+      <!-- Next Button -->
+      <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+        <a class="page-link" href="/admin/ordermanage?page=<%= currentPage + 1 %>">Next</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+</main>
+
+<%- include('../partials/admin/footer') %>

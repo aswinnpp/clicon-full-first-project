@@ -2,11 +2,14 @@ const User = require("../models/usermodel");
 const bcrypt = require("bcrypt");
 const Product = require("../models/productmodel");
 const Category = require("../models/categorymodel")
+
+const Order = require("../models/orderdetails")
 const path = require('path')
 const fs = require ('fs');
 const mongoose =require("mongoose")
 const { v4: uuidv4 } = require('uuid');
 const router = require("../routes/admin");
+const { ObjectId } = require('mongoose').Types;
 const { log } = require("console");
 
 
@@ -659,17 +662,157 @@ if (!categoryId  || !mongoose.Types.ObjectId.isValid(categoryId )) {
 // ------------------------------------------------
 
 
-const loadOrdermanage = async (req,res)=>{
+const loadOrdermanage = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Get the current page or default to 1
+    const limit = 10; // Number of orders per page
+    const skip = (page - 1) * limit; // Number of items to skip
 
+    const totalOrders = await Order.countDocuments(); // Get the total number of orders
+    const totalPages = Math.ceil(totalOrders / limit); // Calculate the total number of pages
+
+    // Fetch orders with pagination and populate customerId
+    const orders = await Order.find()
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: 'customerId',
+        model: 'User',
+        select: 'email name',  // Select customer details (email, name)
+      })
+      .populate({
+        path: 'items.productId',  // Populate product details within items
+        model: 'Product',
+        select: 'productname price image',  // Select product details (name, price, image)
+      })
+      .exec();
+   
+
+  res.render('admin/ordermanage', {
+    orders,
+    currentPage: page,
+    totalPages: totalPages,
+  });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching orders');
+  }
+};
+
+
+const OrderManage = async (req, res) => {
+  try {
+    const { status } = req.body; // Get the updated status
+    const  orderId  = req.params.id;
+     console.log(";;;;;;;;",status,+"[[[[[[[[[[[[[[[[[",orderId);
+     
+
+    // Update the order status in the database
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { status }, // Set the new status
+      { new: true } // Return the updated document
+    );
+
+    // Redirect to the order management page or show updated info
+    res.redirect('/admin/ordermanage');
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    res.status(500).send("Server Error");
+  }
+};
+
+const orderView = async (req, res) => {
 
   try {
+    const { orderId, productId } = req.params;
 
-    res.render("admin/ordermanage")
-    
+    console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+      // Find the order
+      const order = await Order.findById(orderId)
+      .populate("items.productId"); 
+
+      if (!order) {
+          return res.status(404).send("Order not found");
+      }
+
+      // Find the specific item
+      const item = order.items.find(i => i.productId._id.toString() === productId);
+
+      log
+
+      if (!item) {
+          return res.status(404).send("Product not found in order");
+      }
+
+      res.render("admin/orderview", { order, item });
   } catch (error) {
-    
+      console.error(error);
+      res.status(500).send("Error fetching order details");
   }
-}
+};
+
+
+const statusUpdate = async (req, res) => {
+  const { orderId, productId } = req.params;  
+  const { status } = req.body;  
+  const { paymentStatus } = req.body;
+
+  console.log("paymentStatus",paymentStatus);
+  
+
+  if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    return res.status(400).send("Invalid orderId format");
+  }
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).send("Invalid productId format");
+  }
+
+  try {
+    const order = await Order.findById(orderId);
+   
+    const productObjectId = new ObjectId(productId);
+
+   
+console.log("order",order);
+
+    
+
+
+    console.log("iii",Array.isArray(productObjectId),productObjectId);
+    order.items.forEach(item => {
+      console.log(Array.isArray((item.productId)), item?.productId); // Each productId type
+  });
+    
+    
+    const item = order.items.find(item => item?._id.equals(productObjectId));
+
+    
+    
+ 
+    
+
+    item.shippingDetails.status = status;
+    item.paymentStatus = paymentStatus;
+
+
+    await order.save();
+
+    res.redirect('/admin/ordermanage');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating product status");
+  }
+};
+
+
+
+
+
+
+
+
 
 const loadCouponmanage = async (req,res) =>{
 
@@ -706,6 +849,9 @@ module.exports = {
   productDelete,
   adminLogout,
   loadOrdermanage,
-  loadCouponmanage
+  loadCouponmanage,
+  OrderManage,
+  orderView,
+  statusUpdate
  
 };

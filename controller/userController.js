@@ -1,5 +1,6 @@
 const userSchema = require("../models/usermodel");
 const Product = require("../models/productmodel");
+const Order = require ("../models/orderdetails")
 const Cart = require("../models/cartpagemodel")
 const Address = require("../models/addressmodel")
 const Category = require("../models/categorymodel")
@@ -739,7 +740,8 @@ const Carts = async (req, res) => {
     const userId = user?._id;
     const { productId, quantity } = req.body;
 
-    // Fetch the product details
+    const parsedQuantity = Number(quantity);
+
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).send("Product not found.");
@@ -748,10 +750,9 @@ const Carts = async (req, res) => {
     let cart = await Cart.findOne({ userId }).populate('items.productId');
     
     if (!cart) {
-      // If no cart exists, create a new one with the product
       cart = new Cart({
         userId,
-        items: [{ productId, quantity }],
+        items: [{ productId, quantity: parsedQuantity }],
       });
       await cart.save();
       return res.redirect('/cart');
@@ -759,31 +760,28 @@ const Carts = async (req, res) => {
 
     let itemFound = false;
 
-    // Loop through the cart items to check if the product is already in the cart
     for (let i = 0; i < cart.items.length; i++) {
       if (cart.items[i].productId.toString() === productId) {
-        // Check if the quantity exceeds the limit (5 items max)
-        if (cart.items[i].quantity + quantity <= 5) {
-          cart.items[i].quantity += quantity;
-          itemFound = true;
+        if (cart.items[i].quantity + parsedQuantity > 5) {
+          return res.status(200).send("You cannot add more than 5 items of this product.");
         } else {
-          return res.status(400).send("You cannot add more than 5 items of this product.");
+          cart.items[i].quantity += parsedQuantity; 
+          itemFound = true;
         }
         break;
       }
     }
 
-    // If the product was not found in the cart, add it
     if (!itemFound) {
-      if (quantity > 5) {
-        return res.status(400).send("You cannot add more than 5 items of this product.");
+      if (parsedQuantity > 5) {
+        return res.status(200).send("You cannot add more than 5 items of this product.");
       }
-      cart.items.push({ productId, quantity });
+      cart.items.push({ productId, quantity: parsedQuantity });
     }
 
-    // Save the updated cart
+ 
     await cart.save();
-    req.session.buyCheck = "Cart";  // Track session state
+    req.session.buyCheck = "Cart";  
     return res.redirect('/cart');
     
   } catch (error) {
@@ -791,7 +789,6 @@ const Carts = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
-
 
 
 const cartDelete = async (req,res)=>{
@@ -848,12 +845,18 @@ try {
   const id = req.params.id
   // console.log("id",id)
 console.log(req.session)
+const orders = await Order.find({ customerId: id })
+  .populate({
+    path: 'items.productId', // Path to populate
+    select: 'productname price' // Select only the fields you need (in this case, the name of the product)
+  })
+  .exec();
+
   const user = await userSchema.findOne({_id:id})
   const address = await Address.find({userId:id})
-  // console.log("user",user)
   
 
-  res.render("user/profile",{user,id,address})
+  res.render("user/profile",{user,id,address,orders})
   
 } catch (error) {
 
@@ -1000,7 +1003,8 @@ const buyNow = async (req, res) => {
       totalValue,
       totalItems,
       user,
-      cartItems // Pass cartItems instead of product
+      cartItems,
+      quantity // Pass cartItems instead of product
     });
 
   } catch (error) {
@@ -1013,7 +1017,11 @@ const loadCheckout = async (req,res)=>{
 
   try {
 
-    const check = req.session.buyCheck
+    const check = req.session?.buyCheck
+
+    if(!check){
+      res.redirect("/")  
+    }
 
     console.log("////////check",check);
     
@@ -1048,18 +1056,18 @@ const loadCheckout = async (req,res)=>{
 
     }
 
-    if(check === "buyNow"){
-      const email = req.session?.details?.email;
-      if (!email) return res.redirect('/login');
-  
-      const user = await userSchema.findOne({ email });
-      if (!user) return res.redirect('/login');
-  
-  
-      const address = await Address.find({userId:user._id})
-  
-      console.log("check/////////////",check)
-  
+      if(check === "buyNow"){
+        const email = req.session?.details?.email;
+        if (!email) return res.redirect('/login');
+    
+        const user = await userSchema.findOne({ email });
+        if (!user) return res.redirect('/login');
+    
+    
+        const address = await Address.find({userId:user._id})
+    
+        console.log("check/////////////",check)
+    
       const cart = await Cart.findOne({ userId: user._id }).populate({
         path: 'items.productId',
         model: 'Product',
@@ -1100,21 +1108,20 @@ const CheckOut = async (req, res) => {
     let items = [];
 
     
-    if (catqty && catqty.length > 0) {
+    if (catqty && catqty.length > 1) {
       items = catqty.map((quantity, index) => ({
         productId: new mongoose.Types.ObjectId(cartid[index]), 
         quantity: quantity
       }));
-    } 
-    
-    else {
-     //
+    } else{
       items = [{
-        productId: new mongoose.Types.ObjectId(cartid), 
-        quantity: catqty 
-     }];
+        productId: new mongoose.Types.ObjectId(cartid),  
+        quantity: Number(catqty) || 1 
+      }];
+
     }
     
+
     
 
     const billingAddress = { country, street, city, state, postcode, phone,name };
@@ -1134,6 +1141,98 @@ const CheckOut = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 }
+
+
+const OrderView = async (req, res) => {
+  try {
+    const { orderId, productId } = req.params;
+
+    console.log("Fetching Order Details...");
+
+    // Find the order and populate necessary fields
+    const order = await Order.findById(orderId)
+  .populate("items.productId")
+  .populate("customerId")
+
+
+  
+
+    if (!order) {
+      console.log("Order not found");
+     
+    }
+
+    console.log("Order Found:", order.items);
+
+    console.log("All Product IDs in Order:", order.items.map(i => i.productId._id.toString()));
+
+    // Find the specific item in the order
+    const item = order.items.find(i => i.productId._id.toString() === productId);
+
+    console.log("ssssssssssss",item);
+
+    if (!item) {
+      console.log("Product not found in order");
+     
+    }
+console.log("sssssssssssss",item);
+
+    // Render the order details page
+    res.render("user/order-details", { order, item ,user: order.customerId });
+  } catch (error) {
+    console.error("Error fetching order details:", error.message);
+    res.status(500).send(`Error fetching order details: ${error.message}`);
+  }
+};
+
+const cancellOrder = async (req, res) => {
+  try {
+    console.log("Request received for updating order status");
+
+    const orderId = req.query.orderId;
+    const newStatus = req.query.newStatus;
+    const productId = req.query.productId;
+
+    console.log("Received Data:", { orderId, newStatus, productId });
+
+    // Find the order
+    const order = await Order.findById(orderId)
+      .populate("items.productId")
+      .populate("customerId");
+
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+    // Find the specific item with the given productId
+    const itemToUpdate = order.items.find(
+      (item) => item.productId._id.toString() === productId
+    );
+
+    if (!itemToUpdate) {
+      return res.status(404).send("Product not found in order");
+    }
+
+    // Update the shipping status only for the correct product
+    itemToUpdate.shippingDetails.status = newStatus;
+    
+    // Ensure Mongoose detects the change
+    
+
+    // Save the updated order
+    await order.save();
+
+    console.log("Updated status:", itemToUpdate.shippingDetails.status);
+
+    res.redirect(`/orderview/${orderId}/${productId}`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+};
+
+  
+
 
 
 
@@ -1170,6 +1269,8 @@ const CheckOut = async (req, res) => {
     loadCheckout,
     cartDelete,
     buyNow,
-    CheckOut
+    CheckOut,
+    OrderView,
+    cancellOrder
 
   }

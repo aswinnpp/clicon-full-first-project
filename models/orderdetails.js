@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const orderDetailsSchema = new mongoose.Schema({
   customerId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Customer', // Assuming you have a Customer model
+    ref: 'User', // Assuming you have a Customer model
     required: true,
   },
   orderDate: {
@@ -15,11 +15,7 @@ const orderDetailsSchema = new mongoose.Schema({
     required: true,
     min: [0, 'Total amount cannot be negative'],
   },
-  status: {
-    type: String,
-    enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
-    default: 'Pending',
-  },
+  
   paymentMethod: {
     type: String,
     enum: ['Credit Card', 'Debit Card', 'PayPal', 'Cash on Delivery'],
@@ -45,6 +41,19 @@ const orderDetailsSchema = new mongoose.Schema({
     
       min: [1, 'Quantity must be at least 1'],
     },
+    
+    paymentStatus: {
+      type: String,
+      enum: ['Pending', 'Paid', 'Failed'],
+      default: 'Pending',
+    },  
+    shippingDetails: {
+      origin: { type: String, required: true, default: "India" }, // e.g., 'China', 'Africa'
+      // shippingMethod: { type: String, enum: ['Standard', 'Express'], default: 'Standard' },
+      estimatedArrival: { type: Date, default: new Date('2025-02-15') }, // Example date
+      actualArrival: { type: Date, default: null },
+      status: { type: String, enum: ['Pending', 'Shipped','Cancelled','Processing', 'Delivered'], default: 'Pending' },
+    }
     
   }],
   shippingMethod: {

@@ -65,7 +65,13 @@ router.get('/categoryupdate/:id',adminauth.checkSession,adminController.loadCate
 router.post('/categoryupdate',adminController.CategoryUpdate)
 
 
-router.get("/ordermanage" ,adminController.loadOrdermanage)
+router.get("/ordermanage" ,adminauth.checkSession,adminController.loadOrdermanage)
+router.post("/update-status/:id" ,adminController.OrderManage)
+
+router.get('/orderview/:orderId/:productId', adminController.orderView);
+
+router.post('/update-product-status/:orderId/:productId',adminController.statusUpdate)
+
 
 router.get("/couponmanage" ,adminController.loadCouponmanage)
 

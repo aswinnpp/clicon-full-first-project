@@ -2,10 +2,14 @@ const User = require("../models/usermodel");
 
 
 const checkSession = (req, res, next) => {
+  console.log('dfcggc vh');
+  console.log(req.session.details);
+  
+  
     if (req.session.details) {
       next();
     } else {
-      res.render("user/usersignin");
+      res.redirect("/signin");
     }
   };
 
