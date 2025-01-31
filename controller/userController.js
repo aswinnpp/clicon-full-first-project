@@ -765,7 +765,7 @@ const Carts = async (req, res) => {
         const newQuantity = cart.items[i].quantity + parsedQuantity;
 
         if (newQuantity > 5) {
-          req.flash("cart","You cannot add more than 5 items of this product.")
+          req.flash("cart","You cannot add more than 5 items of one product.")
           return res.redirect('/');
         } else {
           cart.items[i].quantity = newQuantity;
@@ -1095,6 +1095,8 @@ const CheckOut = async (req, res) => {
     console.log("lll",catqty);
     
     
+const check = req.session?.buyCheck
+
 
     
     const formattedCustomerId = customerId.trim();
@@ -1132,11 +1134,11 @@ const CheckOut = async (req, res) => {
           await product.save();
         } else {
 
-          req.flash("count","Not enough stock for this product")
-         res.redirect("/productlist")
+          req.flash("count",`Not enough stock for this product ${product.productname}`)
+            res.redirect("/productlist")
         }
       } else {
-        return res.status(404).json({ error: `Product with ID ${item.productId} not found` });
+        return res.status(404).send({ error: `Product with ID ${item.productId} not found` });
       }
     }
     
@@ -1153,14 +1155,20 @@ const CheckOut = async (req, res) => {
 
     await newOrder.save();
 
+    if (check === "Cart") {
+      // Assuming you have a Cart model and it is storing the cart with userId
+      await Cart.deleteMany({ userId: customerId.trim()  });
+      
+    }
+
     console.log("customerId",customerId);
     
 
 
-    res.render("/ordersuccess",{ userid: customerId.trim() })
+    res.render("user/ordersuccess",{ userid: customerId.trim() })
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error.message });
+   
   }
 }
 
