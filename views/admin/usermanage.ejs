@@ -1,185 +1,95 @@
 <%- include('../partials/admin/header') %>
 
-    <!-- Main Content -->
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 d-md-none">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">User Management</a>
-          <button class="navbar-toggler custom-toggler" id="menuBtn" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-        </div>
-      </nav>
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">User Status</h1>
+<!-- Main Content -->
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 d-md-none">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">User Management</a>
+      <button class="navbar-toggler custom-toggler" id="menuBtn" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </nav>
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">User Status</h1>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col">
+      <div class="input-group">
+        <input type="text" id="searchUser" class="form-control" placeholder="Search users...">
       </div>
+    </div>
+  </div>
 
-      <div class="row mb-3">
-        <div class="col">
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search users...">
-            <button class="btn btn-primary" type="button">Search</button>
-          </div>
-        </div>
-      </div>
+  <div class="table-responsive">
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Join Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody">
+        <% users.forEach((user, index) => { %>
+          <% const startIndex = (currentPage - 1) * limit  %>
+          <tr>
+            <td><%= startIndex + index + 1 %></td>
+            <td><%= user?.name %></td>
+            <td><%= user?.email %></td>
+            <td><%= user?.role %></td>
+            <td><%= user?.createdAt.toISOString().split('T')[0] %></td>
+            <td>
+              <button 
+                class="btn <%= user?.isDeleted ? 'btn-secondary' : user?.isBan ? 'btn-success' : 'btn-danger' %> btn-sm" 
+                onclick="toggleProductStatus('<%= user?._id %>', <%= user.isBan %>)">
+                <%= user.isBan ? 'Unblock' : 'Block' %>
+              </button>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
 
-      <div class="table-responsive">
-        <table class="table table-striped table-sm">
-          <thead>
-            <tr>
-              <th>no:</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Join Date</th>
-             
-              <th>Actions</th>
-              
-            </tr>
-          </thead>
-            <tbody>
-
-              <% users.forEach((user, index) => { %>
-
-                <% const startIndex = (currentPage - 1) * limit  %>
-                <tr>
-                  <td><%= startIndex + index + 1 %></td>
-                  <td><%= user?.name %></td>
-                  <td><%= user?.email %></td>
-                  <td><%= user?.role %></td>
-                  <td><%= user?.createdAt.toISOString().split('T')[0] %></td>
-                  <td>
-                  
-                          <button 
-                        class="btn <%= user?.isDeleted ? 'btn-secondary' : user?.isBan ? 'btn-success' : 'btn-danger' %> btn-sm" 
-                        onclick="toggleProductStatus('<%= user?._id %>', <%= user.isBan %>)">
-                        <%= user.isBan ? 'Unblock' : 'Block' %>
-                      </button>
-
-                  </td>
-                </tr>
-              <% }); %>
-            </tbody>
-                              
-
-
-               
-        </table>
-      </div>
-
-
-      <div class="d-flex justify-content-center mt-3 pagination-container">
-        <ul class="pagination">
-          <!-- Previous button with left arrow -->
-          <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-            <a class="page-link" href="?page=<%= currentPage - 1 %>">←</a> <!-- Left Arrow -->
-          </li>
-      
-          <!-- Page Numbers -->
-          <% for (let i = 1; i <= totalPages; i++) { %>
-            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-              <a class="page-link" href="?page=<%= i %>"><%= i %></a>
-            </li>
-          <% } %>
-      
-          <!-- Next button with right arrow -->
-          <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-            <a class="page-link" href="?page=<%= currentPage + 1 %>">→</a> <!-- Right Arrow -->
-          </li>
-        </ul>
-      </div>
-      
-      
-    </main>
-
-
-    <style>
-  
-
-      .pagination-container {
-        position: fixed;
-        bottom: 0; 
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 999; 
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        padding: 10px;
-        box-sizing: border-box;
-        
-      }
-      
-      
-      .pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px; 
-        margin: 0;
-      }
-      
-      
-      .pagination .page-link {
-        display: inline-block;
-        background-color: transparent; 
-        color: rgb(97, 69, 122); 
-        text-align: center;
-        font-size: 16px; 
-        line-height: 30px; 
-        text-decoration: none;
-        cursor: pointer;
-        padding: 5px 10px; 
-      }
-      
-      
-      .pagination .page-item.active .page-link {
-        font-weight: bold;
-        color: black; 
-      }
-      
-      
-      .pagination .page-item.disabled .page-link {
-        color: #ccc; 
-        cursor: not-allowed;
-      }
-      
-      
-      .pagination .page-link:hover {
-        background-color: #f0f0f0; 
-        border-radius: 4px;
-      }
-      
-      
-      @media (max-width: 768px) {
-        
-        .pagination-container {
-          padding: 10px 20px;
-        }
-      
-        .pagination .page-link {
-          font-size: 14px; 
-        }
-      }
-      
-      
-      @media (max-width: 480px) {
-        
-        .pagination .page-link {
-          font-size: 12px; 
-        }
-      
-        .pagination-container {
-          padding: 10px 15px; 
-        }
-      }
-      
-      
-        
-        </style>
-
+  <div class="d-flex justify-content-center mt-3 pagination-container">
+    <ul class="pagination">
+      <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+        <a class="page-link" href="?page=<%= currentPage - 1 %>">←</a>
+      </li>
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+          <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+        </li>
+      <% } %>
+      <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+        <a class="page-link" href="?page=<%= currentPage + 1 %>">→</a>
+      </li>
+    </ul>
+  </div>
+</main>
 
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+  const searchInput = document.getElementById('searchUser');
+  searchInput.addEventListener('input', function () {
+    const searchTerm = searchInput.value.toLowerCase();
+    const rows = document.querySelectorAll('#userTableBody tr');
+    
+    rows.forEach(row => {
+      const username = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase();
+      if (username.includes(searchTerm)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  });
+});
 
 function toggleProductStatus(userId, isBan) {
   const action = isBan ? 'Unblock' : 'Block';
@@ -193,37 +103,28 @@ function toggleProductStatus(userId, isBan) {
     confirmButtonText: `Yes, ${action} it!`
   }).then((result) => {
     if (result.isConfirmed) {
-    
-      console.log(typeof isBan)
       fetch(`/admin/banuser/${userId}`, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-       
         body: JSON.stringify({ isBan }) 
-       
-  
       })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            Swal.fire('Success!', `user has been ${action}ed.`, 'success')
-              .then(() => location.reload());
-          } else {
-            Swal.fire('Error!', data.message || `Failed to ${action} product.`, 'error');
-          }
-        })
-        .catch((error) => {
-
-        console.log(error);
-        
-
-          Swal.fire('Error!', 'Something went wrong. Please try again.', 'error');
-        });
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          Swal.fire('Success!', `User has been ${action}ed.`, 'success')
+            .then(() => location.reload());
+        } else {
+          Swal.fire('Error!', data.message || `Failed to ${action} user.`, 'error');
+        }
+      })
+      .catch(() => {
+        Swal.fire('Error!', 'Something went wrong. Please try again.', 'error');
+      });
     }
   });
 }
-
 </script>
+
 <%- include('../partials/admin/footer') %>

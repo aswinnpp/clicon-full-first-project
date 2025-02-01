@@ -30,9 +30,13 @@
     </form>
   </div>
 
-  <div class="input-group mb-3">
-    <input type="text" class="form-control" placeholder="Search Products" />
-    <button class="btn btn-primary">Search</button>
+  <div class="row mb-3" style="margin-top:80px;">
+    <div class="col">
+      <div class="input-group">
+        <input type="text" class="form-control" id="categorySearch" placeholder="Search categories...">
+        <button class="btn btn-primary" type="button">Search</button>
+      </div>
+    </div>
   </div>
 
   <!-- Make the table responsive -->
@@ -188,7 +192,22 @@
   });
 }
 
-
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('categorySearch');
+    searchInput.addEventListener('input', function () {
+      const searchTerm = searchInput.value.toLowerCase();
+      const rows = document.querySelectorAll('tbody tr');
+      
+      rows.forEach(row => {
+        const categoryName = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase();
+        if (categoryName.includes(searchTerm)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+  });
 
   </script>
 

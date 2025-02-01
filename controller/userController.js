@@ -194,6 +194,9 @@ const loadOtp = async (req, res) => {
 
 //------------------ send OTP to email ------------
 const sendOtpEmail = (email, otp) => {
+
+  console.log("zz",email,otp);
+  
   const mailOptions = {
     from: process.env.GMAIL_USER,
     to: email,
@@ -310,8 +313,10 @@ const resendOtp = async (req, res) => {
    
     
 console.log("resend otp",newOtp)
-    
+console.log("aaaaaaaaaaaaaaaaaaaaa")
     await transporter.sendMail({
+      
+      
       from: process.env.GMAIL_USER,
       to: email,
       subject: 'Your New OTP Verification Code',
@@ -389,6 +394,8 @@ console.log("Is OTP expired:", isExpired);
       }
     } else if (workflowType === "forgot") {
       try {
+        console.log("dddddddddddddddd");
+        
         const user = await userSchema.findOne({ email: req.session.forgot });
         if (!user) {
           console.log("User not found for email:", req.session.forgot);
@@ -592,6 +599,8 @@ const loadForgot = async (req, res) => {
 const forgot = async (req, res) => {
     try {
       const { email } = req.body;
+      console.log("email",email);
+      
       const user = await userSchema.findOne({ email });
 
 

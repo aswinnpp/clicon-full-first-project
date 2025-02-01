@@ -197,7 +197,7 @@ const loadProductManage = async (req, res) => {
   try {
     const message = req.flash("success");
     const page = parseInt(req.query.page) || 1;
-    const limit = 4;
+    const limit = 5;
     const skip = (page - 1) * limit; 
 
   
