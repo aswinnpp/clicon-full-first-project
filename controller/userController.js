@@ -1138,7 +1138,7 @@ const check = req.session?.buyCheck
     for (const item of items) {
       const product = await Product.findById(item.productId); 
       if (product) {
-        if (product.stock > item.quantity) {
+        if (product.stock >= item.quantity) {
           product.stock -= item.quantity; 
           await product.save();
         } else {
