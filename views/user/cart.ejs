@@ -199,49 +199,66 @@
           </thead>
           <tbody>
             <% if (items && items.length > 0) { %>
-              <% items.forEach(item => { %>
+                <% items.forEach(item => { 
+                  const originalPrice = parseFloat(item.productId?.price.replace(/,/g, '')) || 0;
+              
+                  const discountMatch = item.productId?.offer ? item.productId.offer.match(/\d+/) : null;
+                  const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
+              
+                
+                  const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+              
+              
+                  const totalPrice = discountedPrice * item?.quantity;
+                %>
+                  <tr>
+                    <td class="product-col">
+                      <div class="product">
+                        <figure class="product-media">
+                          <a href="#">
+                            <img src="/uploads/<%= item.productId?.image[0] %>" alt="Product image">
+                          </a>
+                        </figure>
+                        <h3 class="product-title">
+                          <a href="#"><%= item.productId?.name %></a>
+                        </h3>
+                      </div>
+                    </td>
+                    <td class="price-col">
+                        ₹<%=  Math.floor(discountedPrice) %>
+                      <br>
+                      <span style="color: green; font-weight: bold;">
+                        
+                      </span>
+                    </td>
+                    <td class="quantity-col">
+                      <div class="cart-product-quantity">
+                        <input
+                          style="border: none;"
+                          type="text"
+                          class="form-control"
+                          value="<%= item.quantity %>"
+                          min="1"
+                          required
+                          inputmode="numeric">
+                      </div>
+                    </td>
+                    <td class="total-col">
+                      ₹<%= Math.floor( totalPrice) %>
+                    </td>
+                    <td class="remove-col">
+                      <a href="javascript:void(0);" onclick="confirmDelete('<%= user?._id %>', '<%= item?.productId?._id %>')">
+                        <button class="btn-remove"><i class="icon-close"></i></button>
+                      </a>
+                    </td>
+                  </tr>
+                <% }); %>
+              <% } else { %>
                 <tr>
-                  <td class="product-col">
-                    <div class="product">
-                      <figure class="product-media">
-                        <a href="#">
-                          <img src="/uploads/<%=item.productId?.image[0] %>" alt="Product image">
-                        </a>
-                      </figure>
-                      <h3 class="product-title">
-                        <a href="#"><%= item.productId?.name %></a>
-                      </h3>
-                    </div>
-                  </td>
-                  <td class="price-col"><%= item.productId?.price %></td>
-                  <td class="quantity-col">
-                    <div class="cart-product-quantity">
-                      <input
-                        style="border: none;"
-                        type="text"
-                        class="form-control"
-                        value="<%= item.quantity %>"
-                        min="1"
-                        required
-                        inputmode="numeric">
-                    </div>
-                  </td>
-                  <td class="total-col">
-                    <%= (parseFloat(item.productId?.price.replace(/,/g, '')) * item?.quantity).toFixed(2) %>
-                  </td>
-                  <td class="remove-col">
-                    <a href="javascript:void(0);" onclick="confirmDelete('<%= user?._id %>', '<%= item?.productId?._id %>')"  >
-                         <button class="btn-remove"><i class="icon-close">
-
-                         </i></button> </a>
-                  </td>
+                  <td colspan="5" style="text-align: center;">Your cart is empty.</td>
                 </tr>
-              <% }); %>
-            <% } else { %>
-              <tr>
-                <td colspan="5">Your cart is empty.</td>
-              </tr>
-            <% } %>
+              <% } %>
+              
           </tbody>
         </table>
 
@@ -279,24 +296,51 @@
           <h3 class="summary-title mb-3">Cart Total</h3>
           <table class="table table-summary">
             <tbody>
-             
+              <% 
+                let originalTotal = 0;
+                let totalDiscount = 0;  
+                let finalTotal = 0;      
+      
+                items.forEach(item => {
+                  const originalPrice = parseFloat(item.productId?.price.replace(/,/g, '')) || 0;
+                  const discountMatch = item.productId?.offer ? item.productId.offer.match(/\d+/) : null;
+                  const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
+      
+                  const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+                  const itemTotalOriginal = originalPrice * item.quantity; 
+                  const itemTotalDiscounted = discountedPrice * item.quantity; 
+                  const discountAmount = itemTotalOriginal - itemTotalDiscounted;
+      
+                  originalTotal += itemTotalOriginal;
+                  totalDiscount += discountAmount;
+                  finalTotal += itemTotalDiscounted;
+                });
+              %>
+              
               <tr>
-                <td><label for="free-shipping">Discount</label></td>
-                <td>0.00</td>
+                <td><label>Total Amount (Before Discount)</label></td>
+                <td>₹<%= Math.floor(originalTotal) %></td>
               </tr>
               <tr>
-                <td><label for="express-shipping">Shipping Charge</label></td>
-                <td>20.00</td>
+                <td><label>Total Discount</label></td>
+                <td>- ₹<%= Math.floor(totalDiscount)  %></td>
               </tr>
               <tr class="summary-total font-weight-bold">
-                <td>Total:(<%= totalItems %> products)</td>
-                
-                <td><%= typeof totalValue !== 'undefined' ? totalValue : 'N/A' %></td>
+                <td>Total: (<%= totalItems %> products)</td>
+                <td>₹<%= Math.floor(finalTotal) %></td>
               </tr>
             </tbody>
           </table>
-          <a href="/checkout" class="btn btn-outline-primary-2 btn-block mt-3">PROCEED TO CHECKOUT</a>
-          <a href="/productlist" class="btn btn-outline-dark-2 btn-block mt-2">CONTINUE SHOPPING</a>
+      
+          <a href="/checkout" 
+            class="btn btn-outline-primary-2 btn-block mt-3"
+            style="<%= totalItems === 0 ? 'display: none;' : '' %>">
+            PROCEED TO CHECKOUT
+          </a>
+      
+          <a href="/productlist" class="btn btn-outline-dark-2 btn-block mt-2">
+            CONTINUE SHOPPING
+          </a>
         </div>
       </aside>
       

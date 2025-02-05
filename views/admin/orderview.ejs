@@ -14,7 +14,12 @@
      
         <p class="card-text"><strong>Order Date:</strong> <%= new Date(order.orderDate).toLocaleDateString() %></p>
         <p class="card-text"><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-        <p class="card-text"><strong>Payment Status:</strong> <%= order.paymentStatus %></p>
+        <p class="card-text"><strong>Payment Status:<strong>
+            <%= item.shippingDetails.status === 'Delivered' ? 'Completed' 
+                : item.shippingDetails.status === 'Cancelled' ? 'Failed' 
+                : 'Pending' %>
+          </strong>
+        </p>
       </div>
     </div>
   
@@ -38,11 +43,23 @@
         <h5 class="card-title">Product Details</h5>
         <p class="card-text"><strong>Product Name:</strong> <%= item.productId.productname %></p>
         <p class="card-text"><strong>Quantity:</strong> <%= item.quantity %></p>
-        <p class="card-text"><strong>Price:</strong> <%= item.productId.price %></p>
-        <p class="card-text"><strong>Total Amount:</strong> <%= (item.quantity * parseFloat(item.productId.price.replace(/,/g, ''))).toFixed(2) %></p>
+        
+        <% 
+          const originalPrice = parseFloat(item.productId.price.replace(/,/g, "")) || 0;
+          const discountMatch = item.productId.offer ? item.productId.offer.match(/\d+/) : null;
+          const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
+          const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+        %>
+    
+        <p class="card-text"><strong>Original Price:</strong><%=  Math.floor(originalPrice) %></p>
+        <p class="card-text"><strong>Discount:</strong> <%= discountPercentage %>%</p>
+        <p class="card-text"><strong>Price After Discount:</strong> <%= Math.floor(discountedPrice)  %></p>
+    
+        <p class="card-text"><strong>Total Amount:</strong> <%= Math.floor(discountedPrice * item.quantity) %></p>
         <p class="card-text"><strong>Status:</strong> <%= item.shippingDetails.status %></p>
       </div>
     </div>
+    
   
     <!-- Shipping Details Section -->
     <div class="card mt-4">

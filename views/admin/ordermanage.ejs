@@ -31,14 +31,11 @@
         <tr>
           <th>Customer Name</th>
           <th>Product Name</th>
-          <th>Order Date</th>
-          <!-- <th>Quantity</th>
-          <th>Price</th> -->
+          <th>Order Date</th> 
           <th>Total Amount</th>
-          <!-- <th>Payment Method</th> -->
           <th>Order Status</th>
           <th>Change Order Status</th>
-          <th>Change Payment Status</th> <!-- Added Payment Status column -->
+          <th> Payment Status</th> 
           <th>Actions</th>
         </tr>
       </thead>
@@ -51,7 +48,7 @@
               <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
               <!-- <td><%= item.quantity %></td>
               <td><%= item.productId.price %></td> -->
-              <td><%= (item.quantity * parseFloat(item.productId.price.replace(/,/g, ''))).toFixed(2) %></td>
+              <td><%= Math.floor(order.totalAmount)  %></td>
               <!-- <td><%= order.paymentMethod %></td> -->
     
               <!-- Display Current Order Status -->
@@ -60,9 +57,8 @@
               </td>
     
               <td>
-                <!-- Order Status Dropdown for individual product -->
-                <form action="/admin/update-product-status/<%= order._id %>/<%= item._id %>" method="POST">
-                  <select name="status" onchange="this.form.submit()">
+                <form action="/admin/update-product-status/<%= order._id %>/<%= item._id %>" method="POST" onsubmit="return confirmStatusChange(event, this)">
+                  <select name="status" onchange="return confirmStatusChange(event, this)">
                     <% ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].forEach(statusOption => { %>
                       <option value="<%= statusOption %>" <%= item.shippingDetails.status === statusOption ? 'selected' : '' %> >
                         <%= statusOption %>
@@ -73,15 +69,13 @@
               </td>
     
               <td>
-                <form action="/admin/update-product-status/<%= order._id %>/<%= item._id %>" method="POST">
-                  <select name="paymentStatus" onchange="this.form.submit()">
-                    <% ['Pending', 'Paid', 'Failed'].forEach(statusOption => { %>
-                      <option value="<%= statusOption %>" <%= item.paymentStatus === statusOption ? 'selected' : '' %>>
-                        <%= statusOption %>
-                      </option>
-                    <% }); %>
-                  </select>
-                </form>
+                <p>
+                  <strong>
+                    <%= item.shippingDetails.status === 'Delivered' ? 'Completed' 
+                        : item.shippingDetails.status === 'Cancelled' ? 'Failed' 
+                        : 'Pending' %>
+                  </strong>
+                </p>
               </td>
     
               <td>
@@ -119,8 +113,40 @@
   </nav>
 </div>
 </main>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+
+function confirmStatusChange(event, form) {
+    // Prevent form submission until confirmation
+    event.preventDefault();
+
+    // Get the new status value
+    const newStatus = form.querySelector('select[name="status"]').value;
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You are about to change the status to "${newStatus}". This action cannot be undone.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, change status",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        form.submit(); // Submit the form if confirmed
+      }
+    });
+
+    return false; // Prevent immediate form submission
+  }
+
+
+
+
+
+
   document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('categorySearch');
     searchInput.addEventListener('input', function () {

@@ -141,9 +141,6 @@ const banPage = async (req,res)=>{
     }
 };
 
-const generateOTP = () => {
-  return Math.floor(100000 + Math.random() * 900000); 
-};
 
 // ------------------ User sign up---------------
 const signUp = async (req, res) => {
@@ -829,6 +826,9 @@ try {
 }
 }
 
+
+
+
 const loadWhishlist = async (req,res)=>{
 
 try {
@@ -845,7 +845,10 @@ res.render("user/wishlist",{user})
 
 
 }
-  
+ 
+
+
+// ================ profile =====================
 const loadProfile = async (req,res)=>{
 
 try {
@@ -982,6 +985,12 @@ const editProfile = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+
+// ================================================
+
+
+//====================== order settings ===========
 
 const buyNow = async (req, res) => {
   try {
@@ -1256,12 +1265,13 @@ const cancellOrder = async (req, res) => {
     
     // Ensure Mongoose detects the change
     
+    
+
 
     // Save the updated order
     await order.save();
 
     console.log("Updated status:", itemToUpdate.shippingDetails.status);
-
     res.redirect(`/orderview/${orderId}/${productId}`);
   } catch (error) {
     console.error(error);
@@ -1281,7 +1291,7 @@ const orderSuccess = async(req,res)=>{
   }
 } 
 
-  
+  // ===============================================
 
 
 

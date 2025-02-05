@@ -296,17 +296,17 @@
 		                				<table class="table table-summary">
 		                					<thead>
 		                						<tr>
-                                                    <td><label for="free-shipping">Discount</label></td>
-                                                    <td>0.00</td>
+                                                    <td><label for="free-shipping">Total Amount</label></td>
+                                                    <td> ₹<%= originalTotal %></td>
                                                   </tr>
                                                   <tr>
-                                                    <td><label for="express-shipping">Shipping Charge</label></td>
-                                                    <td>20.00</td>
+                                                    <td><label for="express-shipping">Total Discount</label></td>
+                                                    <td>- ₹<%=Math.floor(totalDiscount)%></td>
                                                   </tr>
                                                   <tr class="summary-total font-weight-bold">
                                                     <td>Total:(<%= totalItems %> products)</td>
                                                     
-                                                    <td><%= totalValue %></td></td>
+                                                    <td> ₹<%= Math.floor(totalValue) %></td></td>
                                                     <input type="hidden" value="<%= totalValue %>" name="totalValue">
                                                   </tr>
 		                					</tbody>

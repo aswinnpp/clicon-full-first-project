@@ -521,7 +521,7 @@ table td a {
                 <div class="d-flex align-items-center justify-content-center" >
                   <% if (user && user.image) { %>
                                     
-                    <img style="height: 100px; width: 100px; border-radius: 50%;" src="<%= user.image %>" alt="Profile Image">
+                    <img style="height: 100px; width: 100px; border-radius: 50%;" src="<%=user.image %>" alt="Profile Image">
                   <% } else { %>
                    
                     <img style="height: 100px; width: 100px; border-radius: 50%;" src="/images/profile.avif" alt="Default Profile Image">
@@ -709,10 +709,9 @@ table td a {
                       Select this address
                       
                       <!-- Remove Button -->
-                      <form action="/remove-address/<%= user._id %>?address=<%= address.id %>" method="post" style="display: inline;">
-
-                          <button type="submit" class="btn btn-link text-danger" style="font-size: 30px;  border: none;margin-left: 20px; background: none; cursor: pointer;">&times;</button>
-                        </form>
+                      <form action="/remove-address/<%= user?._id %>?address=<%= address?.id %>" method="post" style="display: inline;" onsubmit="return confirmDeletion(event, this)">
+                        <button type="submit" class="btn btn-link text-danger" style="font-size: 30px; border: none; margin-left: 20px; background: none; cursor: pointer;">&times;</button>
+                    </form>
                     </div>
                   <% }) %>
                 </div>
@@ -1492,6 +1491,30 @@ function populateModal(event) {
 <!-- Main JS File -->
 <script src="/assets/js/main.js"></script>
 <script>
+
+
+    function confirmDeletion(event, form) {
+        event.preventDefault(); // Prevent form submission
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This action cannot be undone!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit(); // Submit the form if confirmed
+            }
+        });
+
+        return false; // Stop form submission until user confirms
+    }
+
+
  function initializePagination() {
     // Set initial page to 1
     document.getElementById('pageno').textContent = '1';

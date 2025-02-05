@@ -184,7 +184,8 @@
                         
 
 
-                       
+                   
+                     
                          
 
                     </div>
@@ -247,6 +248,8 @@
             </div><!-- End .header-bottom -->
         </header>
 
+        <input type="hidden" value="<%= product[0]?.stock %>" id="stk">
+                                    
         <main class="main">
             <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
                 <div class="container d-flex align-items-center  border-bottom"  style="border-color: burlywood;">>
@@ -289,169 +292,144 @@
                             </div><!-- End .col-md-6 -->
                             
                          
-                                <div class="col-md-6">
-                                  <div class="product-details">
+                            <div class="col-md-6">
+                                <div class="product-details">
                                     <!-- Product Title -->
                                     <h1 class="product-title"><%= product[0].productname %></h1>
-                              
+                            
                                     <!-- Ratings Section -->
                                     <div class="ratings-container">
-                                      <div class="ratings">
-                                        <div
-                                          class="ratings-val"
-                                          style=""
-                                        ></div>
-                                      </div>
-                                      <a class="ratings-text" href="#product-review-link" id="review-link">
-                                        ( <%= product[0].rating %> )
-                                      </a>
+                                        <div class="ratings">
+                                            <div class="ratings-val" style="width: <%= product[0].rating * 20 %>%;"></div>
+                                        </div>
+                                        <a class="ratings-text" href="#product-review-link" id="review-link">
+                                            ( <%= product[0].rating %> )
+                                        </a>
                                     </div>
-                              
+                            
                                     <!-- Product Price -->
-                                    <div class="product-price">
-                                    <%= product[0].price %>
-                                    </div>
-                                    <div class="product-price">
-                                        <%= product[0].offer %> <p style="color: green; font-size: larger;" >Off</p>
-                                     </div>
+                                    <% 
+                                          
+                                            const originalPrice = parseFloat(product[0].price.replace(/,/g, '')) || 0; 
+                                            const discountMatch = product[0].offer ? product[0].offer.match(/\d+/) : null;
+                                            const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0; 
+                                            const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+                                        %>
+
+                                        <div class="product-price">
+                                            <del style="color: red;">₹<%= originalPrice.toLocaleString('en-IN') %></del>
+                                            <span style="color: green; font-size: 18px; font-weight: bold;">
+                                                ₹<%= discountedPrice.toLocaleString('en-IN') %>
+                                            </span>
+                                        </div>
+
+                                        <div class="product-price">
+                                            <%= product[0].offer %> <p style="color: green; font-size: larger;">Off</p>
+                                        </div>
+
+                            
                                     <!-- Product Description -->
                                     <div class="product-content">
-                                      <p><%= product[0].description %></p>
+                                        <p><%= product[0].description %></p>
                                     </div>
-                              
+                            
                                     <!-- Color Options -->
                                     <div class="details-filter-row details-row-size">
-                                         <span>Available Color:</span>
-                                        <div  class="filter-colors">
-                                          <% for (let i = 0; i < product[0].color.length; i++) { %>
-                                            <a href="#" style="background: <%= product[0].color[i].toLowerCase() %>;">
-                                              <span  class="sr-only"><%= product[0].color[i] %></span>
-                                            </a>
-                                          <% } %>
+                                        <span>Available Color:</span>
+                                        <div class="filter-colors">
+                                            <% for (let i = 0; i < product[0].color.length; i++) { %>
+                                                <a href="#" style="background: <%= product[0].color[i].toLowerCase() %>;">
+                                                    <span class="sr-only"><%= product[0].color[i] %></span>
+                                                </a>
+                                            <% } %>
                                         </div>
-                                        
-                                      </div>
                                     </div>
+                            
                                     <div class="product-cat">
-                                     <strong><span>Category:</span></strong>   
+                                        <strong><span>Category:</span></strong>
                                         <a href="#"><%= product[0].category %></a>
                                     </div>
+                            
                                     <div class="product-cat">
-                                       <strong><span>warranty:</span></strong> 
+                                        <strong><span>Warranty:</span></strong>
                                         <a href="#"><%= product[0].warranty %></a>
-                                    </div> 
+                                    </div>
+                            
                                     <div class="product-cat mb-4">
                                         <strong><span>Specifications:</span></strong>
                                         <div style="margin-top: 5px;">
-                                          <span style="font-weight: bold; display: inline-block; width: 100px;">Ram:</span>
-                                          <% for (let i = 0; i < product[0].ram.length; i++) { %>
-                                            <a href="#" style="margin-right: 5px; text-decoration: none; color: #000000;"><%= product[0]?.ram[i] %></a>
-                                          <% } %>
+                                            <span style="font-weight: bold; display: inline-block; width: 100px;">Ram:</span>
+                                            <% for (let i = 0; i < product[0].ram.length; i++) { %>
+                                                <a href="#" style="margin-right: 5px; text-decoration: none; color: #000000;">
+                                                    <%= product[0]?.ram[i] %>
+                                                </a>
+                                            <% } %>
                                         </div>
+                            
                                         <div style="margin-top: 5px;">
-                                          <span style="font-weight: bold; display: inline-block; width: 100px;">Storage:</span>
-                                          <% for (let i = 0; i < product[0].storage.length; i++) { %>
-                                            <a href="#" style="margin-right: 5px; text-decoration: none; color: #000000;"><%= product[0]?.storage[i] %></a>
-                                          <% } %>
+                                            <span style="font-weight: bold; display: inline-block; width: 100px;">Storage:</span>
+                                            <% for (let i = 0; i < product[0].storage.length; i++) { %>
+                                                <a href="#" style="margin-right: 5px; text-decoration: none; color: #000000;">
+                                                    <%= product[0]?.storage[i] %>
+                                                </a>
+                                            <% } %>
                                         </div>
-                                      </div>
-                                      
-                                    
-                              
-                                   
-                              
+                                    </div>
+                            
                                     <!-- Quantity -->
-
-
-                                   
-                                     <form action="/cart" method="post">
+                                    <form action="/cart" method="post">
                                         <input type="hidden" name="productId" value="<%=product[0]?._id %>">
-                                        
-                                        
-                                        
-
+                                         <input type="hidden" name="stock" value="<%= product[0]?.stock %>">
+                            
                                         <div class="details-filter-row details-row-size">
                                             <label for="qty">Qty:</label>
                                             <div class="product-details-quantity">
-                                                <input
-                                                    type="number"
-                                                    name="quantity"
-                                                    id="qty"
-                                                    class="form-control"
-                                                    value="1"
-                                                    min="1"
-                                                    max="5"
-                                                    step="1"
-                                                    required
-                                                />
+                                                <input type="number" name="quantity" id="qty" class="form-control" 
+                                                       value="1" min="1" max="5" step="1" required />
                                             </div>
                                         </div>
-                                        
+                            
                                         <!-- Notification Box -->
                                         <div class="custom-notification" id="customNotification">
                                             <span class="notification-message"></span>
                                         </div>
-
-
-                                          <div class="product-details-action">
-                                            <a onclick="buy('<%=product[0].stock%>','<%=product[0]._id%>')"
-                                                  class="btn <%= product[0]?.stock < 1 ? 'btn-warning' : 'btn-success' %>" 
-                                                  role="button">
-                                                  <%= product[0]?.stock < 1 ? 'Out of Stock' : 'Buy Now' %>
-                                               </a>                                      
-                                              
-                                               <div class="details-action-wrapper">
-                                                <button 
-                                                  type="submit" 
-                                                  class="btn btn-outline-secondary" 
-                                                  title="Add to Wishlist" 
-                                                  aria-label="Add to Wishlist"
-                                                  style="<%= product[0]?.stock >=1  ? '' : 'display:none;' %>">
-                                                  Add to Cart
+                            
+                                        <div class="product-details-action">
+                                            <a onclick="buy('<%=product[0].stock%>','<%=product[0]._id%>')" 
+                                               class="btn <%= product[0]?.stock < 1 ? 'btn-warning' : 'btn-success' %>" 
+                                               role="button">
+                                               <%= product[0]?.stock < 1 ? 'Out of Stock' : 'Buy Now' %>
+                                            </a>                                      
+                            
+                                            <div class="details-action-wrapper">
+                                                <button type="submit" class="btn btn-outline-secondary" title="Add to Cart" 
+                                                        aria-label="Add to Cart"
+                                                        style="<%= product[0]?.stock >= 1 ? '' : 'display:none;' %>">
+                                                    Add to Cart
                                                 </button>
-                                              </div>
-                                              
-                                              </div>
-                                         
-                                              
-                                     </form>
-
-                                     <!-- <div class="details-action-wrapper">
-                                        <a href="/compare/add/<%= product[0]._id %>" class="btn btn-outline-secondary" title="Add to Compare" aria-label="Add to Compare">
-                                            Add to Compare
-                                          </a>
-                                          </div>
-                                     </div> -->
-                                    
-                                      
-                                          
-                                         
-                              
-                                    <!-- Footer Details -->
-                                    
-                                        
-                                       
-                               
-                                    
-                                    
-                              
-                                      <!-- Social Share -->
-                                      <div class="social-icons social-icons-sm">
+                                            </div>
+                                        </div>
+                                    </form>
+                            
+                                    <!-- Social Share -->
+                                    <div class="social-icons social-icons-sm">
                                         <span class="social-label">Share:</span>
                                         <a href="#" class="social-icon" title="Facebook" target="_blank">
-                                          <i class="icon-facebook-f"></i>
+                                            <i class="icon-facebook-f"></i>
                                         </a>
                                         <a href="#" class="social-icon" title="Twitter" target="_blank">
-                                          <i class="icon-twitter"></i>
+                                            <i class="icon-twitter"></i>
                                         </a>
                                         <a href="#" class="social-icon" title="Instagram" target="_blank">
-                                          <i class="icon-instagram"></i>
+                                            <i class="icon-instagram"></i>
                                         </a>
                                         <a href="#" class="social-icon" title="Pinterest" target="_blank">
-                                          <i class="icon-pinterest"></i>
+                                            <i class="icon-pinterest"></i>
                                         </a>
-                                      </div>
                                     </div>
+                                </div>
+                            </div>
+                            
                                   </div>
                                 </div>
                         
@@ -500,67 +478,81 @@
                                 }
                             }
                         }'>
-                        
-                        <% allproduct.forEach((product, index) => { %>
-                            <div  class="product product-4   text-center " style="width: 250px; padding:;" >
+                        <% allproduct.forEach((product, index) => { 
+                           
+                            const originalPrice = parseFloat(product.price.replace(/,/g, '')) || 0;                         
+                            const discountMatch = product.offer ? product.offer.match(/\d+/) : null;
+                            const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;                  
+                            const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+                        %>
+                            <div class="product product-4 text-center" style="width: 250px; padding:;">
                                 <figure style="width: 100%;" class="product-media">
                                     <a href="http://localhost:3000/productview/<%= product._id %>">
-                                        <img src="/uploads/<%= product.image && product.image[0] ? product.image[0] : 'default.jpg' %>" alt="Product image" class="product-image">
+                                        <img src="/uploads/<%= product.image && product.image[0] ? product.image[0] : 'default.jpg' %>" 
+                                             alt="Product image" class="product-image">
                                     </a>
-                    
+                                    
                                     <div class="product-action-vertical">
                                         <a href="#" class="btn-product-icon btn-wishlist btn-expandable">
-                                            <span>add to wishlist</span>
+                                            <span>Add to Wishlist</span>
                                         </a>
                                         <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view">
-                                            <span>Quick view</span>
+                                            <span>Quick View</span>
                                         </a>
                                         <a href="#" class="btn-product-icon btn-compare" title="Compare">
                                             <span>Compare</span>
                                         </a>
                                     </div>
-                    
+                        
                                     <div class="product-action">
                                         <form action="/cart" method="post" id="addToCartForm">
-                                            <input type="hidden" name="productId" value="<%=product?._id %>">
+                                            <input type="hidden" name="productId" value="<%= product?._id %>">
                                             <input type="hidden" name="quantity" value="1">
+                                            <input type="hidden" name="stock" value="<%= product?.stock %>">
                                           
-                                            <button type="submit"  style="width: 250px; border: none;" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></button>
+                                            <button type="submit" style="width: 250px; border: none;" 
+                                                    class="btn-product btn-cart" title="Add to cart">
+                                                <span>Add to Cart</span>
+                                            </button>
                                         </form>
-                                       
                                     </div>
-                                </figure><!-- End .product-media -->
-                    
+                                </figure>
+                        
                                 <div class="product-body" style="margin-top: 100px;">
                                     <div class="product-cat">
                                         <a href="#"><%= product.category || 'N/A' %></a>
-                                    </div><!-- End .product-cat -->
-                    
+                                    </div>
+                        
                                     <h3 class="product-title">
-                                        <a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname || 'Product Name' %></a>
-                                    </h3><!-- End .product-title -->
-                    
+                                        <a href="http://localhost:3000/productview/<%= product._id %>">
+                                            <%= product.productname || 'Product Name' %>
+                                        </a>
+                                    </h3>
+                        
                                     <div class="product-price">
-                                        <%= product.price || '0.00' %>
-                                    </div><!-- End .product-price -->
-
-
+                                        <del style="color: red;">₹<%= originalPrice.toLocaleString('en-IN') %></del> 
+                                        <span style="color: green; font-size: 18px; font-weight: bold;">
+                                            ₹<%= discountedPrice.toLocaleString('en-IN') %>
+                                        </span>
+                                    </div>
+                        
                                     <div class="product-price">
-                                        <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
-                                     </div>
-                    
-                                     <div class="ratings-container">
+                                        <%= product.offer %> 
+                                        <p style="color: green; font-size: larger;">Off</p>
+                                    </div>
+                        
+                                    <div class="ratings-container">
                                         <div class="ratings">
                                             <div class="ratings-val" style="width: <%= product.rating * 20 %>%;"></div>
                                         </div>
                                         <span class="ratings-text"><%= product.rating %> </span>
                                     </div>
-                    
-                                    <!-- End .product-nav -->
-                                </div><!-- End .product-body -->
-                            </div><!-- End .product -->
+                                </div>
+                            </div>
                         <% }) %>
-                    
+                        
+                        
+                        
                     </div><!-- End .owl-carousel -->
                     
                 </div><!-- End .container -->
@@ -757,22 +749,33 @@
         
         }
 
-
         document.addEventListener("DOMContentLoaded", function () {
     const qtyInput = document.getElementById("qty");
+    const stock = document.getElementById("stk").value
+    
+    console.log("...",stock)// Get stock value from a data attribute
 
     function checkMaxLimit() {
-        const maxQty = parseInt(qtyInput.getAttribute("max"), 10); // Dynamically get max value
+        const maxQty =5 // Dynamically get max value
         const currentQty = parseInt(qtyInput.value, 10);
 
-        if (currentQty >= maxQty) {
-            qtyInput.value = maxQty; // Set to max if exceeded
+        
+        if (currentQty > stock) {
+            qtyInput.value = stock; 
+            qtyInput.setAttribute("max", stock);  // Ensure the max limit is set to stock
+            qtyInput.setAttribute("readonly", "true");  
+            
+            showCustomAlert(`Stock limit exceeded.   Only ${stock}  available`);
+        } else if (currentQty >= maxQty) {
+            qtyInput.value = maxQty; 
             showCustomAlert(`Maximum quantity allowed is ${maxQty}`);
         } else if (currentQty === 5) {
             showCustomAlert("Quantity is exactly 5");
         }
     }
 
+
+    
     // Trigger when value changes (typing or clicking + button)
     qtyInput.addEventListener("input", checkMaxLimit);
     qtyInput.addEventListener("change", checkMaxLimit);
@@ -787,7 +790,7 @@ function showCustomAlert(message) {
 
     setTimeout(() => {
         notification.classList.remove("active");
-    }, 3000);  // Hide after 3 seconds
+    }, 5000);  // Hide after 3 seconds
 }
 
 

@@ -359,7 +359,7 @@
                     <div>
                         <h5 class="mb-2"><%= item.productId.productname %></h5>
                         <p class="text-muted"><%= item.productId.description %></p>
-                        <span class="price-tag">₹<%= item.productId.price %></span>
+                        <span class="price-tag">₹<%= Math.floor(order.totalAmount)  %></span>
                     </div>
                 </div>
             </div>
@@ -388,11 +388,12 @@
     </div>
 
     <!-- Buttons -->
+     <p>sssssssss<%= item.quantity %></p>
     <div class="button-container">
         <% if (item.shippingDetails.status === "Cancelled") { %>
             <button class="btn btn-secondary btn-cancelled" disabled>Cancelled</button>
         <% } else if (item.shippingDetails.status != "Delivered") { %>
-            <button class="btn btn-danger btn-cancel" onclick="confirmCancel('<%= order._id %>', '<%= item.productId._id %>')">Cancel</button>
+            <button class="btn btn-danger btn-cancel" onclick="confirmCancel('<%= order._id %>', '<%= item.productId._id %>','<%=item.quantity %>')">Cancel</button>
         <% } else if (item.shippingDetails.status === 'Delivered') { %>
             <button class="btn btn-warning btn-return" 
                 <% 
@@ -414,7 +415,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function confirmCancel(orderId, productId) {
+    function confirmCancel(orderId, productId ,quantity) {
+    
+        
         Swal.fire({
             title: "Are you sure?",
             text: "You are about to cancel this order. This action cannot be undone!",
@@ -425,8 +428,7 @@
             confirmButtonText: "Yes, cancel it!"
         }).then((result) => {
             if (result.isConfirmed) {
-                // Redirect to cancel order URL
-                window.location.href = `/update-order-status?orderId=${orderId}&productId=${productId}&newStatus=Cancelled`;
+                window.location.href = `/update-order-status?orderId=${orderId}&productId=${productId}&newStatus=Cancelled&quantity=${quantity}`;
             }
         });
     }

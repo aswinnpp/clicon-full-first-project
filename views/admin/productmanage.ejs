@@ -32,10 +32,18 @@
 
   <div class="row mb-3" style="margin-top:80px;">
     <div class="col">
-      <div class="input-group">
-        <input type="text" class="form-control" id="categorySearch" placeholder="Search categories...">
-        <button class="btn btn-primary" type="button">Search</button>
-      </div>
+      <form action="/admin/productmanage" method="GET">
+        <div class="input-group">
+          <input 
+            type="text" 
+            class="form-control" 
+            name="search" 
+            placeholder="Search products..."
+            value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+          >
+          <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -122,21 +130,29 @@
   <div class="d-flex justify-content-center mt-3 pagination-container">
     <ul class="pagination">
       <!-- Previous button with left arrow -->
-       
       <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-        <a class="page-link" href="?page=<%= currentPage - 1 %>">←</a> <!-- Left Arrow -->
+        <a class="page-link" 
+           href="?page=<%= currentPage - 1 %><% if (searchQuery) { %>&search=<%= searchQuery %><% } %>">
+           ←
+        </a>
       </li>
   
       <!-- Page Numbers -->
       <% for (let i = 1; i <= totalPages; i++) { %>
         <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-          <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+          <a class="page-link" 
+             href="?page=<%= i %><% if (searchQuery) { %>&search=<%= searchQuery %><% } %>">
+             <%= i %>
+          </a>
         </li>
       <% } %>
   
       <!-- Next button with right arrow -->
       <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-        <a class="page-link" href="?page=<%= currentPage + 1 %>">→</a> <!-- Right Arrow -->
+        <a class="page-link" 
+           href="?page=<%= currentPage + 1 %><% if (searchQuery) { %>&search=<%= searchQuery %><% } %>">
+           →
+        </a>
       </li>
     </ul>
   </div>
@@ -192,22 +208,9 @@
   });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('categorySearch');
-    searchInput.addEventListener('input', function () {
-      const searchTerm = searchInput.value.toLowerCase();
-      const rows = document.querySelectorAll('tbody tr');
-      
-      rows.forEach(row => {
-        const categoryName = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase();
-        if (categoryName.includes(searchTerm)) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      });
-    });
-  });
+
+
+
 
   </script>
 

@@ -21,6 +21,11 @@ const orderDetailsSchema = new mongoose.Schema({
     enum: ['Credit Card', 'Debit Card', 'PayPal', 'Cash on Delivery'],
     // required: true,
   },
+  paymentStatus: {
+    type: String,
+    enum: ['Pending', 'Paid', 'Failed'],
+    default: 'Pending',
+  },
  
   billingAddress: {
     name: { type: String, required: true },
@@ -40,17 +45,11 @@ const orderDetailsSchema = new mongoose.Schema({
       type: Number,
     
       min: [1, 'Quantity must be at least 1'],
-    },
-    
-    paymentStatus: {
-      type: String,
-      enum: ['Pending', 'Paid', 'Failed'],
-      default: 'Pending',
     },  
+    
     shippingDetails: {
-      origin: { type: String, required: true, default: "India" }, // e.g., 'China', 'Africa'
-      // shippingMethod: { type: String, enum: ['Standard', 'Express'], default: 'Standard' },
-      estimatedArrival: { type: Date, default: new Date('2025-02-15') }, // Example date
+      origin: { type: String, required: true, default: "India" }, 
+      estimatedArrival: { type: Date, default: new Date('2025-02-15') }, 
       actualArrival: { type: Date, default: null },
       status: { type: String, enum: ['Pending', 'Shipped','Cancelled','Processing', 'Delivered'], default: 'Pending' },
     }
