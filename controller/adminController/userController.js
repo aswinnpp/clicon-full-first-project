@@ -8,7 +8,10 @@ const loadUserManage = async (req, res) => {
     const limit = 10;
     const skip = (page - 1) * limit;
 
-    const users = await User.find({ role: 'user' }).skip(skip).limit(limit);
+    const users = await User.find({ role: "user" })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
     const totalUsers = await User.countDocuments();
     const totalPages = Math.ceil(totalUsers / limit);
 
@@ -17,7 +20,7 @@ const loadUserManage = async (req, res) => {
       currentPage: page,
       totalPages,
       message,
-      limit
+      limit,
     });
   } catch (error) {
     console.log(error);
@@ -44,7 +47,8 @@ const updateUser = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const existingUser = await User.findOne({ email, _id: { $ne: id } });
-    if (existingUser) return res.status(400).json({ message: "Email already in use" });
+    if (existingUser)
+      return res.status(400).json({ message: "Email already in use" });
 
     user.name = name || user.name;
     user.email = email || user.email;

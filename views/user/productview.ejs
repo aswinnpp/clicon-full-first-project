@@ -82,6 +82,19 @@
             font-weight: bold;
             font-size: 18px;
         }
+        .variant-option {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 5px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.variant-option:hover {
+    background-color: #f4f4f4;
+}
 
 </style>
 
@@ -120,13 +133,13 @@
                                             </div><!-- End .header-menu -->
                                         </div>
                                     </li>
-                                    <!-- <% if(user){%>
+                                    <% if(user){%>
 
                                         <li><a href="/logout">Logout</a></li>
                                   <%  }else{%>
 
                                     <li><a href="/signin">Sign in / Sign up</a></li>
-                                <%  } %> -->
+                                <%  } %>
                                 </ul>
                             </li>
                         </ul><!-- End .top-menu -->
@@ -198,26 +211,7 @@
             <div class="header-bottom sticky-header">
                 <div class="container">
                     <div class="header-left">
-                        <!-- <div class="dropdown category-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Browse Categories">
-                                Browse Categories <i class="icon-angle-down"></i>
-                            </a> -->
-<!-- 
-                            <div class="dropdown-menu">
-                                <nav class="side-nav">
-                                    <% category.forEach(Categories =>{%>
-                                        <ul class="menu-vertical sf-arrows">
-                                            <li class="item-lead"><a href="#"><%= Categories.name %></a></li>
-                                            </ul>
-
-                                   <% })%>
-                                    
-                               
-                                </nav>
-                            </div>End .dropdown-menu -->
-
-
-                        <!-- </div>End .category-dropdown -->
+                     
                     </div><!-- End .header-left -->
                     <div class="header-center">
 
@@ -230,10 +224,10 @@
                                     <a href="/productlist" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Shop</a>
                                 </li>
                                 <li style="margin: 0 10px;">
-                                    <a href="blog.html" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">About</a>
+                                    <a href="/hi" class="sff-with" style="text-decoration: none; color: #000; font-size: 16px;">About</a>
                                 </li>
                                 <li style="margin: 0 10px;">
-                                    <a href="elements-list.html" class="sff-with-ul" style="text-decoration: none; color: #000; font-size: 16px;">Contact</a>
+                                    <a href="/hi" class="sff-with" style="text-decoration: none; color: #000; font-size: 16px;">Contact</a>
                                 </li>
                               
                             </ul>
@@ -248,6 +242,8 @@
             </div><!-- End .header-bottom -->
         </header>
 
+
+        
         <input type="hidden" value="<%= product[0]?.stock %>" id="stk">
                                     
         <main class="main">
@@ -317,9 +313,9 @@
                                         %>
 
                                         <div class="product-price">
-                                            <del style="color: red;">₹<%= originalPrice.toLocaleString('en-IN') %></del>
-                                            <span style="color: green; font-size: 18px; font-weight: bold;">
-                                                ₹<%= discountedPrice.toLocaleString('en-IN') %>
+                                            <del style="color: red;">₹<%=Math.floor(originalPrice)  %></del>
+                                            <span style="color: green; font-size: 28px; font-weight: bold; margin-left: 10px;">
+                                                ₹<%= Math.floor(discountedPrice)%>
                                             </span>
                                         </div>
 
@@ -338,7 +334,8 @@
                                         <span>Available Color:</span>
                                         <div class="filter-colors">
                                             <% for (let i = 0; i < product[0].color.length; i++) { %>
-                                                <a href="#" style="background: <%= product[0].color[i].toLowerCase() %>;">
+                                                <a href="javascript:void(0);" class="color-option <%= i === 0 ? 'selected' : '' %>" data-value="<%= product[0].color[i] %>"
+                                                   style="background: <%= product[0].color[i].toLowerCase() %>; display: inline-block; width: 25px; height: 25px; border-radius: 50%; margin-right: 5px; border: 2px solid transparent;">
                                                     <span class="sr-only"><%= product[0].color[i] %></span>
                                                 </a>
                                             <% } %>
@@ -354,33 +351,44 @@
                                         <strong><span>Warranty:</span></strong>
                                         <a href="#"><%= product[0].warranty %></a>
                                     </div>
-                            
-                                    <div class="product-cat mb-4">
-                                        <strong><span>Specifications:</span></strong>
-                                        <div style="margin-top: 5px;">
-                                            <span style="font-weight: bold; display: inline-block; width: 100px;">Ram:</span>
-                                            <% for (let i = 0; i < product[0].ram.length; i++) { %>
-                                                <a href="#" style="margin-right: 5px; text-decoration: none; color: #000000;">
-                                                    <%= product[0]?.ram[i] %>
-                                                </a>
+
+                                    <% if (product[0].ram[0].length > 0) { %>
+                                        <div class="product-cat mb-4">
+                                            <strong><span>Specifications:</span></strong>
+                                    
+                                            <div style="margin-top: 15px;">
+                                                <span style="font-weight: bold; display: inline-block; width: 100px;">Ram:</span>
+                                                <% for (let i = 0; i < product[0].ram.length; i++) { %>
+                                                    <a href="javascript:void(0);" class="variant-option" data-type="ram" data-value="<%= product[0].ram[i] %>"
+                                                       style="margin-right: 5px; padding: 5px 10px; text-decoration: none; color: #000000; border-radius: 5px;">
+                                                        <%= product[0].ram[i] %>
+                                                    </a>
+                                                <% } %>
+                                            </div>
+                                    
+                                            <% if (product[0].storage.length > 0) { %>
+                                                <div style="margin-top: 5px;">
+                                                    <span style="font-weight: bold; display: inline-block; width: 100px;">Storage:</span>
+                                                    <% for (let i = 0; i < product[0].storage.length; i++) { %>
+                                                        <a href="javascript:void(0);" class="variant-option" data-type="storage" data-value="<%= product[0].storage[i] %>"
+                                                           style="margin-right: 5px; padding: 5px 10px; text-decoration: none; color: #000000; border-radius: 5px;">
+                                                            <%= product[0].storage[i] %>
+                                                        </a>
+                                                    <% } %>
+                                                </div>
                                             <% } %>
                                         </div>
-                            
-                                        <div style="margin-top: 5px;">
-                                            <span style="font-weight: bold; display: inline-block; width: 100px;">Storage:</span>
-                                            <% for (let i = 0; i < product[0].storage.length; i++) { %>
-                                                <a href="#" style="margin-right: 5px; text-decoration: none; color: #000000;">
-                                                    <%= product[0]?.storage[i] %>
-                                                </a>
-                                            <% } %>
-                                        </div>
-                                    </div>
+                                    <% } %>
+                                    
+                                    
+                                    
                             
                                     <!-- Quantity -->
-                                    <form action="/cart" method="post">
-                                        <input type="hidden" name="productId" value="<%=product[0]?._id %>">
-                                         <input type="hidden" name="stock" value="<%= product[0]?.stock %>">
-                            
+                                    <form action="/cart" method="post" id="addToCartForm">
+                                        <input type="hidden" name="productId" value="<%= product[0]?._id %>">
+                                        <input type="hidden" name="stock" value="<%= product[0]?.stock %>">
+                                        <input type="hidden" name="selectedColor" id="selectedColorInput"> <!-- Hidden input for color -->
+                                    
                                         <div class="details-filter-row details-row-size">
                                             <label for="qty">Qty:</label>
                                             <div class="product-details-quantity">
@@ -388,28 +396,30 @@
                                                        value="1" min="1" max="5" step="1" required />
                                             </div>
                                         </div>
-                            
+                                    
                                         <!-- Notification Box -->
                                         <div class="custom-notification" id="customNotification">
                                             <span class="notification-message"></span>
                                         </div>
-                            
+                                    
                                         <div class="product-details-action">
-                                            <a onclick="buy('<%=product[0].stock%>','<%=product[0]._id%>')" 
+                                            <a onclick="buy('<%= product[0].stock %>', '<%= product[0]._id %>')" 
                                                class="btn <%= product[0]?.stock < 1 ? 'btn-warning' : 'btn-success' %>" 
                                                role="button">
                                                <%= product[0]?.stock < 1 ? 'Out of Stock' : 'Buy Now' %>
                                             </a>                                      
-                            
+                                    
                                             <div class="details-action-wrapper">
                                                 <button type="submit" class="btn btn-outline-secondary" title="Add to Cart" 
                                                         aria-label="Add to Cart"
+                                                        onclick="setColorBeforeSubmit(event)"
                                                         style="<%= product[0]?.stock >= 1 ? '' : 'display:none;' %>">
                                                     Add to Cart
                                                 </button>
                                             </div>
                                         </div>
                                     </form>
+                                    
                             
                                     <!-- Social Share -->
                                     <div class="social-icons social-icons-sm">
@@ -531,7 +541,7 @@
                         
                                     <div class="product-price">
                                         <del style="color: red;">₹<%= originalPrice.toLocaleString('en-IN') %></del> 
-                                        <span style="color: green; font-size: 18px; font-weight: bold;">
+                                        <span style="color: green; font-size: 18px; font-weight: bold; margin-left: 10px;">
                                             ₹<%= discountedPrice.toLocaleString('en-IN') %>
                                         </span>
                                     </div>
@@ -632,7 +642,7 @@
 	        	<div class="container">
 	        		<p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p><!-- End .footer-copyright -->
 	        		<figure class="footer-payments">
-	        			<img src="assets/images/payments.png" alt="Payment methods" width="272" height="20">
+	        			<img src="/assets/images/payments.png" alt="Payment methods" width="272" height="20">
 	        		</figure><!-- End .footer-payments -->
 	        	</div><!-- End .container -->
 	        </div><!-- End .footer-bottom -->
@@ -737,32 +747,132 @@
     <script src="/assets/js/jquery.magnific-popup.min.js"></script>
     <!-- Main JS File -->
     <script src="/assets/js/main.js"></script>
+
+    <script>
+        let selectedRam = null;
+        let selectedStorage = null;
+    
+        document.querySelectorAll('.variant-option').forEach(option => {
+            option.addEventListener('click', function () {
+                let type = this.getAttribute('data-type');
+                let value = this.getAttribute('data-value');
+    
+                // Remove previous selection highlight in the same category
+                document.querySelectorAll(`.variant-option[data-type="${type}"]`).forEach(el => {
+                    el.style.backgroundColor = "#ffffff";
+                    el.style.border = "1px solid #000";
+                    el.style.color = "#000";
+                });
+    
+                // Highlight the selected option
+                this.style.backgroundColor = "#B78628";
+                this.style.color = "#ffffff";
+                this.style.border = "1px solid #0056b3";
+    
+                if (type === 'ram') {
+                    selectedRam = value;
+                } else if (type === 'storage') {
+                    selectedStorage = value;
+                }
+    
+                // Enable storage options only after RAM is selected
+                if (selectedRam) {
+                    document.querySelectorAll('.variant-option[data-type="storage"]').forEach(el => {
+                        el.style.pointerEvents = "auto";
+                        el.style.opacity = "1";
+                    });
+                }
+            });
+        });
+    
+        // Initially disable storage selection until RAM is chosen
+        document.querySelectorAll('.variant-option[data-type="storage"]').forEach(el => {
+            el.style.pointerEvents = "none";
+            el.style.opacity = "0.5";
+        });
+    </script>
+    
+    
     
 
     <script>
-        function buy(stock,id){
-            if(stock<1){
-                return
-            }
-            const qty = document.getElementById('qty').value
-            window.location.href=`  /buynow/${id}?qty=${qty}`
-        
-        }
+
+
+
+
+    
+// ================================color selection ========================================
+    document.querySelectorAll('.color-option').forEach(option => {
+    option.addEventListener('click', function() {
+        // Remove "selected" class from all colors
+        document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+
+        // Add "selected" class to the clicked color
+        this.classList.add('selected');
+
+        // Optional: Highlight selected color
+        document.querySelectorAll('.color-option').forEach(el => el.style.border = "2px solid transparent");
+        this.style.border = "2px solid #000";
+    });
+});
+
+// ==============================================================================================
+
+// ===========================================================
+
+
+function setColorBeforeSubmit(event) {
+    // Prevent form submission if no color is selected
+    const selectedColorElement = document.querySelector('.color-option.selected');
+    if (!selectedColorElement) {
+        alert("Please select a color before adding to cart.");
+        event.preventDefault();  // Stop form submission
+        return;
+    }
+
+    // Set selected color in the hidden input field
+    const selectedColor = selectedColorElement.getAttribute('data-value');
+    document.getElementById('selectedColorInput').value = selectedColor;
+   
+
+}
+
+
+
+function buy(stock, id) {
+    if (stock < 1) {
+        return;
+    }
+
+    const qty = document.getElementById('qty').value;
+
+    // Get the selected color
+    const selectedColorElement = document.querySelector('.color-option.selected');
+    if (!selectedColorElement) {
+        alert("Please select a color.");
+        return;
+    }
+
+    const selectedColor = selectedColorElement.getAttribute('data-value');
+
+    // Redirect without encoding (not recommended if color names contain spaces)
+    window.location.href = `/buynow/${id}?qty=${qty}&color=${selectedColor.replace(/\s+/g, '-')}`;
+}
+// ==========================================================================
 
         document.addEventListener("DOMContentLoaded", function () {
     const qtyInput = document.getElementById("qty");
     const stock = document.getElementById("stk").value
     
-    console.log("...",stock)// Get stock value from a data attribute
 
     function checkMaxLimit() {
-        const maxQty =5 // Dynamically get max value
+        const maxQty =5 
         const currentQty = parseInt(qtyInput.value, 10);
 
         
         if (currentQty > stock) {
             qtyInput.value = stock; 
-            qtyInput.setAttribute("max", stock);  // Ensure the max limit is set to stock
+            qtyInput.setAttribute("max", stock);  
             qtyInput.setAttribute("readonly", "true");  
             
             showCustomAlert(`Stock limit exceeded.   Only ${stock}  available`);
@@ -776,7 +886,6 @@
 
 
     
-    // Trigger when value changes (typing or clicking + button)
     qtyInput.addEventListener("input", checkMaxLimit);
     qtyInput.addEventListener("change", checkMaxLimit);
 });
@@ -798,5 +907,4 @@ function showCustomAlert(message) {
 </body>
 
 
-<!-- molla/product.html  22 Nov 2019 09:55:05 GMT -->
 </html>

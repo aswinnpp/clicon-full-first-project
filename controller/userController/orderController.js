@@ -11,7 +11,8 @@ const buyNow = async (req, res) => {
   try {
     req.session.buyCheck = "buyNow";
     const id = req.params.id;
-    const { qty } = req.query;
+    const { qty, color } = req.query;
+    console.log("=============check", color);
 
     const email = req.session?.details?.email;
     if (!email) return res.redirect("/signin");
@@ -25,16 +26,21 @@ const buyNow = async (req, res) => {
     const quantity = parseFloat(qty) || 1;
     const cartItems = [{ productId: product, quantity }];
 
-  
     let originalTotal = 0;
     let totalDiscount = 0;
     let totalValue = 0;
 
     cartItems.forEach((item) => {
-      const originalPrice = parseFloat(item.productId.price.replace(/,/g, "")) || 0;
-      const discountMatch = item.productId.offer ? item.productId.offer.match(/\d+/) : null;
-      const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
-      const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+      const originalPrice =
+        parseFloat(item.productId.price.replace(/,/g, "")) || 0;
+      const discountMatch = item.productId.offer
+        ? item.productId.offer.match(/\d+/)
+        : null;
+      const discountPercentage = discountMatch
+        ? parseFloat(discountMatch[0])
+        : 0;
+      const discountedPrice =
+        originalPrice - (originalPrice * discountPercentage) / 100;
 
       const itemTotalOriginal = originalPrice * quantity;
       const itemTotalDiscounted = discountedPrice * quantity;
@@ -58,14 +64,13 @@ const buyNow = async (req, res) => {
       user,
       cartItems,
       quantity,
+      color
     });
   } catch (error) {
     console.log(error);
     res.status(500).send("Server Error");
   }
 };
-
-
 
 const loadCheckout = async (req, res) => {
   try {
@@ -74,7 +79,10 @@ const loadCheckout = async (req, res) => {
 
     if (!check) return res.redirect("/");
 
-    console.log("////////check", check);
+
+
+
+
 
     const email = req.session?.details?.email;
     if (!email) return res.redirect("/login");
@@ -91,20 +99,30 @@ const loadCheckout = async (req, res) => {
       });
 
       if (!cartItems || cartItems.items.length === 0) {
-        return res.redirect("/cart"); // Redirect if cart is empty
+        return res.redirect("/cart"); 
       }
+      
+      let  color = req.query.color.split(",")
 
-      console.log("Cart Items:", cartItems);
+      
+      
+      console.log("Cart Items:",color );
 
       let originalTotal = 0;
       let totalDiscount = 0;
       let totalValue = 0;
 
       cartItems.items.forEach((item) => {
-        const originalPrice = parseFloat(item.productId?.price.replace(/,/g, "")) || 0;
-        const discountMatch = item.productId?.offer ? item.productId.offer.match(/\d+/) : null;
-        const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
-        const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+        const originalPrice =
+          parseFloat(item.productId?.price.replace(/,/g, "")) || 0;
+        const discountMatch = item.productId?.offer
+          ? item.productId.offer.match(/\d+/)
+          : null;
+        const discountPercentage = discountMatch
+          ? parseFloat(discountMatch[0])
+          : 0;
+        const discountedPrice =
+          originalPrice - (originalPrice * discountPercentage) / 100;
 
         const quantity = Number(item.quantity);
         const itemTotalOriginal = originalPrice * quantity;
@@ -125,6 +143,8 @@ const loadCheckout = async (req, res) => {
         address,
         user,
         message,
+        color
+      
       });
     }
 
@@ -139,8 +159,11 @@ const loadCheckout = async (req, res) => {
 
       const originalPrice = parseFloat(product.price.replace(/,/g, "")) || 0;
       const discountMatch = product.offer ? product.offer.match(/\d+/) : null;
-      const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
-      const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+      const discountPercentage = discountMatch
+        ? parseFloat(discountMatch[0])
+        : 0;
+      const discountedPrice =
+        originalPrice - (originalPrice * discountPercentage) / 100;
       const quantity = parseInt(qty, 10);
       const totalOriginal = originalPrice * quantity;
       const totalDiscount = (originalPrice - discountedPrice) * quantity;
@@ -155,6 +178,7 @@ const loadCheckout = async (req, res) => {
         totalDiscount,
         finalTotal,
         message,
+        color
       });
     }
   } catch (error) {
@@ -181,12 +205,17 @@ const CheckOut = async (req, res) => {
       phone,
     } = req.body;
 
-    console.log("lll", catqty);
-
+    // Ensure colors are properly processed
+    const color = req.body.color
+      ? [].concat(req.body.color).flatMap(c => c.split(',').map(s => s.trim()))
+      : [];
+    
+    console.log("Processed Colors:", color);
+    
     const check = req.session?.buyCheck;
-
     const formattedCustomerId = customerId.trim();
 
+    // Validate customerId format
     if (!mongoose.Types.ObjectId.isValid(formattedCustomerId)) {
       return res.status(400).json({ error: "Invalid customerId format" });
     }
@@ -197,27 +226,28 @@ const CheckOut = async (req, res) => {
 
     let items = [];
 
-    if (catqty && catqty.length > 1) {
+    if (Array.isArray(catqty) && catqty.length > 1) {
       items = catqty.map((quantity, index) => ({
         productId: new mongoose.Types.ObjectId(cartid[index]),
         quantity: quantity,
+        color: Array.isArray(color) ? color[index] || color[0] : color // Assigns a single color per item
       }));
     } else {
+      console.log("Single Item Checkout");
       items = [
         {
           productId: new mongoose.Types.ObjectId(cartid),
           quantity: Number(catqty) || 1,
+          color: Array.isArray(color) ? color[0] : color // Assigns the first color if array
         },
       ];
     }
 
-
-
-
+    
     for (const item of items) {
       const product = await Product.findById(item.productId);
       if (product) {
-        if ( item.quantity <= product.stock) {
+        if (item.quantity <= product.stock) {
           product.stock -= item.quantity;
           await product.save();
         } else {
@@ -225,18 +255,14 @@ const CheckOut = async (req, res) => {
             "count",
             `Not enough stock for this product ${product.productname}`
           );
-          res.redirect("/productlist");
+          return res.redirect("/productlist");
         }
       } else {
         return res
           .status(404)
-          .send({ error: `Product with ID ${item.productId} not found` });
+          .json({ error: `Product with ID ${item.productId} not found` });
       }
     }
-
-    
-
-
 
     const billingAddress = {
       country,
@@ -248,6 +274,7 @@ const CheckOut = async (req, res) => {
       name,
     };
 
+    // Create a new order
     const newOrder = new Orders({
       customerId: formattedCustomerId,
       totalAmount: totalValue,
@@ -258,25 +285,27 @@ const CheckOut = async (req, res) => {
 
     await newOrder.save();
 
+    // If coming from cart, clear the cart after checkout
     if (check === "Cart") {
       await Cart.deleteMany({ userId: customerId.trim() });
     }
 
-    console.log("customerId", customerId);
+    console.log("Order placed for customerId:", customerId);
 
     res.render("user/ordersuccess", { userid: customerId.trim() });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-const   OrderView = async (req, res) => {
+const OrderView = async (req, res) => {
   try {
     const { orderId, productId } = req.params;
 
     console.log("Fetching Order Details...");
 
-    // Find the order and populate necessary fields
+
     const order = await Order.findById(orderId)
       .populate("items.productId")
       .populate("customerId");
@@ -321,7 +350,7 @@ const cancellOrder = async (req, res) => {
     const productId = req.query.productId;
     let quantity = parseInt(req.query.quantity, 10);
 
-    console.log("Received Data:", { orderId, newStatus, productId ,quantity});
+    console.log("Received Data:", { orderId, newStatus, productId, quantity });
 
     // Find the order
     const order = await Order.findById(orderId)
@@ -332,7 +361,6 @@ const cancellOrder = async (req, res) => {
       return res.status(404).send("Order not found");
     }
 
-    
     const itemToUpdate = order.items.find(
       (item) => item.productId._id.toString() === productId
     );
@@ -342,7 +370,7 @@ const cancellOrder = async (req, res) => {
     }
 
     itemToUpdate.productId.stock += quantity;
-   
+
     itemToUpdate.shippingDetails.status = newStatus;
 
     await itemToUpdate.productId.save();

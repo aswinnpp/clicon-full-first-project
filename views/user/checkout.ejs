@@ -202,15 +202,18 @@
                                     <!-- Hidden fields to pass productId and quantity -->
                                     <input type="hidden" value="<%= item.productId._id %>" name="cartid">
                                     <input type="hidden" value="<%= item.quantity %>" name="catqty">
+                                    <input type="hidden" value="<%= color %>" name="color">
                                 <% }) %>
                             <% } else if (product) { %>
                                 <!-- For a single product -->
                                 <input type="hidden" value="<%= product._id %>" name="cartid">
                                 <input type="hidden" value="<%= quantity %>" name="catqty">
+                                
                             <% } %>
                             
 		                	<div class="row">
 		                		<div class="col-lg-9">
+                                    <P><%= color%></P>
 		                			<h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
 		                				<div class="row">
 		                					<!-- <div class="col-sm-6">

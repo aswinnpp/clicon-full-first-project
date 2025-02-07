@@ -299,7 +299,8 @@
               <% 
                 let originalTotal = 0;
                 let totalDiscount = 0;  
-                let finalTotal = 0;      
+                let finalTotal = 0;
+                let colors=[]     
       
                 items.forEach(item => {
                   const originalPrice = parseFloat(item.productId?.price.replace(/,/g, '')) || 0;
@@ -314,6 +315,7 @@
                   originalTotal += itemTotalOriginal;
                   totalDiscount += discountAmount;
                   finalTotal += itemTotalDiscounted;
+                  colors.push(item.color)
                 });
               %>
               
@@ -326,13 +328,14 @@
                 <td>- ₹<%= Math.floor(totalDiscount)  %></td>
               </tr>
               <tr class="summary-total font-weight-bold">
-                <td>Total: (<%= totalItems %> products)</td>
+                <td>Total: (<%= totalItems %> items)</td>
                 <td>₹<%= Math.floor(finalTotal) %></td>
               </tr>
             </tbody>
           </table>
-      
-          <a href="/checkout" 
+       
+        
+          <a href="/checkout?color=<%=colors%>" 
             class="btn btn-outline-primary-2 btn-block mt-3"
             style="<%= totalItems === 0 ? 'display: none;' : '' %>">
             PROCEED TO CHECKOUT

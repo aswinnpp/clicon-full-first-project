@@ -27,8 +27,8 @@ const loadProductManage = async (req, res) => {
 
     const products = await Product.find(query)
       .skip(skip)
-      .limit(limit);
-
+      .limit(limit)
+      .sort({ createdAt: -1 });
     const totalProduct = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProduct / limit);
 

@@ -15,7 +15,8 @@ const loadOrdermanage = async (req, res) => {
       .skip(skip)
       .limit(limit)
       .populate('customerId')
-      .populate('items.productId');
+      .populate('items.productId')
+      .sort({ createdAt: -1 })
 
     res.render('admin/ordermanage', {
       orders,

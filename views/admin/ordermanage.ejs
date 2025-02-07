@@ -57,8 +57,9 @@
               </td>
     
               <td>
-                <form action="/admin/update-product-status/<%= order._id %>/<%= item._id %>" method="POST" onsubmit="return confirmStatusChange(event, this)">
-                  <select name="status" onchange="return confirmStatusChange(event, this)">
+                <!-- Order Status Dropdown for individual product -->
+                <form action="/admin/update-product-status/<%= order._id %>/<%= item._id %>" method="POST">
+                  <select name="status" onchange="showSwalAndSubmit(this)">
                     <% ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].forEach(statusOption => { %>
                       <option value="<%= statusOption %>" <%= item.shippingDetails.status === statusOption ? 'selected' : '' %> >
                         <%= statusOption %>
@@ -113,40 +114,8 @@
   </nav>
 </div>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-
-
-function confirmStatusChange(event, form) {
-    // Prevent form submission until confirmation
-    event.preventDefault();
-
-    // Get the new status value
-    const newStatus = form.querySelector('select[name="status"]').value;
-
-    Swal.fire({
-      title: "Are you sure?",
-      text: `You are about to change the status to "${newStatus}". This action cannot be undone.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, change status",
-      cancelButtonText: "Cancel"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        form.submit(); // Submit the form if confirmed
-      }
-    });
-
-    return false; // Prevent immediate form submission
-  }
-
-
-
-
-
-
   document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('categorySearch');
     searchInput.addEventListener('input', function () {
@@ -163,6 +132,36 @@ function confirmStatusChange(event, form) {
       });
     });
   });
+
+
+
+
+
+  function showSwalAndSubmit(selectElement) {
+
+    
+    
+  
+    const selectedStatus = selectElement.value;
+    
+    
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You are changing the status to "${selectedStatus}".`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update!',
+      cancelButtonText: 'No, cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        selectElement.form.submit();
+      } else {
+        
+        selectElement.value = selectedStatus;
+      }
+    });
+  }
 </script>
 
 <%- include('../partials/admin/footer') %>

@@ -45,7 +45,12 @@ const orderDetailsSchema = new mongoose.Schema({
       type: Number,
     
       min: [1, 'Quantity must be at least 1'],
-    },  
+    }, 
+     color:{
+      type:String,
+      require:true
+      
+    },
     
     shippingDetails: {
       origin: { type: String, required: true, default: "India" }, 

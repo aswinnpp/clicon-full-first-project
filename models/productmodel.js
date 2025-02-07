@@ -24,10 +24,7 @@ const productSchema = new mongoose.Schema({
     ref:'Category',
     
   },
-  // brand: {
-  //   type: String,
-  //   trim: true,
-  // },
+  
   price: {
     type: String,
     min: [0, 'Price cannot be negative'], 

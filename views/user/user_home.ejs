@@ -735,6 +735,9 @@
                                             <%= Math.floor(discountedPrice)  %>
                                         </span>
                                     </div>
+                                    <div>
+                                        
+                                    </div>
 
                                     <div class="product-price">
                                         <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
@@ -1183,8 +1186,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Response status:', response.status);
                     return response.json();
                 })
-                .then(products => {
-                    console.log('Products received:', products);
+                .then(data => {
+                    
                     searchResultsContainer.innerHTML = '';
                     
                     // Hide all main content elements except search results
@@ -1196,9 +1199,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Show search results container
                     searchResults.style.display = 'block';
                     
-                    if (products && products.length > 0) {
-                        console.log('Building product cards for', products.length, 'products');
-                        products.forEach(product => {
+                    if (data.products && data.products.length > 0) {
+                      
+                        data.products.forEach((product,index) => {
                             const productCard = `
                                 <div class="col-6 col-md-4 col-lg-3 mb-4">
                                     <div class="product product-2">
@@ -1228,6 +1231,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                             </h3>
                                             <div class="product-price">
                                                 <span>${product.price}</span>
+                                                <span style="text-decoration: line-through; color: red;">
+                                          ${data.offerprice[index]}
+                                        </span>
+                                            </div>
+
+                                             <div class="product-price">
+                                                <span style="color:green;">${product.offer} off</span>
                                             </div>
                                         </div>
                                     </div>

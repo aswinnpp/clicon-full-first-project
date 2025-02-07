@@ -42,7 +42,7 @@ const upload = multer({
 
 const uploadMultiple = multer({
     storage: storage,
-    limits: { fileSize: 100 * 1024 * 1024, // 100MB for file uploads
+    limits: { fileSize: 100 * 1024 * 1024, 
       fieldSize: 10 * 1024 * 1024, }, 
 }).fields([
     { name: 'image0', maxCount: 1 },

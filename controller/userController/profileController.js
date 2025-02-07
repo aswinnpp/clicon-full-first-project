@@ -11,12 +11,11 @@ const loadProfile = async (req,res)=>{
 try {
 
   const id = req.params.id
-  // console.log("id",id)
 console.log(req.session)
 const orders = await Order.find({ customerId: id })
   .populate({
-    path: 'items.productId', // Path to populate
-    select: 'productname price' // Select only the fields you need (in this case, the name of the product)
+    path: 'items.productId', 
+    select: 'productname price'
   })
   .exec();
 

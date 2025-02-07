@@ -8,12 +8,16 @@ const loadCart = async (req, res) => {
     const email = req.session?.details?.email;
     if (!email) return res.redirect('/login');
 
+    console.log("aaaaaaaaaaaa",req.query.page)
+
     const user = await userSchema.findOne({ email });
     if (!user) return res.redirect('/login');
 
-    const page = parseInt(req.query.page) || 1; // Current page
-    const limit = 4; // Items per page
+    const page = parseInt(req.query.page) || 1; 
+    const limit = 4; 
     const skip = (page - 1) * limit;
+   
+    
 
     const cart = await Cart.findOne({ userId: user._id }).populate({
       path: 'items.productId',
@@ -72,9 +76,14 @@ const Carts = async (req, res) => {
     const email = req.session?.details?.email;
     if (!email) return res.redirect('/login');
 
+
+    
+
     const user = await userSchema.findOne({ email });
     const userId = user?._id;
-    const { productId, quantity, stock } = req.body;
+    const { productId, quantity, stock ,selectedColor} = req.body;
+
+   
     
     const parsedQuantity = Number(quantity);
     
@@ -88,7 +97,7 @@ const Carts = async (req, res) => {
     if (!cart) {
       cart = new Cart({
         userId,
-        items: [{ productId, quantity: parsedQuantity }],
+        items: [{ productId, quantity: parsedQuantity ,color:selectedColor}],
       });
       await cart.save();
       return res.redirect('/cart');
@@ -96,7 +105,7 @@ const Carts = async (req, res) => {
 
     let itemFound = false;
 
-    // Check each item in the cart
+    
     for (let i = 0; i < cart.items.length; i++) {
       if (cart.items[i].productId.toString() === productId) {
         const newQuantity = cart.items[i].quantity + parsedQuantity;
@@ -120,17 +129,17 @@ const Carts = async (req, res) => {
         req.flash("cart", "You cannot add more than 5 items of this product.");
         return res.redirect('/');
       }
-      cart.items.push({ productId, quantity: parsedQuantity });
+      cart.items.push({ productId, quantity: parsedQuantity,color:selectedColor });
     }
 
-    // Calculate price after discount
     let price = parseFloat(product.price.replace(/,/g, '')) || 0;
 
-    // Extract discount percentage from "18% Off"
+    
     const discountMatch = product.offer ? product.offer.match(/\d+/) : null;
     const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
 
-    // Apply discount
+    
+
     let finalPrice = price - (price * discountPercentage / 100);
 
     console.log(`Original Price: ${price}, Discount: ${discountPercentage}%, Final Price: ${finalPrice}`);
@@ -151,7 +160,7 @@ const cartDelete = async (req, res) => {
   try {
     const { userid, productid } = req.query;
     await Cart.updateOne({ userId: userid }, { $pull: { items: { productId: productid } } });
-    res.redirect("/");
+    res.redirect("/cart");
   } catch (error) {
     console.error("Cart delete error:", error);
     res.status(500).send("Server Error");

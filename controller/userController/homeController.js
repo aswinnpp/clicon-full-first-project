@@ -25,6 +25,7 @@ const mongoose  = require("mongoose")
 
   const searchProducts = async (req, res) => {
     try {
+      let a=[]
         const searchTerm = req.query.q;
         console.log('Search term received:', searchTerm);
         
@@ -33,8 +34,25 @@ const mongoose  = require("mongoose")
             isDeleted: false
         }).limit(10);
         
-        console.log('Products found:', products.length);
-        res.json(products);
+        products.forEach((product,ind)=>{
+         
+          
+          let offer =Number(product.offer.slice(0, -1)); 
+          
+          
+           let price = Number(product.price.replace(/,/g, ''));
+
+     
+           const offerprice=price-(price*(offer/100))
+          
+           
+         a.push(offerprice)
+        })
+     
+      
+       console.log(a);
+      
+        res.json({products,offerprice:a});
     } catch (error) {
         console.error('Search error:', error);
         res.status(500).json([]);

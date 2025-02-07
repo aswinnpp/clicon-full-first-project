@@ -821,63 +821,73 @@ table td a {
 
               <!-- Recent Orders -->
               
-          </section>
-          <div style="display: flex; justify-content: center; align-items: center;">
-            <div class="recent-orders mb-5" style="margin-top: 20px; width: 1000px; background-color: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
-              <h3 style="margin: 0 0 20px;">Your Orders</h3>
-              <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                  <tr>
-                    <th style="padding: 12px; background-color: #f4f4f4; text-align: left;">Product Name</th>
-                    <th style="padding: 12px; background-color: #f4f4f4; text-align: left;">Status</th>
-                    <th style="padding: 12px; background-color: #f4f4f4; text-align: left;">Date</th>
-                    <th style="padding: 12px; background-color: #f4f4f4; text-align: left;">Total</th>
-                    <th style="padding: 12px; background-color: #f4f4f4; text-align: left;">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% let rowCount = 1; %>
-                  <% orders.forEach(order => { %>
-                    <% order.items.forEach(item => { %>
-                      <tr id="row<%= rowCount %>">
-                        <td style="padding: 12px;">
-                          <%= item.productId.productname %>
-                        </td>
-                        <td style="padding: 12px; color: 
-                          <% if (item.shippingDetails.status === 'Pending') { %> 
-                            #ff9800; 
-                          <% } else if (item.shippingDetails.status === 'Completed') { %> 
-                            #4caf50; 
-                          <% } else if (item.shippingDetails.status === 'Shipped') { %> 
-                            #2196F3;
-                          <% } else if (item.shippingDetails.status === 'Cancelled') { %> 
-                            #f44336;
-                          <% } else { %> 
-                            #000;
-                          <% } %>">
-                          <%= item.shippingDetails.status %>
-                        </td>
-                        <td style="padding: 12px;"><%= new Date(order.orderDate).toLocaleDateString() %></td>
-                        <td style="padding: 12px;"><%= (item.quantity * parseFloat(item.productId.price.replace(/,/g, ''))).toFixed(2) %></td>
-                        <td style="padding: 12px;">
-                          <a href="/orderview/<%= order._id %>/<%= item.productId._id %>" class="btn btn-primary">
-                            View Details
-                          </a>
-                        </td>
-                      </tr>
-                      <% rowCount++; %>
+            </section>
+            <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
+              <div class="recent-orders mb-5" 
+                   style="width: 1000px; background-color: #fff; border-radius: 8px; padding: 20px; 
+                          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+                <h3 style="margin-bottom: 20px; font-size: 22px; color: #333;">Your Orders</h3>
+                <table style="width: 100%; border-collapse: collapse; font-size: 16px;">
+                  <thead>
+                    <tr style="background-color: #f4f4f4; text-align: left;">
+                      <th style="padding: 12px;">Product Name</th>
+                      <th style="padding: 12px;">Status</th>
+                      <th style="padding: 12px;">Date</th>
+                      <th style="padding: 12px;">Total</th>
+                      <th style="padding: 12px;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% let rowCount = 1; %>
+                    <% orders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate)).forEach(order => { %>
+                      <% order.items.forEach(item => { %>
+                        <tr id="row<%= rowCount %>" style="border-bottom: 1px solid #ddd;">
+                          <td style="padding: 12px; color: #333;"><%= item.productId.productname %></td>
+                          <td style="padding: 12px; font-weight: bold; color: 
+                            <% if (item.shippingDetails.status === 'Pending') { %> 
+                              #ff9800; 
+                            <% } else if (item.shippingDetails.status === 'Completed') { %> 
+                              #4caf50; 
+                            <% } else if (item.shippingDetails.status === 'Shipped') { %> 
+                              #2196F3;
+                            <% } else if (item.shippingDetails.status === 'Cancelled') { %> 
+                              #f44336;
+                            <% } else { %> 
+                              #000;
+                            <% } %>">
+                            <%= item.shippingDetails.status %>
+                          </td>
+                          <td style="padding: 12px; color: #666;"><%= new Date(order.orderDate).toLocaleDateString() %></td>
+                          <td style="padding: 12px; font-weight: bold; color: #333;"><%= Math.floor(order.totalAmount) %></td>
+                          <td style="padding: 12px;">
+                            <a href="/orderview/<%= order._id %>/<%= item.productId._id %>" 
+                               class="btn btn-primary" 
+                               style="padding: 8px 12px; background-color: #007bff; color: white; text-decoration: none; 
+                                      border-radius: 5px; display: inline-block;">
+                              View Details
+                            </a>
+                          </td>
+                        </tr>
+                        <% rowCount++; %>
+                      <% }); %>
                     <% }); %>
-                  <% }); %>
-                </tbody>
-              </table>
-          
-              <div id="pagination" style="text-align: center; margin-top: 20px;">
-                <button id="prevBtn" class="btn btn-secondary">Previous</button>
-                <span id="pageno">1</span>
-                <button id="nextBtn" class="btn btn-secondary">Next</button>
+                  </tbody>
+                  
+                </table>
+            
+                <div id="pagination" style="text-align: center; margin-top: 20px;">
+                  <button id="prevBtn" class="btn btn-secondary" 
+                          style="padding: 8px 12px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Previous
+                  </button>
+                  <span id="pageno" style="margin: 0 15px; font-weight: bold; font-size: 18px;">1</span>
+                  <button id="nextBtn" class="btn btn-secondary" 
+                          style="padding: 8px 12px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Next
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
             
           
 
