@@ -16,17 +16,16 @@ const orderDetailsSchema = new mongoose.Schema({
     min: [0, 'Total amount cannot be negative'],
   },
   
+  // paymentMethod: {
+  //   type: String,
+  //   enum: ['Credit Card', 'Debit Card', 'PayPal', 'Cash on Delivery'],
+  //   // required: true,
+  // },
   paymentMethod: {
     type: String,
-    enum: ['Credit Card', 'Debit Card', 'PayPal', 'Cash on Delivery'],
-    // required: true,
-  },
-  paymentStatus: {
-    type: String,
-    enum: ['Pending', 'Paid', 'Failed'],
-    default: 'Pending',
-  },
- 
+    enum: ["cod", "Wallet", "razorpay", 'Cash on Delivery'],
+    required: true
+}, 
   billingAddress: {
     name: { type: String, required: true },
     country: { type: String, required: true },
@@ -35,6 +34,9 @@ const orderDetailsSchema = new mongoose.Schema({
     state: { type: String, required: true },
     postcode: { type: String, required: true },
     phone: { type: String, required: true },
+  }, coupon: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Coupon',
   },
   items: [{
     productId: {

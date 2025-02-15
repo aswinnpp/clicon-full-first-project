@@ -27,7 +27,53 @@
     <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
     <!-- Main CSS File -->
     <link rel="stylesheet" href="/assets/css/style.css">
+
+    <style>
+/* Main Coupon Section */
+.available-coupons {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* Coupon List Container */
+.coupon-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 10px;
+}
+
+/* Individual Coupon Card */
+.coupon-item.card {
+    flex: 0 0 calc(25% - 12px); /* Adjust for gap (4 cards with 3 gaps between) */
+    background: #fff;
+    border: 1px dashed #e0e0e0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 10px;
+}
+
+.coupon-item.card:hover {
+    border-color: #2874f0;
+    background: #f5f8ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .coupon-item.card {
+        flex: 0 0 calc(50% - 8px); /* 2 cards per row on tablets */
+    }
+}
+
+@media (max-width: 576px) {
+    .coupon-item.card {
+        flex: 0 0 100%; /* 1 card per row on mobile */
+    }
+}
+
+    </style>
 </head>
+
 
 <body>
     <div class="page-wrapper">
@@ -167,7 +213,7 @@
         
 
         <main class="main">
-        	<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+        	<div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg')">
         		<div class="container">
         			<h1 class="page-title">Checkout<span>Shop</span></h1>
         		</div><!-- End .container -->
@@ -183,18 +229,64 @@
             </nav><!-- End .breadcrumb-nav -->
 
             <div class="page-content">
+
+
             	<div class="checkout">
 	                <div class="container">
-            			<div class="checkout-discount">
-            				<form action="#">
-        						<input type="text" class="form-control" required id="checkout-discount-input">
-            					<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
-            				</form>
-            			</div><!-- End .checkout-discount -->
 
-                       
                         
-            			<form action="/checkout" method="post">
+                        
+
+
+                        
+            			<form action="/checkout" method="post" id="checkForm">
+
+                            
+                        <div class="available-coupons mb-4">
+                            <h4 class="coupon-title">Available Coupons</h4>
+                            <% 
+                                    const filteredCoupons = availableCoupons.filter(coupon => 
+                                        totalValue >= coupon.minOrderAmount &&  
+                                        !coupon.users.includes(user._id) && 
+                                        coupon.isActive === true &&  
+                                        coupon.usageLimit > 0 &&
+                                        new Date(coupon.startDate) <= new Date()
+                                    );
+
+                                    if (filteredCoupons.length > 0) { 
+                                %>
+
+                                <div class="coupon-list">
+                                    <% filteredCoupons.forEach(coupon => { %>
+                                        <div class="coupon-item card mb-2">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-center h-4">
+                                                    <div>
+                                                        <input type="radio" 
+                                                            name="selectedCoupon" 
+                                                            value='<%=coupon.code%>' 
+                                                            id="coupon-<%= coupon.code %>" 
+                                                            class="mr-2" 
+                                                            data-checked="false"
+                                                            onclick="handleCouponSelection(this, <%= coupon.discountValue %>)">
+                                                        <label for="coupon-<%= coupon.code %>">
+                                                            <strong class="text-primary"><%= coupon.code %></strong>
+                                                            <div class="ml-2"> Rs <%= coupon.discountValue %> OFF</div>
+                                                        </label>
+                                                    </div>
+                                                    <small class="text-muted">
+                                                        Valid until: <%= new Date(coupon.expiryDate).toLocaleDateString() %>
+                                                    </small>
+                                                </div>
+                                                <p class="mb-0 text-muted small">Min. purchase: ₹<%= coupon.minOrderAmount %></p>
+                                            </div>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            <% } else { %>
+                                <p class="text-muted">No active coupons available at the moment.</p>
+                            <% } %>
+                        </div>
 
                             <input type="hidden" class="form-control" name="customerId" value=" <%= user?._id %>">
                             <% if (cartItems && cartItems.items) { %>
@@ -213,56 +305,52 @@
                             
 		                	<div class="row">
 		                		<div class="col-lg-9">
-                                    <P><%= color%></P>
+                                    
 		                			<h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
 		                				<div class="row">
-		                					<!-- <div class="col-sm-6">
-		                						<label>First Name *</label>
-		                						<input type="text" class="form-control" required>
-		                					</div>End .col-sm-6 -->
-
-		                					<div class="col-sm-6">
-		                						<label> Name *</label>
-		                						<input type="text" class="form-control" name="name" required>
-		                					</div><!-- End .col-sm-6 -->
-		                				</div><!-- End .row -->
-
-	            						<!-- <label>Company Name (Optional)</label>
-	            						<input type="text" class="form-control"> -->
-
-	            						<label>Country *</label>
-	            						<input type="text" class="form-control" name="country" required>
-
-	            						<label>Street address *</label>
-	            						<input type="text" class="form-control" name="street" placeholder="House number and Street name" required>
-
-	            						<div class="row">
-		                					<div class="col-sm-6">
-		                						<label>Town / City *</label>
-		                						<input type="text" class="form-control" name="city" required>
-		                					</div><!-- End .col-sm-6 -->
-
-		                					<div class="col-sm-6">
-		                						<label>State / County *</label>
-		                						<input type="text" class="form-control" name="state" required>
-		                					</div><!-- End .col-sm-6 -->
-		                				</div><!-- End .row -->
-
-		                				<div class="row">
-		                					<div class="col-sm-6">
-		                						<label>Postcode / ZIP *</label>
-		                						<input type="text" class="form-control" name="postcode" required>
-		                					</div><!-- End .col-sm-6 -->
-
-		                					<div class="col-sm-6">
-		                						<label>Phone *</label>
-		                						<input type="tel" class="form-control" name="phone" required>
-		                					</div><!-- End .col-sm-6 -->
-		                				</div><!-- End .row -->
-
-	                					<!-- <label>Email address *</label>
-	        							<input type="email" class="form-control" required> -->
-
+                                            <div class="col-sm-6">
+                                                <label for="name">Name *</label>
+                                                <input type="text" class="form-control" id="name" name="name" >
+                                                <p id="nameError"></p>
+                                            </div>
+                                        </div>
+                                
+                                        <label for="country">Country *</label>
+                                        <input type="text" class="form-control" id="country" name="country" >
+                                        <p id="countryError"></p>
+                                
+                                        <label for="street">Street Address *</label>
+                                        <input type="text" class="form-control" id="street" name="street" >
+                                        <p id="streetError"></p>
+                                
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label for="city">Town / City *</label>
+                                                <input type="text" class="form-control" id="city" name="city" >
+                                                <p id="cityError"></p>
+                                            </div>
+                                
+                                            <div class="col-sm-6">
+                                                <label for="state">State / County *</label>
+                                                <input type="text" class="form-control" id="state" name="state" >
+                                                <p id="stateError"></p>
+                                            </div>
+                                        </div>
+                                
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label for="postcode">Postcode / ZIP *</label>
+                                                <input type="text" class="form-control" id="postcode" name="postcode" >
+                                                <p id="postcodeError"></p>
+                                            </div>
+                                
+                                            <div class="col-sm-6">
+                                                <label for="phone">Phone *</label>
+                                                <input type="tel" class="form-control" id="phone" name="phone" >
+                                                <p id="errorMsg" style="color: red;"></p>
+                                            </div>
+	                				
+</div>
 
                                         <div class="custom-control custom-checkbox">
                                             <input type="checkbox" class="custom-control-input" id="multyaddress"> 
@@ -304,15 +392,15 @@
                                                   </tr>
                                                   <tr>
                                                     <td><label for="express-shipping">Total Discount</label></td>
-                                                    <td>- ₹<%=Math.floor(totalDiscount)%></td>
+                                                    <td id="discountValue">- ₹<%=Math.floor(totalDiscount)%></td>
                                                   </tr>
                                                   <tr class="summary-total font-weight-bold">
                                                     <td>Total:(<%= totalItems %> products)</td>
                                                     
-                                                    <td> ₹<%= Math.floor(totalValue) %></td></td>
-                                                    <input type="hidden" value="<%= totalValue %>" name="totalValue">
+                                                    <td id="totaAmount"> ₹<%= Math.floor(totalValue) %></td></td>
+                                                    <input type="hidden" value="<%= totalValue %>" id="totalValue" name="totalValue">
                                                   </tr>
-		                					</tbody>
+		                					</thead>
 		                				</table><!-- End .table table-summary -->
 
 		                				<div class="accordion-summary" id="accordion-payment">
@@ -327,7 +415,7 @@
                                        <div class="accordion-summary"> 
                                             <div class="card-header">
                                                 <h2 class="card-title">
-                                                    <input type="radio" name="paymentMethod" required value="PayPal"> PayPal
+                                                    <input type="radio" name="paymentMethod"  required value="razorpay" required> Razorpay
                                                 </h2>
                                             </div>
                                         </div>
@@ -335,14 +423,14 @@
                                         <div class="accordion-summary">
                                             <div class="card-header">
                                                 <h2 class="card-title">
-                                                    <input type="radio" name="paymentMethod" required value="Credit Card (Stripe)"> Credit Card (Stripe)
+                                                    <input type="radio" onclick="validate(<%=wallet.balance %>,<%= totalValue %>,event)" name="paymentMethod"  value="Wallet" > Wallet  (Balance:<%=Math.floor( wallet?.balance) %> )
                                                 </h2>
                                             </div>
                                         </div>
-
+                                        <P style="color: red;" id="wallet"></P>
 										</div><!-- End .accordion -->
 
-		                				<button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
+		                				<button type="button" id="pay-btn" onclick="he()" class="btn btn-outline-primary-2 btn-order btn-block">
 		                					<span class="btn-text">Place Order</span>
 		                					<span class="btn-hover-text">Proceed to Checkout</span>
 		                				</button>
@@ -354,6 +442,9 @@
 		                	</div><!-- End .row -->
             			</form>
 	                </div><!-- End .container -->
+
+
+
                 </div><!-- End .checkout -->
             </div><!-- End .page-content -->
         </main><!-- End .main -->
@@ -364,7 +455,7 @@
 	            	<div class="row">
 	            		<div class="col-sm-6 col-lg-3">
 	            			<div class="widget widget-about">
-	            				<img src="assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
+	            				<img src="/assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
 	            				<p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
 
 	            				<div class="social-icons">
@@ -427,10 +518,9 @@
 	        	<div class="container">
 	        		<p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p><!-- End .footer-copyright -->
 	        		<figure class="footer-payments">
-	        			<img src="assets/images/payments.png" alt="Payment methods" width="272" height="20">
+	        			<img src="/assets/images/payments.png" alt="Payment methods" width="272" height="20">
 	        		</figure><!-- End .footer-payments -->
 	        	</div><!-- End .container -->
-	        </div><!-- End .footer-bottom -->
         </footer><!-- End .footer -->
     </div><!-- End .page-wrapper -->
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
@@ -729,14 +819,16 @@
     <script src="/assets/js/superfish.min.js"></script>
     <script src="/assets/js/owl.carousel.min.js"></script>
     <!-- Main JS File -->
-    <script src="assets/js/main.js"></script>
+    <script src="/assets/js/main.js"></script>
+
+   
+        
 
     <script>
 
 const enableCheckbox = document.getElementById('multyaddress');
   const addressContainer = document.getElementById('addressContainer');
 
-  // Add event listener to the enable checkbox
   enableCheckbox.addEventListener('change', () => {
     if (enableCheckbox.checked) {
       addressContainer.style.display = 'block';
@@ -745,16 +837,13 @@ const enableCheckbox = document.getElementById('multyaddress');
     }
   });
 
-  // Show/hide address container
 document.getElementById('multyaddress').onchange = function() {
     document.getElementById('addressContainer').style.display = this.checked ? 'block' : 'none';
 }
 
-// Function to fill address details
 function fillAddress(street, city, state, country, postalCode, phone) {
     const inputs = document.getElementsByClassName('form-control');
     
-    // Loop through all form-control inputs and set values based on their labels
     Array.from(inputs).forEach(input => {
         const label = input.previousElementSibling?.textContent.toLowerCase() || '';
         
@@ -768,13 +857,225 @@ function fillAddress(street, city, state, country, postalCode, phone) {
 }
 
 
+let total = <%= Math.floor(totalValue) %>;
+let discount = <%= Math.floor(totalDiscount) %>;
+
+function handleCouponSelection(radio, discountValue) {
+    // If the radio is already checked, uncheck it
+    if (radio.getAttribute('data-checked') === 'true') {
+        radio.checked = false;
+        radio.setAttribute('data-checked', 'false');
+        // Reset the discount calculation
+        kkk({ target: radio }, 0);
+    } else {
+        // Uncheck all other radios and reset their data-checked attribute
+        document.querySelectorAll('input[name="selectedCoupon"]').forEach(r => {
+            r.checked = false;
+            r.setAttribute('data-checked', 'false');
+        });
+        // Check the clicked radio
+        radio.checked = true;
+        radio.setAttribute('data-checked', 'true');
+        // Apply the discount
+        kkk({ target: radio }, discountValue);
+    }
+}
+
+function kkk(e, dis) {
+    let a = discount;
+    let b = total;
+    
+    // Reset to original values if discount is 0 (unchecking case)
+    if (dis === 0) {
+        discount = <%= Math.floor(totalDiscount) %>;
+        total = <%= Math.floor(totalValue) %>;
+    } else {
+        discount += dis;
+        total -= dis;
+    }
+    
+    document.getElementById("discountValue").innerText = "-₹" + discount;
+    document.getElementById("totaAmount").innerText = "₹" + total;
+
+    discount = a;
+    total = b;
+    return discount;
+}
 
 
 
+function validate(wallet , total ,event){
+    console.log(wallet,total);
+    if(wallet < total){
 
+
+        event.preventDefault()
+
+ document.getElementById("wallet").innerHTML="insufficient balance "
+    }
+    
+    
+    
+}
+
+
+
+function he() {
+    const form = document.getElementById("checkForm");
+    let isValid = true;
+    
+    // Clear previous error messages
+    clearErrors();
+
+    // Get form field values
+    const name = document.getElementById("name").value.trim();
+    const country = document.getElementById("country").value.trim();
+    const street = document.getElementById("street").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const state = document.getElementById("state").value.trim();
+    const postcode = document.getElementById("postcode").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+
+    // Validate each field
+    if (name === "") {
+        document.getElementById("nameError").innerHTML = "Name is required.";
+        document.getElementById("nameError").style.color = "red";
+        isValid = false;
+    }
+
+    if (country === "") {
+        document.getElementById("countryError").innerHTML = "Country is required.";
+        document.getElementById("countryError").style.color = "red";
+        isValid = false;
+    }
+
+    if (street === "") {
+        document.getElementById("streetError").innerHTML = "Street address is required.";
+        document.getElementById("streetError").style.color = "red";
+        isValid = false;
+    }
+
+    if (city === "") {
+        document.getElementById("cityError").innerHTML = "City is required.";
+        document.getElementById("cityError").style.color = "red";
+        isValid = false;
+    }
+
+    if (state === "") {
+        document.getElementById("stateError").innerHTML = "State is required.";
+        document.getElementById("stateError").style.color = "red";
+        isValid = false;
+    }
+
+    if (!/^\d{5,6}$/.test(postcode)) {
+        document.getElementById("postcodeError").innerHTML = "Postcode must be 5-6 digits.";
+        document.getElementById("postcodeError").style.color = "red";
+        isValid = false;
+    }
+
+    if (!/^\d{10}$/.test(phone)) {
+        document.getElementById("errorMsg").innerHTML = "Phone number must be exactly 10 digits.";
+        document.getElementById("errorMsg").style.color = "red";
+        isValid = false;
+    }
+
+    // Payment method validation
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+    if (!paymentMethod) {
+        document.getElementById("errorMsg").innerHTML = "Please select a payment method.";
+        document.getElementById("errorMsg").style.color = "red";
+        isValid = false;
+    }
+
+    // Amount validation
+    const amount = document.getElementById("totalValue").value;
+    if (!amount || amount <= 0) {
+        document.getElementById("errorMsg").innerHTML = "Invalid amount.";
+        document.getElementById("errorMsg").style.color = "red";
+        isValid = false;
+    }
+
+    if (!isValid) {
+        return false;
+    }
+
+    // If using Razorpay
+    if (paymentMethod.value === "razorpay") {
+        const options = {
+            key: "rzp_test_tiBBaN9rBkAr9r",
+            amount: amount * 100,
+            currency: 'INR',
+            name: "Your Store",
+            description: "Purchase of Electronics",
+            handler: function (response) {
+                if (response.razorpay_payment_id) {
+                    form.submit();
+                } else {
+                    document.getElementById("errorMsg").innerHTML = "Payment failed. Please try again.";
+                    document.getElementById("errorMsg").style.color = "red";
+                }
+            },
+            theme: { color: "#3399cc" }
+        };
+        const rzp = new Razorpay(options);
+        rzp.open();
+    } else {
+        // For other payment methods
+        form.submit();
+    }
+}
+
+// Function to clear all error messages
+function clearErrors() {
+    const errorElements = [
+        "nameError",
+        "countryError",
+        "streetError",
+        "cityError",
+        "stateError",
+        "postcodeError",
+        "errorMsg"
+    ];
+    
+    errorElements.forEach(elementId => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.innerHTML = "";
+        }
+    });
+}
+
+// Update the pay-btn click handler
+document.getElementById("pay-btn").addEventListener("click", function(e) {
+    e.preventDefault();
+    he();
+});
+
+// Add input event listeners to clear individual error messages when user starts typing
+const inputFields = [
+    { field: "name", error: "nameError" },
+    { field: "country", error: "countryError" },
+    { field: "street", error: "streetError" },
+    { field: "city", error: "cityError" },
+    { field: "state", error: "stateError" },
+    { field: "postcode", error: "postcodeError" },
+    { field: "phone", error: "errorMsg" }
+];
+
+inputFields.forEach(({ field, error }) => {
+    document.getElementById(field).addEventListener('input', function() {
+        document.getElementById(error).innerHTML = "";
+    });
+});
 
   </script>
 
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  
+</script>
     
 </body>
 

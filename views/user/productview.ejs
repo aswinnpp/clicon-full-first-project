@@ -248,7 +248,7 @@
                                     
         <main class="main">
             <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
-                <div class="container d-flex align-items-center  border-bottom"  style="border-color: burlywood;">>
+                <div class="container d-flex align-items-center  border-bottom"  style="border-color: burlywood;">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">Home</a></li>
                         <li class="breadcrumb-item"><a href="/productview/<%= product[0]._id %>">Products</a></li>
@@ -352,7 +352,7 @@
                                         <a href="#"><%= product[0].warranty %></a>
                                     </div>
 
-                                    <% if (product[0].ram[0].length > 0) { %>
+                                    <% if (product[0]?.ram[0]?.length > 0) { %>
                                         <div class="product-cat mb-4">
                                             <strong><span>Specifications:</span></strong>
                                     

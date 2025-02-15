@@ -21,6 +21,22 @@
             --text-color: #1f2937;
             --border-radius: 12px;
         }
+        .order-summary-card {
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    background: white;
+    margin-bottom: 1rem;
+}
+
+.order-summary-card .row {
+    margin: 8px 0;
+    align-items: center;
+}
+
+.border-top {
+    border-top: 1px solid #e5e7eb !important;
+}
 
         body {
             background-color: #f9fafb;
@@ -282,8 +298,8 @@
     <div class="order-header mb-4">
         <div class="row align-items-center">
             <div class="col-md-8">
-                <h4 class="mb-2">Order #<%= order._id %></h4>
-                <p class="mb-0">Placed on <%= order.createdAt.toDateString() %></p>
+                <h4 class="mb-2">Order #<%= order?._id %></h4>
+                <p class="mb-0">Placed on <%= order?.createdAt.toDateString() %></p>
             </div>
         </div>
     </div>
@@ -292,35 +308,35 @@
     <div class="order-timeline">
         <ul class="timeline">
             <!-- Pending Status -->
-            <li class="timeline-item <%= item.shippingDetails.status === 'Pending' ? 'active' : '' %>">
-                <span class="timeline-icon <%= item.shippingDetails.status === 'Pending' ? 'bg-success' : 'bg-secondary' %>">
+            <li class="timeline-item <%= item?.shippingDetails.status === 'Pending' ? 'active' : '' %>">
+                <span class="timeline-icon <%= item?.shippingDetails.status === 'Pending' ? 'bg-success' : 'bg-secondary' %>">
                     <i class="fas fa-hourglass-half"></i>
                 </span>
                 <div class="timeline-content">
                     <strong>Pending</strong>
-                    <p><%= order.createdAt.toDateString() %></p>
+                    <p><%= order?.createdAt.toDateString() %></p>
                 </div>
             </li>
 
             <!-- Processing Status -->
-            <li class="timeline-item <%= item.shippingDetails.status === 'Processing' ? 'active' : '' %>">
-                <span class="timeline-icon <%= item.shippingDetails.status === 'Processing' ? 'bg-success' : 'bg-secondary' %>">
+            <li class="timeline-item <%= item?.shippingDetails.status === 'Processing' ? 'active' : '' %>">
+                <span class="timeline-icon <%= item?.shippingDetails.status === 'Processing' ? 'bg-success' : 'bg-secondary' %>">
                     <i class="fas fa-cogs"></i>
                 </span>
                 <div class="timeline-content">
                     <strong>Processing</strong>
-                    <p><%= item.shippingDetails.processingDate %></p>
+                    <p><%= item?.shippingDetails.processingDate %></p>
                 </div>
             </li>
 
             <!-- Shipped Status -->
-            <li class="timeline-item <%= item.shippingDetails.status === 'Shipped' ? 'active' : '' %>">
-                <span class="timeline-icon <%= item.shippingDetails.status === 'Shipped' ? 'bg-success' : 'bg-secondary' %>">
+            <li class="timeline-item <%= item?.shippingDetails.status === 'Shipped' ? 'active' : '' %>">
+                <span class="timeline-icon <%= item?.shippingDetails.status === 'Shipped' ? 'bg-success' : 'bg-secondary' %>">
                     <i class="fas fa-truck"></i>
                 </span>
                 <div class="timeline-content">
                     <strong>Shipped</strong>
-                    <p><%= item.shippingDetails.shippedDate %></p>
+                    <p><%= item?.shippingDetails.shippedDate %></p>
                 </div>
             </li>
 
@@ -331,7 +347,7 @@
                 </span>
                 <div class="timeline-content">
                     <strong>Delivered</strong>
-                    <p><%= item.shippingDetails.deliveryDate %></p>
+                    <p><%= item?.shippingDetails.deliveryDate %></p>
                 </div>
             </li>
 
@@ -342,7 +358,7 @@
                 </span>
                 <div class="timeline-content">
                     <strong>Cancelled</strong>
-                    <p><%= item.shippingDetails.cancelledDate %></p>
+                    <p><%= item?.shippingDetails.cancelledDate %></p>
                 </div>
             </li>
         </ul>
@@ -354,12 +370,22 @@
             <div class="product-card mb-4">
                 <h5 class="mb-4">Product Details</h5>
                 <div class="d-flex align-items-center">
-                    <img src="/uploads/<%= item.productId.image[0] %>" class="product-image me-4" alt="Product">
-
+                    <img src="/uploads/<%= item?.productId.image[0] %>" class="product-image me-4" alt="Product">
+                 
+                    <% 
+                    const originalPrice = parseFloat(item.productId.price.replace(/,/g, "")) || 0;
+                    const discountMatch = item.productId.offer ? item.productId.offer.match(/\d+/) : null;
+                    const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
+                    const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+                    
+                    const total = discountedPrice*item.quantity
+                  %>
+                         
                     <div>
-                        <h5 class="mb-2"><%= item.productId.productname %></h5>
-                        <p class="text-muted"><%= item.productId.description %></p>
-                        <span class="price-tag">₹<%= Math.floor(order.totalAmount)  %></span>
+                        <h5 class="mb-2"><%= item?.productId.productname %></h5>
+                        <p class="text-muted mb-2"><%= item?.productId.description %></p>
+                        <span class="price-tag ">₹<%= Math.floor(discountedPrice)  %></span>
+                        <div class="mt-3">Delivery by <%= new Date(item.shippingDetails.estimatedArrival).toLocaleDateString() %></div>
                     </div>
                 </div>
             </div>
@@ -369,34 +395,76 @@
         <div class="col-lg-4">
             <div class="shipping-card">
                 <h5 class="mb-3">Shipping Details</h5>
-                <h6><%= order.customerId.name %></h6>
+                <h6><%= order?.customerId.name %></h6>
 
                 <p class="text-muted">
-                    <% if (order.billingAddress) { %>
-                        <%= order.billingAddress.street %><br>
-                        <%= order.billingAddress.city %>, <%= order.billingAddress.state %> - <%= order.billingAddress.postcode %>
+                    <% if (order?.billingAddress) { %>
+                        <%= order?.billingAddress.street %><br>
+                        <%= order?.billingAddress.city %>, <%= order.billingAddress.state %> - <%= order.billingAddress.postcode %>
                     <% } else { %>
                         <span class="text-danger">Billing address not available</span>
                     <% } %>
                 </p>
                 <div class="d-flex align-items-center">
                     <i class="fas fa-phone-alt me-2 text-primary"></i>
-                    <span><%= order.billingAddress.phone %></span>
+                    <span><%= order?.billingAddress.phone %></span>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Add this right below the Shipping Details div inside the col-lg-4 column -->
+<div class="order-summary-card mb-2 ">
+    <h5 class="mb-3">Order Summary</h5>
+    <div class="row mb-2">
+        <div class="col-6">Quantity:</div>
+        <div class="col-6 text-end"><%= item.quantity %></div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-6">Unit Price:</div>
+        <div class="col-6 text-end">₹<%= originalPrice %></div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-6"> Subtotal:</div>
+        <div class="col-6 text-end">₹<%= (item.quantity * originalPrice).toFixed(2) %></div>
+    </div>
+   
+        <div class="row mb-2">
+            <div class="col-6"> Unit Price After    Discount:</div>
+            <div class="col-6 text-end">-₹<%= discountedPrice %></div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-6">Coupon Applied:</div>
+            <div class="col-6 text-end">-₹<%= order.coupon?.discountValue||0 %></div>
+        </div>
+  
+        <div class="row pt-3 border-top">
+            <div class="col-6 fw-bold">Total:</div>
+            <div class="col-6 text-end fw-bold">
+                
+                <% if (order.paymentMethod === "razorpay") { %>
+                    <div style="color: rgb(113, 113, 34);">Paid </div>  ₹<%= order?.totalAmount.toFixed(2) %>
+                <% } else { %>
+                    ₹<%= order?.totalAmount.toFixed(2) %>
+                <% } %>
+            </div>
+        </div>
+        
+</div>
+
+
+
     <!-- Buttons -->
     <div class="button-container">
         <% if (item.shippingDetails.status === "Cancelled") { %>
-            <button class="btn btn-secondary btn-cancelled" disabled>Cancelled</button>
-        <% } else if (item.shippingDetails.status != "Delivered") { %>
-            <button class="btn btn-danger btn-cancel" onclick="confirmCancel('<%= order._id %>', '<%= item.productId._id %>','<%=item.quantity %>')">Cancel</button>
-        <% } else if (item.shippingDetails.status === 'Delivered') { %>
+            <button class="btn btn-secondary btn-cancelled" style="display: none;">Cancelled</button>
+        <% } else if (item?.shippingDetails.status != "Delivered") { %>
+            <button class="btn btn-danger btn-cancel" onclick="confirmCancel('<%= order?._id %>', '<%= item?.productId._id %>','<%=item?.quantity %>')">Cancel</button>
+        <% } else if (item?.shippingDetails.status === 'Delivered') { %>
             <button class="btn btn-warning btn-return" 
                 <% 
-                    let deliveryDate = new Date(item.shippingDetails.deliveryDate);
+                    let deliveryDate = new Date(item.shippingDetails.createdAt);
                     let currentDate = new Date();
                     if ((currentDate - deliveryDate) > 7 * 24 * 60 * 60 * 1000) { 
                 %> disabled <% } %>>Return</button>
@@ -405,7 +473,7 @@
     
     
     <div class="text-center mt-4">
-        <a href="/profile/<%= user._id %>" class="btn btn-secondary">
+        <a href="/profile/<%= user?._id %>" class="btn btn-secondary">
             <i class="fas fa-arrow-left me-2"></i>Back to Orders
         </a>
     </div>
@@ -416,20 +484,39 @@
 <script>
     function confirmCancel(orderId, productId ,quantity) {
     
-        
         Swal.fire({
-            title: "Are you sure?",
-            text: "You are about to cancel this order. This action cannot be undone!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, cancel it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = `/update-order-status?orderId=${orderId}&productId=${productId}&newStatus=Cancelled&quantity=${quantity}`;
-            }
-        });
+    title: "Are you sure?",
+    html: `
+        <p>You are about to cancel this order.</p>
+        <p>Please select a reason for cancellation:</p>
+        <div style="text-align: left; margin-top:50px;">
+            <input type="radio" name="cancelReason" value="Color Issue" id="colorIssue">
+            <label for="colorIssue">Color Issue</label><br>
+            <input type="radio" name="cancelReason" value="Damage" id="damage">
+            <label for="damage">Damage</label><br>
+            <input type="radio" name="cancelReason" value="Other" id="other">
+            <label for="other">Other</label><br>
+        </div>
+    `,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, cancel it!",
+    preConfirm: () => {
+        const selectedReason = document.querySelector('input[name="cancelReason"]:checked');
+        if (!selectedReason) {
+            Swal.showValidationMessage("Please select a cancellation reason");
+            return false;
+        }
+        return selectedReason.value;
+    }
+}).then((result) => {
+    if (result.isConfirmed) {
+        const cancelReason = result.value;
+        window.location.href = `/update-order-status?orderId=${orderId}&productId=${productId}&newStatus=Cancelled&quantity=${quantity}&reason=${encodeURIComponent(cancelReason)}`;
+    }
+});
     }
 </script>
 </body>

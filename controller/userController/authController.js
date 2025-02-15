@@ -1,11 +1,11 @@
 const bcrypt = require("bcrypt");
 const userSchema = require("../../models/usermodel");
+const wallet = require("../../models/walletmodel")
 const { generateOTP, sendOtpEmail } = require("./helpers");
 
 const loadSignUp = (req, res) => {
-  res.render("user/usersignup", { message: req.flash("success") });
+  res.render("user/usersignup", { message: req.flash("success"), googleClientId: process.env.GOOGLE_CLIENT_ID });
 };
-
 
 const signUp = async (req, res) => {
   try {
@@ -30,9 +30,8 @@ const signUp = async (req, res) => {
   }
 };
 
-
 const loadSignIn = (req, res) => {
-  res.render("user/usersignin", { error: req.flash("error") });
+  res.render("user/usersignin", { error: req.flash("error") , googleClientId: process.env.GOOGLE_CLIENT_ID});
 };
 
 const signIn = async (req, res) => {
@@ -64,12 +63,10 @@ const signIn = async (req, res) => {
   }
 };
 
-
 const Logout = (req, res) => {
   req.session.destroy();
   res.redirect("/");
 };
-
 
 const loadOtp = (req, res) => {
   res.render("user/otpverify", { OTP: req.flash("OTP") });
@@ -86,6 +83,16 @@ const verifyOTP = async (req, res) => {
     const { email, password, name } = req.session.details;
     const hashedPassword = await bcrypt.hash(password, 10);
     await new userSchema({ email, password: hashedPassword, name }).save();
+
+
+    const newWallet = new wallet({
+      userId: newUser._id,
+      paymentId: '', 
+      balance: 0
+  });
+
+  await newWallet.save();
+
     req.flash("error", "User registered successfully.");
     res.redirect("/signin");
   } else if (req.session.type === "forgot") {
@@ -101,69 +108,63 @@ const resendOtp = async (req, res) => {
   res.redirect("/otp");
 };
 
-
-const authsignup=async(req,res)=>{
-
+const authsignup = async (req, res) => {
   console.log("kjhgghjkl;lkjhgfdfghjkl;lkjhgvcvbnjkkjbvc");
-  
- 
 
-  const data = req.body.data
-  const email=data.email
-  const user = await userSchema.findOne({email});
+  const data = req.body.data;
+  const email = data.email;
+  const user = await userSchema.findOne({ email });
   console.log(user);
+
+  if (user) {
+    return res.json({ status: "not done" });
+  } else {
+    console.log(data);
+    const newUser = new userSchema({
+      email: data.email,
+      name: data.name,
+      image: data.imageUrl,
+    });
     
-
-
-   
-  if(user){
-    return res.json({ status: 'not done' });
-  }else{
-    console.log(data)
-  const newUser = new userSchema({
-    email:data.email,
-    name:data.name,
-    image:data.imageUrl
+    const newWallet = new wallet({
+      userId: newUser._id,
+      paymentId: '',
+      balance: 0
   });
-  req.session.details={email}
-  req.session.logged=true
-  newUser.authuser = true;
-  await newUser.save();
-  res.redirect(302, '/');
+  await newWallet.save();
+
+    req.session.details = { email };
+    req.session.logged = true;
+    newUser.authuser = true;
+    await newUser.save();
+    res.redirect(302, "/");
   }
+};
 
-
-
- 
-}
-
-const authsignin = async (req,res)=>{
+const authsignin = async (req, res) => {
   console.log("kjhgghjkl;lkjhgfdfghjkl;lkjhgvcvbnjkkjbvc");
 
-  const data = req.body.data
-  const email= data.email
-  const user = await userSchema.findOne({email});
-  
+  const data = req.body.data;
+  const email = data.email;
+  const user = await userSchema.findOne({ email });
+
   console.log(user);
 
-  
-  if(!user){
-    return res.status(404).json({ status: 'not done',message:'user not found' });
+  if (!user) {
+    return res
+      .status(404)
+      .json({ status: "not done", message: "user not found" });
   }
 
-  if(user.isBan === true){
-    
-    return res.status(401).json({ message:'user banned By Admin'});
+  if (user.isBan === true) {
+    return res.status(401).json({ message: "user banned By Admin" });
   }
- 
-  req.session.details={email}
-  req.session.logged=true
 
-  res.redirect(302, '/');
+  req.session.details = { email };
+  req.session.logged = true;
 
-
-}
-
+  res.redirect(302, "/");
+};
 
 module.exports = {
   loadSignUp,

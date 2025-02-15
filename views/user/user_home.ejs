@@ -238,28 +238,7 @@
             <div class="header-bottom sticky-header">
                 <div class="container">
         
-                    <div class="header-left">
-                        <div class="dropdown category-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Browse Categories">
-                                Browse Categories <i class="icon-angle-down"></i>
-                            </a>
-        
-                            <div class="dropdown-menu">
-                                <nav class="side-nav">
-                                    <% category.forEach(Categories =>{%>
-                                        <ul class="menu-vertical sf-arrows">
-                                            <li class="item-lead"><a href="#"><%= Categories?.name %></a></li>
-                                            </ul>
-        
-                                   <% })%>
-                                    
-                               
-                                </nav>
-                               
-                            </div>
-                        </div>
-                        
-                    </div>
+                   
         
                     <div class="header-center">
         
@@ -480,9 +459,13 @@
                                         <a href="/productview/<%= product._id %>">
                                             <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
                                         </a>
-                                        <div class="product-action-vertical">
-                                            <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
-                                        </div>
+                                        <form action="/wishlist?productId=<%= product._id%>" method="post">
+
+                                            <div class="product-action-vertical">
+                                                <button type="submit" class="btn-product-icon btn-wishlist" title="Add to wishlist"></button>
+                                            </div><!-- End .product-action -->
+        
+                                         </form>
                                         <div class="product-action">
                                             <form action="/cart" method="post">
                                                 <input type="hidden" name="productId" value="<%= product._id %>">
@@ -695,11 +678,16 @@
                                     <a href="http://localhost:3000/productview/<%= product._id %>">
                                         <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
                                     </a>
+                                    
 
-                                    <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
-                                    </div><!-- End .product-action -->
-
+                                        <div class="product-action-vertical">
+                                            <form action="/wishlist?productId=<%= product._id%>" method="post">
+                                            <button type="submit" class="btn-product-icon btn-wishlist" title="Add to wishlist"></button>
+                                            <form action="/wishlist?productId=<%= product._id%>" method="post">
+                                        </div><!-- End .product-action -->
+    
+                                   
+                                   
                                     <div class="product-action">
                                         <form action="/cart" method="post" id="addToCartForm" >
                                             <input type="hidden" name="productId" value="<%=product?._id %>">
@@ -1231,8 +1219,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                             </h3>
                                             <div class="product-price">
                                                 <span>${product.price}</span>
-                                                <span style="text-decoration: line-through; color: red;">
-                                          ${data.offerprice[index]}
+                                                <span style="text-decoration: line-through; color: red; margin-left:5px;">
+                                          ${Math.floor(data.offerprice[index])}
                                         </span>
                                             </div>
 

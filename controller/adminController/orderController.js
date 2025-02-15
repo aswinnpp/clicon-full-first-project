@@ -1,6 +1,6 @@
 const Order = require("../../models/orderdetails");
 const mongoose = require("mongoose");
-const { ObjectId } = require('mongoose').Types;
+const { ObjectId } = require("mongoose").Types;
 
 const loadOrdermanage = async (req, res) => {
   try {
@@ -14,18 +14,18 @@ const loadOrdermanage = async (req, res) => {
     const orders = await Order.find()
       .skip(skip)
       .limit(limit)
-      .populate('customerId')
-      .populate('items.productId')
-      .sort({ createdAt: -1 })
+      .populate("customerId")
+      .populate("items.productId")
+      .sort({ createdAt: -1 });
 
-    res.render('admin/ordermanage', {
+    res.render("admin/ordermanage", {
       orders,
       currentPage: page,
-      totalPages
+      totalPages,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Error fetching orders');
+    res.status(500).send("Error fetching orders");
   }
 };
 
@@ -34,7 +34,7 @@ const OrderManage = async (req, res) => {
     const { status } = req.body;
     const orderId = req.params.id;
     await Order.findByIdAndUpdate(orderId, { status }, { new: true });
-    res.redirect('/admin/ordermanage');
+    res.redirect("/admin/ordermanage");
   } catch (error) {
     console.error("Error updating order status:", error);
     res.status(500).send("Server Error");
@@ -44,11 +44,16 @@ const OrderManage = async (req, res) => {
 const orderView = async (req, res) => {
   try {
     const { orderId, productId } = req.params;
-    const order = await Order.findById(orderId).populate("items.productId");
-    
+    const order = await Order.findById(orderId)
+    .populate("items.productId") 
+    .populate( "coupon");
+
+
     if (!order) return res.status(404).send("Order not found");
-    
-    const item = order.items.find(i => i.productId._id.toString() === productId);
+
+    const item = order.items.find(
+      (i) => i.productId._id.toString() === productId
+    );
     if (!item) return res.status(404).send("Product not found in order");
 
     res.render("admin/orderview", { order, item });
@@ -63,18 +68,19 @@ const statusUpdate = async (req, res) => {
     const { orderId, productId } = req.params;
     const { status, paymentStatus } = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(orderId) || !mongoose.Types.ObjectId.isValid(productId)) {
+    if (
+      !mongoose.Types.ObjectId.isValid(orderId) ||
+      !mongoose.Types.ObjectId.isValid(productId)
+    ) {
       return res.status(400).send("Invalid ID format");
     }
 
     const order = await Order.findById(orderId);
     if (!order) return res.status(404).send("Order not found");
 
-    const item = order.items.find(i => i._id.equals(productId));
+    const item = order.items.find((i) => i._id.equals(productId));
     if (!item) return res.status(404).send("Product not found in order");
 
-    
-  
     item.shippingDetails.status = status;
     item.paymentStatus = paymentStatus;
 
@@ -82,17 +88,16 @@ const statusUpdate = async (req, res) => {
 
     console.log("After update:", item);
 
-    res.redirect('/admin/ordermanage');
+    res.redirect("/admin/ordermanage");
   } catch (error) {
     console.error("Error updating status:", error);
     res.status(500).send("Error updating product status");
   }
 };
 
-
 module.exports = {
   loadOrdermanage,
   OrderManage,
   orderView,
-  statusUpdate
+  statusUpdate,
 };

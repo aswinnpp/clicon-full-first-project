@@ -16,6 +16,7 @@
         <p class="card-text"><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
         <p class="card-text"><strong>Payment Status:<strong>
             <%= item.shippingDetails.status === 'Delivered' ? 'Completed' 
+                : order.paymentMethod ==="razorpay"?"Completed"
                 : item.shippingDetails.status === 'Cancelled' ? 'Failed' 
                 : 'Pending' %>
           </strong>
@@ -49,13 +50,17 @@
           const discountMatch = item.productId.offer ? item.productId.offer.match(/\d+/) : null;
           const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
           const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+          const finalAmount = discountedPrice -(order.coupon?.discountValue  ||0)
         %>
     
         <p class="card-text"><strong>Original Price:</strong><%=  Math.floor(originalPrice) %></p>
         <p class="card-text"><strong>Discount:</strong> <%= discountPercentage %>%</p>
-        <p class="card-text"><strong>Price After Discount:</strong> <%= Math.floor(discountedPrice)  %></p>
+        <p class="card-text"><strong>Coupon Discount:</strong> <%= order.coupon?.discountValue||0 %> rs</p>
+
+        
+        <p class="card-text"><strong>Price After Discount:</strong> <%= Math.floor(finalAmount)  %></p>
     
-        <p class="card-text"><strong>Total Amount:</strong> <%= Math.floor(discountedPrice * item.quantity) %></p>
+        <p class="card-text"><strong>Total Amount:</strong> <%= Math.floor(discountedPrice * item.quantity)-(order.coupon?.discountValue  ||0) %></p>
         <p class="card-text"><strong>Status:</strong> <%= item.shippingDetails.status %></p>
       </div>
     </div>

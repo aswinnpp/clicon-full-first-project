@@ -1,28 +1,29 @@
-
-
 <%- include('../partials/admin/header') %>
-
 
 <div class="container-fluid">
   <div class="row">
-    <!-- Toggle Button for Sidebar -->
-    <button class="btn btn-dark d-md-none" onclick="toggleSidebar()" style="position: fixed; z-index: 1050;">
+    <button
+      class="btn btn-dark d-md-none"
+      onclick="toggleSidebar()"
+      style="position: fixed; z-index: 1050"
+    >
       <i class="bi bi-list"></i>
     </button>
 
-    <!-- Main Content -->
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+      >
         <h1 class="h2">Dashboard</h1>
       </div>
 
-      <!-- Dashboard Widgets -->
+      <!-- Dynamic Dashboard Widgets -->
       <div class="row">
         <div class="col-md-3 mb-4">
           <div class="card text-white bg-primary">
             <div class="card-body">
               <h5 class="card-title">Users</h5>
-              <p class="card-text">Total Users: 1,200</p>
+              <p class="card-text">Total Users: <%= totalUsers %></p>
             </div>
           </div>
         </div>
@@ -30,7 +31,7 @@
           <div class="card text-white bg-success">
             <div class="card-body">
               <h5 class="card-title">Orders</h5>
-              <p class="card-text">Completed Orders: 320</p>
+              <p class="card-text">Completed Orders: <%=totalOrders %></p>
             </div>
           </div>
         </div>
@@ -38,59 +39,340 @@
           <div class="card text-white bg-warning">
             <div class="card-body">
               <h5 class="card-title">Revenue</h5>
-              <p class="card-text">Revenue: $12,000</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3 mb-4">
-          <div class="card text-white bg-danger">
-            <div class="card-body">
-              <h5 class="card-title">Issues</h5>
-              <p class="card-text">Open Issues: 5</p>
+              <p class="card-text">Revenue: <%=Math.floor( totalRevenue) %></p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Recent Activity Table -->
-      <h4 class="mt-4">Recent Activities</h4>
-      <div class="table-responsive">
-        <table class="table table-striped table-sm">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>User</th>
-              <th>Activity</th>
-              <th>Status</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>John Doe</td>
-              <td>Added a new product</td>
-              <td>Completed</td>
-              <td>2025-01-07</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Jane Smith</td>
-              <td>Updated order status</td>
-              <td>Pending</td>
-              <td>2025-01-06</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Michael Scott</td>
-              <td>Created a coupon</td>
-              <td>Completed</td>
-              <td>2025-01-05</td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Sales Report Section -->
+      <h4 class="mt-4 text-center">Sales Report</h4>
+
+      <!-- Report Type Buttons -->
+      <div class="text-center mb-4">
+        <div
+          class="btn-group mb-3"
+          role="group"
+          aria-label="Sales report period"
+        >
+          <button
+            type="button"
+            value="daily"
+            class="btn btn-outline-primary custom-btn"
+            onclick="showReport('daily')"
+          >
+            Daily
+          </button>
+          <button
+          value="weekly"
+            type="button"
+            class="btn btn-outline-primary custom-btn"
+            onclick="showReport('weekly')"
+          >
+            Weekly
+          </button>
+          <button
+          value="monthly"
+            type="button"
+            class="btn btn-outline-primary custom-btn"
+            onclick="showReport('monthly')"
+          >
+            Monthly
+          </button>
+          <button
+            type="button"
+            value="yearly"
+            class="btn btn-outline-primary custom-btn"
+            onclick="showReport('yearly')"
+          >
+            Yearly
+          </button>
+        </div>
+        <div class="d-block">
+          <div class="btn-group" role="group" aria-label="Download reports">
+            <button
+              type="button"
+              class="btn btn-success custom-btn"
+              onclick="downloadExcel()"
+            >
+              <i class="bi bi-file-earmark-excel"></i> Excel
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger custom-btn"
+              onclick="downloadPDF()"
+            >
+              <i class="bi bi-file-earmark-pdf"></i> PDF
+            </button>
+          </div>
+        </div>
       </div>
+
+      <div class="row justify-content-center">
+        <!-- Daily Report -->
+        <div class="col-12 col-md-8" id="daily-report" style="display: none">
+          <div class="card bg-light shadow-sm">
+            <div class="card-header bg-primary text-white text-center">
+              <h5 class="mb-0">Daily Sales Report</h5>
+            </div>
+            <div class="card-body text-center">
+              <div class="report-content">
+                <p>
+                  <strong>Total Orders:</strong> <%= salesReport?.daily?.count
+                  %>
+                </p>
+                <p>
+                  <strong>Total Revenue:</strong> ₹<%=
+                  Math.floor(salesReport?.daily?.totalSales) %>
+                </p>
+                <p>
+                  <strong> Total Discounts Given:</strong> ₹<%=
+                  Math.floor(salesReport?.daily?.totalDiscount) %>
+                </p>
+                <p>
+                  <strong>Total Coupons Used:</strong> <%=
+                  salesReport.daily?.couponUsageCount %>
+                </p>
+                <p>
+                  <strong>Total Coupon Discount:</strong> ₹<%=
+                  Math.floor(salesReport?.daily?.totalCouponDiscount || 0) %>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly Report -->
+        <div class="col-12 col-md-8" id="weekly-report" style="display: none">
+          <div class="card bg-light shadow-sm">
+            <div class="card-header bg-success text-white text-center">
+              <h5 class="mb-0">Weekly Sales Report</h5>
+            </div>
+            <div class="card-body text-center">
+              <div class="report-content">
+                <p>
+                  <strong>Total Orders:</strong> <%= salesReport?.weekly?.count
+                  %>
+                </p>
+                <p>
+                  <strong>Total Revenue:</strong> ₹<%=
+                  Math.floor(salesReport?.weekly?.totalSales) %>
+                </p>
+                <p>
+                  <strong>Total Discounts Given:</strong> ₹<%=
+                  Math.floor(salesReport?.weekly?.totalDiscount) %>
+                </p>
+                <p>
+                  <strong>Total Coupons Used:</strong> <%=
+                  salesReport?.weekly?.couponUsageCount %>
+                </p>
+                <p>
+                  <strong>Total Coupon Discount:</strong> ₹<%=
+                  Math.floor(salesReport?.weekly?.totalCouponDiscount || 0) %>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly Report -->
+        <div class="col-12 col-md-8" id="monthly-report" style="display: none">
+          <div class="card bg-light shadow-sm">
+            <div class="card-header bg-warning text-dark text-center">
+              <h5 class="mb-0">Monthly Sales Report</h5>
+            </div>
+            <div class="card-body text-center">
+              <div class="report-content">
+                <p>
+                  <strong>Total Orders:</strong> <%= salesReport?.monthly?.count
+                  %>
+                </p>
+                <p>
+                  <strong>Total Revenue:</strong> ₹<%=
+                  Math.floor(salesReport?.monthly?.totalSales) %>
+                </p>
+                <p>
+                  <strong>Total Discounts Given:</strong> ₹<%=
+                  Math.floor(salesReport?.monthly?.totalDiscount) %>
+                </p>
+                <p>
+                  <strong>Total Coupons Used:</strong> <%=
+                  salesReport?.monthly?.couponUsageCount %>
+                </p>
+                <p>
+                  <strong>Total Coupon Discount:</strong> ₹<%=
+                  Math.floor(salesReport?.monthly?.totalCouponDiscount || 0) %>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Yearly Report -->
+        <div class="col-12 col-md-8" id="yearly-report" style="display: none">
+          <div class="card bg-light shadow-sm">
+            <div class="card-header bg-info text-white text-center">
+              <h5 class="mb-0">Yearly Sales Report</h5>
+            </div>
+            <div class="card-body text-center">
+              <div class="report-content">
+                <p>
+                  <strong>Total Orders:</strong> <%= salesReport?.yearly?.count
+                  %>
+                </p>
+                <p>
+                  <strong>Total Revenue:</strong> ₹<%=
+                  Math.floor(salesReport?.yearly?.totalSales) %>
+                </p>
+                <p>
+                  <strong>Total Discounts Given:</strong> ₹<%=
+                  Math.floor(salesReport?.yearly?.totalDiscount) %>
+                </p>
+                <p>
+                  <strong>Total Coupons Used:</strong> <%=
+                  salesReport?.yearly?.couponUsageCount %>
+                </p>
+                <p>
+                  <strong>Total Coupon Discount:</strong> ₹<%=
+                  Math.floor(salesReport?.yearly?.totalCouponDiscount || 0) %>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <style>
+        .custom-btn {
+          padding: 8px 24px;
+          font-weight: 500;
+          min-width: 120px;
+        }
+
+        .custom-btn.active {
+          background-color: #0d6efd;
+          color: white;
+          border-color: #0d6efd;
+        }
+
+        .card {
+          width: 100%;
+        }
+
+        .card-header {
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .report-content {
+          max-width: 400px;
+          margin: 0 auto;
+          padding: 1rem;
+        }
+
+        .report-content p {
+          margin-bottom: 1rem;
+          padding: 0.5rem;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .report-content p:last-child {
+          border-bottom: none;
+        }
+
+        .btn-group .btn i {
+          margin-right: 5px;
+        }
+
+        @media (max-width: 768px) {
+          .d-flex.justify-content-center {
+            flex-direction: column;
+            align-items: center;
+          }
+          .btn-group {
+            margin-bottom: 1rem;
+          }
+          .btn-group:last-child {
+            margin-bottom: 0;
+          }
+        }
+      </style>
+
+      <script>
+        let selectedReportType = "daily";
+        function showReport(type) {
+          selectedReportType =type
+          document.getElementById("daily-report").style.display = "none";
+          document.getElementById("weekly-report").style.display = "none";
+          document.getElementById("monthly-report").style.display = "none";
+          document.getElementById("yearly-report").style.display = "none";
+
+          // Show the selected report
+          const selectedReport = document.getElementById(`${type}-report`);
+          if (selectedReport) {
+            selectedReport.style.display = "block";
+          } else {
+            console.error(`Element with ID '${type}-report' not found.`);
+          }
+
+          // Highlight active button
+          const buttons = document.querySelectorAll(".btn-group .btn");
+          buttons.forEach((button) => {
+            button.classList.remove("active");
+            if (button.textContent.toLowerCase().includes(type.toLowerCase())) {
+              button.classList.add("active");
+            }
+          });
+        }
+function downloadExcel() {
+  if (!selectedReportType) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'No Report Selected',
+      text: 'Please select a report type (Daily, Weekly, Monthly, or Yearly) before downloading',
+      confirmButtonColor: '#3085d6'
+    });
+    return;
+  }
+
+  Swal.fire({
+    icon: 'success',
+    title: 'Downloading Report',
+    text: `Downloading ${selectedReportType.charAt(0).toUpperCase() + selectedReportType.slice(1)} Report as Excel`,
+    timer: 2000,
+    showConfirmButton: false
+  });
+
+  window.location.href = `/admin/download-report?type=${selectedReportType}&format=excel`;
+}
+
+function downloadPDF() {
+  if (!selectedReportType) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'No Report Selected',
+      text: 'Please select a report type (Daily, Weekly, Monthly, or Yearly) before downloading',
+      confirmButtonColor: '#3085d6'
+    });
+    return;
+  }
+
+  Swal.fire({
+    icon: 'success',
+    title: 'Downloading Report',
+    text: `Downloading ${selectedReportType.charAt(0).toUpperCase() + selectedReportType.slice(1)} Report as PDF`,
+    timer: 2000,
+    showConfirmButton: false
+  });
+
+  window.location.href = `/admin/download-report?type=${selectedReportType}&format=pdf`;
+}
+        // Run after DOM is fully loaded
+        document.addEventListener("DOMContentLoaded", function () {
+          showReport("daily");
+        });
+      </script>
     </main>
   </div>
 </div>
+
 <%- include('../partials/admin/footer') %>

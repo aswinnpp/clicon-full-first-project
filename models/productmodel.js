@@ -13,17 +13,30 @@ const productSchema = new mongoose.Schema({
   },
   ram: {
     type: [String], 
-    default:'nill'
+    
   },
   storage: {
     type: [String],
-    default:'nill' 
+  
   },
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref:'Category',
     
   },
+
+  // variants: [
+  //   {
+      
+  //     stock: {
+  //       type: Number,
+      
+  //     color: {
+  //       type: [String],
+  //       trim: true,
+  //     },
+  //   }
+  // ],
   
   price: {
     type: String,

@@ -9,7 +9,7 @@ const couponController = require('../controller/adminController/couponController
 const multer = require("../utils/multter");
 const adminauth = require("../middleware/adminauth");
 
-router.get("/login", authController.loadLogin);
+router.get("/login",adminauth.isLogin, authController.loadLogin);
 router.post("/login", authController.login);
 router.get("/adminlogout", authController.adminLogout);
 router.get("/dashboard", adminauth.checkSession, authController.loadDashboard);
@@ -39,11 +39,21 @@ router.post('/categorydelete/:id', categoryController.categoryDelete);
 
 router.get("/ordermanage", adminauth.checkSession, orderController.loadOrdermanage);
 router.post("/update-status/:id", orderController.OrderManage);
-router.get('/orderview/:orderId/:productId', orderController.orderView);
+router.get('/orderview/:orderId/:productId', adminauth.checkSession, orderController.orderView);
 router.post('/update-product-status/:orderId/:productId', orderController.statusUpdate);
 
 
-router.get("/couponmanage", couponController.loadCouponmanage);
+router.get("/couponcreate", adminauth.checkSession,couponController.loadCouponCreate)
+router.get("/couponedit", adminauth.checkSession,couponController.couponEdit)
+router.get("/couponmanage", adminauth.checkSession, couponController.loadCouponmanage);
+
+router.delete("/coupondelete" , couponController.deleteCoupon)
+router.post("/couponedit",  adminauth.checkSession,couponController.updateCoupon);
+
+
+router.get("/download-report",authController.downloadSalesPDF)
+
+router.post("/couponcreate",couponController.couponCreate)
 
 // 404 Handler
 router.get("*", (req, res) => {

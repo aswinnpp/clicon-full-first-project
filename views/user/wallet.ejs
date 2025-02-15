@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wallet</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-4xl mx-auto p-4">
+      
+        <!-- Wallet Balance Card -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-2xl font-bold text-gray-800">My Wallet</h1>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Money</button>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <p class="text-gray-600 mb-2">Available Balance </p>
+                <h2 class="text-4xl font-bold text-gray-900"><%= wallet[0]?.balance %></h2>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Recent Transactions</h2>
+            <div class="space-y-4">
+           
+                <% transactions.forEach(transaction => { %>
+                    <div class="flex justify-between items-center border-b pb-4">
+                        <div class="flex items-center">
+                            <div class="p-2 rounded-full mr-4" style="background-color: <%= transaction.type === 'credit' ? '#D1FAE5' : '#FEE2E2' %>;">
+                                <svg class="w-6 h-6" fill="none" stroke="<%= transaction.type === 'credit' ? '#10B981' : '#EF4444' %>" viewBox="0 0 24 24">
+                                    <%= transaction %>
+                                    <% if (transaction.type === "credit") { %>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    <% } else { %>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 17l-4 4m0 0l-4-4m4 4V3"></path>
+                                    <% } %>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">Transaction ID: <%= transaction.transId %></p>
+                                <p class="text-sm text-gray-500"><%= transaction.createdAt %></p>
+                                <p class="text-sm text-gray-500">Method: <%= transaction.method %></p>
+                                <p class="text-sm text-gray-500">Status: <%= transaction.status %></p>
+                            </div>
+                        </div>
+                        <p class="font-semibold" style="color: <%= transaction.type === 'credit' ? '#10B981' : '#EF4444' %>;">
+                            <%= transaction.type === 'credit' ? '+' : '-' %>₹<%= transaction.amount %>
+                        </p>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,5 +1,5 @@
 const userSchema = require("../../models/usermodel");
-const bcrypt = require ("bcrypt")
+const bcrypt = require("bcrypt");
 const { generateOTP, sendOtpEmail } = require("./helpers");
 
 // Load Forgot Password Page

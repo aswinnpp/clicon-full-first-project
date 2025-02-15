@@ -14,9 +14,23 @@ const flash = require("connect-flash");
 const bodyParser = require('body-parser')
 const cors = require("cors");
 app.use(cors({ origin: "*" }));
+
+const cron = require("node-cron");
+const Coupon = require("./models/couponmodel");
 // const morgan = require('morgan')
 
-
+cron.schedule("*/10 * * * * *", async () => { 
+  // console.log("Checking for expired coupons...");
+  try {
+    const result = await Coupon.updateMany(
+      { expiryDate: { $lt: new Date() }, isActive: true },
+      { $set: { isActive: false } }
+    );
+    // console.log(`Expired coupons updated: ${result.modifiedCount}`);
+  } catch (error) {
+    console.error("Error updating expired coupons:", error);
+  }
+});
 
 app.use(nocache());
 app.use(nocache());
