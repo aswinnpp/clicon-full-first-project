@@ -47,46 +47,67 @@
         const discountMatch = item.productId?.offer ? item?.productId.offer.match(/\d+/) : null;
         const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
         const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
-        const total = discountedPrice*item.quantity
+        const total = (discountedPrice*item.quantity)-(order.coupon?.discountValue||0)
       %>
-             
+            
             <tr>
               <td><%= order.customerId?.email %></td>
               <td><%= item.productId?.productname %></td>
               <td><%= new Date(order?.orderDate).toLocaleDateString() %></td>
               <!-- <td><%= item?.quantity %></td>
               <td><%= item.productId?.price %></td> -->
-              <td><%= Math.floor(order.totalAmount)  %></td>
+              <td><%= Math.floor(total)  %></td>
               <!-- <td><%= order.paymentMethod %></td> -->
     
-             
+        
     
               <td>
                 <form action="/admin/update-product-status/<%= order._id %>/<%= item._id %>" method="POST">
+                  <% 
+                    // Check if the product is returned
+                    let isReturned = returns.some(returnItem => 
+                      returnItem.orderId.toString() === order._id.toString() && 
+                      returnItem.productId.toString() === item.productId._id.toString()
+                    );
+                  %>
+              
                   <% if (item.shippingDetails.status === 'Cancelled') { %>
-                      <p style="color: red; font-weight: bold;">Cancelled</p>
+                    <p style="color: red; font-weight: bold;">Cancelled</p>
+                  <% } else if (isReturned) { %>
+                    <p style="color: orange; font-weight: bold;">Returned</p>
                   <% } else { %>
-                      <select name="status" onchange="showSwalAndSubmit(this)">
-                          <% ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].forEach(statusOption => { %>
-                              <option value="<%= statusOption %>" <%= item.shippingDetails.status === statusOption ? 'selected' : '' %> >
-                                  <%= statusOption %>
-                              </option>
-                          <% }); %>
-                      </select>
+                    <select name="status" onchange="showSwalAndSubmit(this)">
+                      <% ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].forEach(statusOption => { %>
+                        <option value="<%= statusOption %>" <%= item.shippingDetails.status === statusOption ? 'selected' : '' %> >
+                          <%= statusOption %>
+                        </option>
+                      <% }); %>
+                    </select>
                   <% } %>
                 </form>
-                
-              
               </td>
+              
     
               <td>
                 <p>
                   <strong>
-                    <%= item.shippingDetails.status === 'Delivered' ? 'Completed' 
-                        : order.paymentMethod ==="razorpay"?"Completed"
-                        : item.shippingDetails.status === 'Cancelled' ? 'Failed' 
-                        : 'Pending' %>
+                    <% 
+                      let status = "Pending"; 
+                  
+                      if (item?.shippingDetails?.status === 'Delivered') {
+                        status = 'Completed';
+                      } else if (item?.shippingDetails?.status === 'Cancelled') {
+                        status = 'Failed';
+                      } else if (order?.paymentMethod === 'razorpay' || order?.paymentMethod === 'wallet') {
+                        status = 'Completed';
+                      }
+                  
+                      // Print final status
+                    %>
+                    <%= status %>
                   </strong>
+                  
+                  
                 </p>
               </td>
     

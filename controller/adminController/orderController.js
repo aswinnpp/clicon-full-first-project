@@ -1,25 +1,32 @@
 const Order = require("../../models/orderdetails");
+const Returns = require("../../models/productreturn")
 const mongoose = require("mongoose");
 const { ObjectId } = require("mongoose").Types;
 
 const loadOrdermanage = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 10;
+    const limit = 6;
     const skip = (page - 1) * limit;
 
     const totalOrders = await Order.countDocuments();
     const totalPages = Math.ceil(totalOrders / limit);
+
+    const returns = await Returns.find()
+     console.log("returns",returns);
+     
 
     const orders = await Order.find()
       .skip(skip)
       .limit(limit)
       .populate("customerId")
       .populate("items.productId")
+      .populate("coupon")
       .sort({ createdAt: -1 });
 
     res.render("admin/ordermanage", {
       orders,
+      returns,
       currentPage: page,
       totalPages,
     });

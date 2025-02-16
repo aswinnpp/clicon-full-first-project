@@ -6,7 +6,6 @@ const paymentSchema = new mongoose.Schema({
   method: { type: String, enum: ["cod", "Wallet", "razorpay", "Cash on Delivery"],   }, 
   status: { type: String, enum: ["pending", "completed", "failed"],  }, 
   amount: { type: Number,  },
-  balance:{type :Number, default:0},
   type: { type: String, enum: ["credit", "debit"], required: true, }
 }, {
   timestamps: true

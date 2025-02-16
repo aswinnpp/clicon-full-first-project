@@ -888,7 +888,6 @@ table td a {
                   <thead>
                     <tr style="background-color: #f4f4f4; text-align: left;">
                       <th style="padding: 12px;">Product Name</th>
-                      <th style="padding: 12px;">Status</th>
                       <th style="padding: 12px;">Date</th>
                       <th style="padding: 12px;">Total</th>
                       <th style="padding: 12px;">Action</th>
@@ -906,26 +905,14 @@ table td a {
         const discountMatch = item.productId?.offer ? item.productId?.offer.match(/\d+/) : null;
         const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
         const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
-        const total = discountedPrice*item?.quantity
+        const total = (discountedPrice*item.quantity)-(order.coupon?.discountValue||0)
       %>
                         <tr id="row<%= rowCount %>" style="border-bottom: 1px solid #ddd;">
                           <td style="padding: 12px; color: #333;"><%= item?.productId?.productname %></td>
-                          <td style="padding: 12px; font-weight: bold; color: 
-                            <% if (item?.shippingDetails.status === 'Pending') { %> 
-                              #ff9800; 
-                            <% } else if (item?.shippingDetails.status === 'Completed') { %> 
-                              #4caf50; 
-                            <% } else if (item?.shippingDetails.status === 'Shipped') { %> 
-                              #2196F3;
-                            <% } else if (item?.shippingDetails.status === 'Cancelled') { %> 
-                              #f44336;
-                            <% } else { %> 
-                              #000;
-                            <% } %>">
-                            <%= item?.shippingDetails.status %>
-                          </td>
+                        
+                        
                           <td style="padding: 12px; color: #666;"><%= new Date(order?.orderDate).toLocaleDateString() %></td>
-                          <td style="padding: 12px; font-weight: bold; color: #333;"><%= Math.floor(order?.totalAmount) %></td>
+                          <td style="padding: 12px; font-weight: bold; color: #333;"><%= Math.floor(total)  %></td>
                           <td style="padding: 12px;">
                             <a href="/orderview/<%= order?._id %>/<%= item?.productId?._id %>" 
                                class="btn btn-primary" 

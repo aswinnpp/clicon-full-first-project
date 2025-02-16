@@ -979,7 +979,6 @@ function he() {
         isValid = false;
     }
 
-    // Payment method validation
     const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
     if (!paymentMethod) {
         document.getElementById("errorMsg").innerHTML = "Please select a payment method.";
@@ -987,8 +986,9 @@ function he() {
         isValid = false;
     }
 
-    // Amount validation
     const amount = document.getElementById("totalValue").value;
+    console.log("amount",amount);
+    
     if (!amount || amount <= 0) {
         document.getElementById("errorMsg").innerHTML = "Invalid amount.";
         document.getElementById("errorMsg").style.color = "red";
@@ -999,17 +999,34 @@ function he() {
         return false;
     }
 
-    // If using Razorpay
     if (paymentMethod.value === "razorpay") {
+    fetch("/create-order", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount: amount, currency: "INR" }),
+    })
+    .then(response => response.json())
+    .then(order => {
         const options = {
             key: "rzp_test_tiBBaN9rBkAr9r",
-            amount: amount * 100,
-            currency: 'INR',
+            amount: order.amount, 
+            currency: order.currency,
             name: "Your Store",
             description: "Purchase of Electronics",
+            order_id: order.id, 
             handler: function (response) {
                 if (response.razorpay_payment_id) {
-                    form.submit();
+                    Swal.fire({
+                        title: "Payment Successful!",
+                        text: "Your order has been placed successfully.",
+                        icon: "success",
+                        confirmButtonText: "OK"
+                    }).then(()=>{
+                        form.submit();
+                    })
+                    
                 } else {
                     document.getElementById("errorMsg").innerHTML = "Payment failed. Please try again.";
                     document.getElementById("errorMsg").style.color = "red";
@@ -1019,10 +1036,15 @@ function he() {
         };
         const rzp = new Razorpay(options);
         rzp.open();
-    } else {
-        // For other payment methods
-        form.submit();
-    }
+    })
+    .catch(error => {
+        console.error("Error creating Razorpay order:", error);
+        document.getElementById("errorMsg").innerHTML = "Payment initialization failed.";
+    });
+}else{
+    form.submit()
+}
+
 }
 
 // Function to clear all error messages
@@ -1071,11 +1093,11 @@ inputFields.forEach(({ field, error }) => {
   </script>
 
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-  
-</script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
     
 </body>
 

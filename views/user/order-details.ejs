@@ -378,7 +378,7 @@
                     const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
                     const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
                     
-                    const total = discountedPrice*item.quantity
+                    const total = (discountedPrice*item.quantity)-(order?.coupon?.discountValue||0)
                   %>
                          
                     <div>
@@ -443,10 +443,10 @@
             <div class="col-6 fw-bold">Total:</div>
             <div class="col-6 text-end fw-bold">
                 
-                <% if (order.paymentMethod === "razorpay") { %>
-                    <div style="color: rgb(113, 113, 34);">Paid </div>  ₹<%= order?.totalAmount.toFixed(2) %>
+                <% if (order.paymentMethod === "razorpay" || order.paymentMethod === "wallet") { %>
+                    <div style="color: rgb(113, 113, 34);">Paid </div>  ₹<%= total %>
                 <% } else { %>
-                    ₹<%= order?.totalAmount.toFixed(2) %>
+                    ₹<%= total %>
                 <% } %>
             </div>
         </div>
@@ -454,22 +454,70 @@
 </div>
 
 
+<div class="modal fade" id="returnModal-<%= item?.productId._id %>" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg"> <!-- Added modal-lg for larger modal -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="returnModalLabel">Return Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="returnForm-<%= item?.productId._id %>" action="/returns" method="post">
+                    <input type="hidden" name="orderId" value="<%= order?._id %>">
+                    <input type="hidden" name="productId" value="<%= item?.productId._id %>">
+                    <input type="hidden" name="quantity" value="<%= item?.quantity %>">
+                    
+                    <label for="returnReason" class="form-label">Select Return Reason:</label>
+                    <select class="form-select form-control-lg" name="reason" required> <!-- Larger select input -->
+                        <option value="">-- Select Reason --</option>
+                        <option value="Received a defective product">Received a defective product</option>
+                        <option value="Wrong item received">Wrong item received</option>
+                        <option value="Product not as described">Product not as described</option>
+                        <option value="Missing accessories or parts">Missing accessories or parts</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary" >Submit Request</button>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
     <!-- Buttons -->
-    <div class="button-container">
-        <% if (item.shippingDetails.status === "Cancelled") { %>
-            <button class="btn btn-secondary btn-cancelled" style="display: none;">Cancelled</button>
-        <% } else if (item?.shippingDetails.status != "Delivered") { %>
-            <button class="btn btn-danger btn-cancel" onclick="confirmCancel('<%= order?._id %>', '<%= item?.productId._id %>','<%=item?.quantity %>')">Cancel</button>
-        <% } else if (item?.shippingDetails.status === 'Delivered') { %>
-            <button class="btn btn-warning btn-return" 
+        <div class="button-container">
+            <% if (item.shippingDetails?.status === "Cancelled") { %>
+                <button class="btn btn-secondary btn-cancelled" style="display: none;">Cancelled</button>
+            <% } else if (item?.shippingDetails?.status !== "Delivered") { %>
+                <button class="btn btn-danger btn-cancel" onclick="confirmCancel('<%= order?._id %>', '<%= item?.productId._id %>', '<%= item?.quantity %>')">
+                    Cancel
+                </button>
+            <% } else if (item?.shippingDetails?.status === "Delivered") { %>
                 <% 
                     let deliveryDate = new Date(item.shippingDetails.createdAt);
                     let currentDate = new Date();
-                    if ((currentDate - deliveryDate) > 7 * 24 * 60 * 60 * 1000) { 
-                %> disabled <% } %>>Return</button>
-        <% } %>
-    </div>
+                    let returnDisabled = (currentDate - deliveryDate) > 7 * 24 * 60 * 60 * 1000;
+                %>
+
+
+                
+                <% if (returns.length >0) { %>
+                    <button class="btn btn-success btn-returned">Returned</button> 
+                <% } else { %>
+                    <button class="btn btn-warning btn-return" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#returnModal-<%= item?.productId._id %>"
+                        <% if (returnDisabled) { %> disabled <% } %>
+                    >
+                        Return
+                    </button>
+                <% } %>
+            <% } %>
+        </div>
+        
     
     
     <div class="text-center mt-4">
@@ -481,6 +529,7 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function confirmCancel(orderId, productId ,quantity) {
     

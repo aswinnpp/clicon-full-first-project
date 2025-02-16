@@ -4,38 +4,38 @@ const User = require("../../models/usermodel")
 
 
 
-
-const loadWallet = async (req,res)=>{
-
-
+const loadWallet = async (req, res) => {
     try {
+        const email = req.session.details.email;
+        const user = await User.findOne({ email: email });
 
-        
-    const email =  req.session.details.email
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
 
+        const page = parseInt(req.query.page) || 1; 
+        const limit = 5; 
+        const skip = (page - 1) * limit;
 
-    const user = await User.findOne({email:email})
-    console.log(user.id);
+        const transactions = await payments.find({ userId: user._id })
+            .sort({ createdAt: -1 }) 
+            .skip(skip)
+            .limit(limit);
+
+        const totalTransactions = await payments.countDocuments({ userId: user._id });
+        const totalPages = Math.ceil(totalTransactions / limit);
 
     
-    const transactions = await payments.find({ userId: user._id }).sort({ createdAt: -1 });
+        const wallet = await Wallet.findOne({ userId: user._id });
 
-    console.log("transactions",transactions);
-    
+        res.render("user/wallet", { transactions, wallet, page, totalPages });
 
-  
-  const wallet = await Wallet.find({userId:user.id})
-  console.log("wallet",wallet);
-  
-        res.render("user/wallet",{transactions ,wallet })
-        
     } catch (error) {
-        
+        console.error(error);
+        res.status(500).send("Internal Server Error");
     }
+};
 
-
-
-}
 
 
 module.exports = {loadWallet}

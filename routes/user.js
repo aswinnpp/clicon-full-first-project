@@ -5,6 +5,9 @@ const multer = require('../utils/multter');
 const Product = require ("../models/productmodel")
 require("dotenv").config();
 
+  
+   
+
 
 const authController = require("../controller/userController/authController");
 const homeController = require("../controller/userController/homeController");
@@ -72,8 +75,10 @@ router.get("/wishlist", userauth.checkSession, userauth.isBan, wishlistControlle
 router.post("/wishlist",userauth.checkSession,wishlistController.wishlist)
 router.post("/wishlist/remove",wishlistController.removeProduct)
 
-
+router.post("/create-order", orderController.razorpay)
 router.get("/wallet",userauth.checkSession, WalletController.loadWallet)
+
+router.post ("/returns",orderController.productReturns )
 
 router.get("/banpage", homeController.banPage);
 

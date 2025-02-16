@@ -6,6 +6,7 @@ const productController = require('../controller/adminController/productControll
 const categoryController = require('../controller/adminController/categoryController');
 const orderController = require('../controller/adminController/orderController');
 const couponController = require('../controller/adminController/couponController');
+const returnController = require("../controller/adminController/returnsController")
 const multer = require("../utils/multter");
 const adminauth = require("../middleware/adminauth");
 
@@ -51,9 +52,10 @@ router.delete("/coupondelete" , couponController.deleteCoupon)
 router.post("/couponedit",  adminauth.checkSession,couponController.updateCoupon);
 
 
-router.get("/download-report",authController.downloadSalesPDF)
-
+router.get("/download-report",adminauth.checkSession,authController.downloadSalesPDF)
 router.post("/couponcreate",couponController.couponCreate)
+
+router.get("/returns",adminauth.checkSession,returnController.loadReturns)
 
 // 404 Handler
 router.get("*", (req, res) => {

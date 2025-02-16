@@ -1,6 +1,7 @@
 const userSchema = require("../../models/usermodel");
 const Address = require("../../models/addressmodel");
 const Order = require("../../models/orderdetails");
+const Returns = require("../../models/productreturn")
 const bcrypt = require("bcrypt");
 const path = require("path");
 const fs = require("fs");
@@ -15,12 +16,17 @@ const loadProfile = async (req, res) => {
         path: "items.productId",
         select: "productname price offer",
       })
-      .exec();
+      
+
+      const returns = await Returns.find({ userId: id })
+      .populate("productId", "productname price images")
+      .populate("orderId");
+     
 
     const user = await userSchema.findOne({ _id: id });
     const address = await Address.find({ userId: id });
 
-    res.render("user/profile", { user, id, address, orders });
+    res.render("user/profile", { user, id, address, orders,returns });
   } catch (error) {
     console.log(error);
   }
@@ -50,7 +56,7 @@ const addAddress = async (req, res) => {
   }
 };
 
-// Remove Address
+
 const removeAdrress = async (req, res) => {
   try {
     await Address.findByIdAndDelete(req.query.address);

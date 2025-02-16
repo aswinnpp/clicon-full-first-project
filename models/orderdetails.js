@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const orderDetailsSchema = new mongoose.Schema({
   customerId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Assuming you have a Customer model
+    ref: 'User', 
     required: true,
   },
   orderDate: {
@@ -15,12 +15,7 @@ const orderDetailsSchema = new mongoose.Schema({
     required: true,
     min: [0, 'Total amount cannot be negative'],
   },
-  
-  // paymentMethod: {
-  //   type: String,
-  //   enum: ['Credit Card', 'Debit Card', 'PayPal', 'Cash on Delivery'],
-  //   // required: true,
-  // },
+
   paymentMethod: {
     type: String,
     enum: ["cod", "Wallet", "razorpay", 'Cash on Delivery'],

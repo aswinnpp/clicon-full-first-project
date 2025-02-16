@@ -4,10 +4,19 @@ const Cart = require("../../models/cartpagemodel");
 const userSchema = require("../../models/usermodel");
 const Coupon = require("../../models/couponmodel");
 const Address = require("../../models/addressmodel");
+const payments = require("../../models/paymentmodel")
+const Returns = require("../../models/productreturn")
 const mongoose = require("mongoose");
 const Orders = require("../../models/orderdetails");
 const Wallet = require("../../models/walletmodel");
 const { orderView } = require("../adminController/orderController");
+
+const Razorpay = require("razorpay");
+
+const razorpayInstance = new Razorpay({
+    key_id: "rzp_test_tiBBaN9rBkAr9r",
+    key_secret: "VCzNc72HUDmdOHK9Va1BkfpE", 
+});
 
 const buyNow = async (req, res) => {
   try {
@@ -224,7 +233,7 @@ const CheckOut = async (req, res) => {
     } = req.body;
 
     let finalTotal = totalValue;
-    console.log("totalValue", totalValue);
+    console.log("customerId", customerId);
 
 const wallet = await Wallet.findOne({userId:customerId.trim()})
 
@@ -255,6 +264,19 @@ const wallet = await Wallet.findOne({userId:customerId.trim()})
 
     if(paymentMethod === "Wallet" && wallet.balance >= finalTotal ){
       console.log("walleeet",wallet);
+
+      const transId = `txn_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+
+      const payment = new payments({
+        method:paymentMethod,
+        status:"completed",
+        type:"debit",
+        amount:finalTotal,
+        userId:customerId.trim(),
+        transId:transId
+      })
+
+      payment.save()
 
       wallet.balance-=finalTotal
 
@@ -365,6 +387,12 @@ const OrderView = async (req, res) => {
 
     console.log("Fetching Order Details...");
 
+    const returns = await Returns.find({
+      orderId: orderId, 
+      productId: productId
+  });
+  
+
     const order = await Order.findById(orderId)
       .populate("items.productId")
       .populate("customerId")
@@ -385,12 +413,13 @@ const OrderView = async (req, res) => {
     const item = order.items.find(
       (i) => i.productId._id.toString() === productId
     );
+console.log("return",returns);
 
     if (!item) {
       console.log("Product not found in order");
     }
 
-    res.render("user/order-details", { order, item, user: order.customerId });
+    res.render("user/order-details", { order, item, user: order.customerId,returns });
   } catch (error) {
     console.error("Error fetching order details:", error.message);
     res.status(500).send(`Error fetching order details: ${error.message}`);
@@ -428,9 +457,22 @@ const cancellOrder = async (req, res) => {
 
     const paymentMethod = order.paymentMethod;
 
-    if (paymentMethod == "razorpay" || "wallet") {
+    if (paymentMethod == "razorpay" ||paymentMethod == "wallet") {
+
+      const transId = `txn_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+       
       const amount = order.totalAmount;
 
+      const payment = new payments({
+        method:paymentMethod,
+        status:"completed",
+        type:"credit",
+        amount:amount,
+        userId:user._id,
+        transId:transId
+      })
+
+      payment.save()
       wallet.balance += amount;
       wallet.save();
     }
@@ -465,6 +507,46 @@ const orderSuccess = async (req, res) => {
   res.render("user/ordersuccess", { userid });
 };
 
+const razorpay =  async (req, res) => {
+  try {
+      const { amount, currency } = req.body;
+      console.log("jjjj",amount);
+      
+      const order = await razorpayInstance.orders.create({
+          amount: amount * 100, // Razorpay expects amount in paisa
+          currency: currency || "INR",
+          receipt: `receipt_${Date.now()}`,
+      });
+
+      res.json(order);
+  } catch (error) {
+      console.error("Razorpay Order Creation Failed", error);
+      res.status(500).json({ error: "Failed to create order" });
+  }
+} 
+
+const productReturns = async (req,res)=>{
+  try {
+    
+  const email = req.session.details.email
+  const user = await userSchema.findOne({email:email})
+    const {orderId,productId,quantity ,reason} =req.body
+console.log(user.id)
+
+const returns =  new Returns({
+  reason:reason,
+  productId:productId,
+  orderId:orderId,
+  userId:user._id,
+  quantity:quantity
+})
+returns.save()
+res.redirect(`/orderview/${orderId}/${productId}`)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 module.exports = {
   buyNow,
   loadCheckout,
@@ -472,4 +554,6 @@ module.exports = {
   orderSuccess,
   cancellOrder,
   OrderView,
+  razorpay,
+  productReturns
 };

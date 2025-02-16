@@ -15,7 +15,8 @@
 
     <!-- Create Coupon Form -->
     <form action="/admin/couponcreate" method="POST" id="form">
-      <p style="color: red; display: none;" id="in"><%= typeof  message!== 'undefined' ?message:''  %></p>
+      <p style="color: red; display: none;" id="in"></p>
+      <P style="color: red;"  ><%= typeof  message!== 'undefined' ?message:''  %></P>
 
       <div class="mb-3">
         <label for="couponCode" class="form-label">Coupon Code</label>
@@ -47,13 +48,15 @@
         <input type="date" class="form-control" id="expiryDate" name="expiryDate" required>
       </div>
 
-      <button type="submit" class="btn btn-primary">Create Coupon</button>
+      <button id="submitbtn" type="submit" class="btn btn-primary">Create Coupon</button>
     </form>
 </main>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("form");
+    alert("kkkkkkkkkkkkk");
+    
+    const submitbtn = document.getElementById("submitbtn");
     const discountValueInput = document.getElementById("discountValue");
     const minOrderAmountInput = document.getElementById("minOrderAmount");
     const usageLimitInput = document.getElementById("usageLimit");
@@ -62,9 +65,9 @@
     const couponCodeInput = document.getElementById("couponCode");
     const messageDisplay = document.getElementById("in");
 
-    form.addEventListener("submit", function (event) {
+    submitbtn.addEventListener("click", function (event) {
       let errorMessage = "";
-
+    
       const discountValue = parseFloat(discountValueInput.value);
       const minOrderAmount = parseFloat(minOrderAmountInput.value);
       const usageLimit = parseInt(usageLimitInput.value, 10);
@@ -86,6 +89,8 @@
         errorMessage = "Start date cannot be in the past.";
       } else if (startDate > expiryDate) {
         errorMessage = "Start date cannot be after the expiry date.";
+      }else if(discountValue >= minOrderAmount){
+        errorMessage = "minOrder Amount Value Must Greater Than Discount Value";
       }
 
       if (errorMessage !== "") {
