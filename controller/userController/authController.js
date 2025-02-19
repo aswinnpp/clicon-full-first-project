@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const userSchema = require("../../models/usermodel");
 const wallet = require("../../models/walletmodel")
+const payments = require("../../models/paymentmodel")
 const { generateOTP, sendOtpEmail } = require("./helpers");
 
 const loadSignUp = (req, res) => {
@@ -9,7 +10,7 @@ const loadSignUp = (req, res) => {
 
 const signUp = async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name ,referralCode } = req.body;
     const existingUser = await userSchema.findOne({ email });
     if (existingUser) {
       req.flash("success", "User already exists.");
@@ -21,6 +22,7 @@ const signUp = async (req, res) => {
     req.session.type = "signup";
     req.session.timestamp = Date.now();
     req.session.details = { email, password, name };
+    req.session.referralCode=referralCode 
 
     sendOtpEmail(email, otp);
     res.redirect("/otp");
@@ -74,6 +76,7 @@ const loadOtp = (req, res) => {
 
 const verifyOTP = async (req, res) => {
   const { otp } = req.body;
+  
   if (parseInt(otp) !== req.session.otp) {
     req.flash("OTP", "Invalid OTP. Please try again.");
     return res.redirect("/otp");
@@ -81,24 +84,78 @@ const verifyOTP = async (req, res) => {
 
   if (req.session.type === "signup") {
     const { email, password, name } = req.session.details;
+    const referralCode = req.session.referralCode
     const hashedPassword = await bcrypt.hash(password, 10);
-    await new userSchema({ email, password: hashedPassword, name }).save();
 
+    const generateReferralCode = () => Math.random().toString(36).substr(2, 8).toUpperCase();
+    const userReferralCode = generateReferralCode();
+
+    let referredBy = null;
+
+      const newUser = await new userSchema({
+        email,
+        password: hashedPassword,
+        name,
+        referralCode: userReferralCode, 
+        referredBy,
+        walletBalance: 0, 
+      }).save();
 
     const newWallet = new wallet({
       userId: newUser._id,
-      paymentId: '', 
-      balance: 0
-  });
+      paymentId: "",
+      balance: 0,
+    });
 
-  await newWallet.save();
+    await newWallet.save();
 
-    req.flash("error", "User registered successfully.");
+    if (referralCode) {
+      console.log("referralCode",referralCode);
+      
+      const referrer = await userSchema.findOne({ referralCode });
+
+      if (referrer) {
+        console.log("referrer",referrer);
+        
+        referredBy = referrer._id; 
+
+        
+        referrer.walletBalance += 50;
+        await referrer.save();
+
+     
+        const referrerWallet = await wallet.findOne({ userId: referrer._id });
+        if (referrerWallet) {
+          console.log("referrerWallet",referrerWallet);
+          
+          referrerWallet.balance += 50;
+          await referrerWallet.save();
+        }
+     
+        const transId = `Ref${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+    
+        await new payments({
+          transId: transId,
+          userId: referrer._id,
+          method: "Wallet",
+          status: "completed",
+          amount: 50,
+          type: "credit",
+        }).save();
+      }
+    }
+
+  
+
+   
+
+    req.flash("success", "User registered successfully.");
     res.redirect("/signin");
   } else if (req.session.type === "forgot") {
     res.render("user/resetpassword");
   }
 };
+
 
 const resendOtp = async (req, res) => {
   const newOtp = generateOTP();

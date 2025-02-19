@@ -5,75 +5,249 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Wallet</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        .transaction-icon {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .credit-icon {
+            background-color: rgba(0, 255, 0, 0.1);
+           
+        }
+        
+        .credit-icon i {
+            color: #16a34a;
+            font-size: 1.5rem;
+        }
+        
+        .debit-icon {
+            background-color: rgba(255, 0, 0, 0.1);
+            
+        }
+        
+        .debit-icon i {
+            color: #dc2626;
+            font-size: 1.5rem;
+        }
+
+        .transaction-icon:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .transaction-icon i {
+            transition: transform 0.3s ease;
+        }
+
+        .credit-icon:hover i {
+            transform: translateY(-2px);
+        }
+
+        .debit-icon:hover i {
+            transform: translateY(2px);
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
-    <div class="max-w-4xl mx-auto p-4">
-      
-        <!-- Wallet Balance Card -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div class="flex justify-between items-center mb-4">
-                <h1 class="text-2xl font-bold text-gray-800">My Wallet</h1>
-                <!-- <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Money</button> -->
-            </div>
-            <div class="bg-gray-50 p-6 rounded-lg">
-                <p class="text-gray-600 mb-2">Available Balance </p>
-                <h2 class="text-4xl font-bold text-gray-900"><%= wallet?.balance %></h2>
-            </div>
-        </div>
-
-        <!-- Recent Transactions -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Recent Transactions</h2>
-            <div class="space-y-4">
-           
-                <% transactions.forEach(transaction => { %>
-                    <div class="flex justify-between items-center border-b pb-4">
-                        <div class="flex items-center">
-                            <div class="p-2 rounded-full mr-4" style="background-color: <%= transaction.type === 'credit' ? '#D1FAE5' : '#FEE2E2' %>;">
-                                <svg class="w-6 h-6" fill="none" stroke="<%= transaction.type === 'credit' ? '#10B981' : '#EF4444' %>" viewBox="0 0 24 24">
-                                    <%= transaction %>
-                                    <% if (transaction.type === "credit") { %>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    <% } else { %>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 17l-4 4m0 0l-4-4m4 4V3"></path>
-                                    <% } %>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="font-semibold text-gray-800">Transaction ID: <%= transaction.transId %></p>
-                                <p class="text-sm text-gray-500"><%= transaction.createdAt %></p>
-                                <p class="text-sm text-gray-500">Method: <%= transaction.method %></p>
-                                <p class="text-sm text-gray-500">Status: <%= transaction.status %></p>
-                            </div>
-                        </div>
-                        <p class="font-semibold" style="color: <%= transaction.type === 'credit' ? '#10B981' : '#EF4444' %>;">
-                            <%= transaction.type === 'credit' ? '+' : '-' %>₹<%= transaction.amount %>
-                        </p>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <div class="col-12">
+                <!-- Wallet Balance Card -->
+                <div class="profile-section mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="mb-0">My Wallet</h3>
                     </div>
-                <% }); %>
+                    <div class="bg-white p-4 rounded shadow-sm">
+                        <p class="text-muted mb-2">Available Balance</p>
+                        <h2 class="display-4 fw-bold">₹<%= Math.floor(wallet?.balance) %></h2>
+                    </div>
+                </div>
 
+                <!-- Recent Transactions -->
+                <div class="profile-section">
+                    <h4 class="mb-4">Recent Transactions</h4>
+                    <div class="transaction-list" style="min-height: 400px;">
+                        <% if (transactions && transactions.length > 0) { %>
+                            <% transactions.forEach(transaction => { %>
+                                <div class="bg-white rounded shadow-sm p-3 mb-3">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <div class="transaction-icon rounded-circle p-3 me-3 d-flex align-items-center justify-content-center <%= transaction.type === 'credit' ? 'credit-icon' : 'debit-icon' %>" 
+                                                 style="width: 48px; height: 48px;">
+                                                <i class="fas <%= transaction.type === 'credit' ? 'fa-arrow-up' : 'fa-arrow-down' %> fa-lg"></i>
+                                            </div>
+                                            <div>
+                                                <p class="fw-bold mb-1">Transaction ID: <%= transaction.transId %></p>
+                                                <p class="text-muted mb-1 small">
+                                                    <%= new Date(transaction.createdAt).toLocaleDateString('en-US', { 
+                                                        year: 'numeric', 
+                                                        month: 'long', 
+                                                        day: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    }) %>
+                                                </p>
+                                                <p class="text-muted mb-1 small">Method: <%= transaction.method %></p>
+                                                <span class="badge <%= transaction.status === 'success' ? 'bg-success' : 'bg-danger' %>">
+                                                    <%= transaction.status %>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <p class="h5 mb-0" style="color: <%= transaction.type === 'credit' ? '#10B981' : '#EF4444' %>;">
+                                                <%= transaction.type === 'credit' ? '+' : '-' %>₹<%= transaction.amount %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
 
+                            <!-- Pagination -->
+                            <div class="d-flex justify-content-center mt-4">
+                                <nav aria-label="Transaction pagination">
+                                    <ul class="pagination mb-0">
+                                        <% if (page > 1) { %>
+                                            <li class="page-item">
+                                                <button class="page-link" onclick="loadWalletPage(<%= page - 1 %>)">Previous</button>
+                                            </li>
+                                        <% } %>
 
+                                        <% for (let i = 1; i <= totalPages; i++) { %>
+                                            <li class="page-item <%= page === i ? 'active' : '' %>">
+                                                <button class="page-link" onclick="loadWalletPage(<%= i %>)"><%= i %></button>
+                                            </li>
+                                        <% } %>
 
-<div class="flex justify-center mt-6 space-x-2">
-    <% if (page > 1) { %>
-        <a href="/wallet?page=<%= page - 1 %>" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Previous</a>
-    <% } %>
-
-    <% for (let i = 1; i <= totalPages; i++) { %>
-        <a href="/wallet?page=<%= i %>" class="px-4 py-2 <%= page === i ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700' %> rounded hover:bg-blue-700">
-            <%= i %>
-        </a>
-    <% } %>
-
-    <% if (page < totalPages) { %>
-        <a href="/wallet?page=<%= page + 1 %>" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Next</a>
-    <% } %>
-</div>
-
-
+                                        <% if (page < totalPages) { %>
+                                            <li class="page-item">
+                                                <button class="page-link" onclick="loadWalletPage(<%= page + 1 %>)">Next</button>
+                                            </li>
+                                        <% } %>
+                                    </ul>
+                                </nav>
+                            </div>
+                        <% } else { %>
+                            <div class="text-center py-5">
+                                <i class="fas fa-wallet fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No transactions found</h5>
+                                <p class="text-muted">Your transaction history will appear here</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <script>
+    async function loadWalletPage(pageNumber) {
+        try {
+            const walletSection = document.getElementById('wallet-section');
+            
+            // Show loading state
+            walletSection.style.opacity = '0.6';
+            
+            const response = await fetch(`/wallet?page=${pageNumber}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const html = await response.text();
+            
+            // Parse the HTML and get the container content
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newContent = doc.querySelector('.container-fluid').innerHTML;
+            
+            // Update only the inner content of the wallet section
+            walletSection.innerHTML = newContent;
+            
+            // Restore opacity
+            walletSection.style.opacity = '1';
+
+        } catch (error) {
+            console.error('Error loading wallet page:', error);
+            alert('Error loading transactions. Please try again.');
+        }
+    }
+
+    // Add styles to maintain consistent layout
+    document.addEventListener('DOMContentLoaded', function() {
+        const style = document.createElement('style');
+        style.textContent = `
+            #wallet-section {
+                width: 100%;
+                padding: 20px;
+            }
+            .transaction-list {
+                position: relative;
+                min-height: 400px;
+            }
+            .profile-section {
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            .container-fluid {
+                width: 100%;
+                padding-right: 15px;
+                padding-left: 15px;
+                margin-right: auto;
+                margin-left: auto;
+            }
+            .transaction-icon {
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            
+            .credit-icon {
+                background-color: rgba(0, 255, 0, 0.1);
+                border: 2px solid #22c55e;
+            }
+            
+            .credit-icon i {
+                color: #16a34a;
+                font-size: 1.5rem;
+            }
+            
+            .debit-icon {
+                background-color: rgba(255, 0, 0, 0.1);
+                border: 2px solid #ef4444;
+            }
+            
+            .debit-icon i {
+                color: #dc2626;
+                font-size: 1.5rem;
+            }
+
+            .transaction-icon:hover {
+                transform: scale(1.05);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+
+            .transaction-icon i {
+                transition: transform 0.3s ease;
+            }
+
+            .credit-icon:hover i {
+                transform: translateY(-2px);
+            }
+
+            .debit-icon:hover i {
+                transform: translateY(2px);
+            }
+        `;
+        document.head.appendChild(style);
+    });
+    </script>
 </body>
 </html>
+

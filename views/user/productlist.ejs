@@ -114,6 +114,22 @@ border-left: none;
 box-shadow: none;
 border-color: #ced4da;
 }
+
+.pagination {
+    margin-top: 20px;
+  }
+  .pagination a {
+    padding: 8px 12px;
+    margin: 0 5px;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    color: #333;
+  }
+  .pagination a.active {
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+  }
 </style>
 
 <div class="page-wrapper">
@@ -343,13 +359,24 @@ border-color: #ced4da;
                                                     <%= Math.floor(discountedPrice)  %>
                                                 </span>
                                             </div>
+
+                                            <div class="ratings-container">
+                                                <div class="ratings">
+                                                    <div class="ratings-val" style="width: <%= product.rating * 20 %>%;"></div>
+                                                </div>
+                                                <span class="ratings-text"><%= product.rating %> </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <% }) %>
                             </div>
+
+                           
                         </div>
                     </div>
+
+                  
     
                     <aside class="col-lg-3 order-lg-first">
                         <div class="sidebar sidebar-shop">
@@ -444,7 +471,12 @@ border-color: #ced4da;
                                 </div>
                             </div>
                         </div>
+
+                        
                     </aside>
+
+
+                    
                 </div>
             </div>
         </div>

@@ -386,12 +386,12 @@ const OrderView = async (req, res) => {
     const { orderId, productId } = req.params;
 
     console.log("Fetching Order Details...");
-
     const returns = await Returns.find({
-      orderId: orderId, 
-      productId: productId
-  });
-  
+      $and: [
+        { orderId: orderId }, 
+        { productId: productId }
+      ]
+    });
 
     const order = await Order.findById(orderId)
       .populate("items.productId")
@@ -454,14 +454,34 @@ const cancellOrder = async (req, res) => {
     if (!order) {
       return res.status(404).send("Order not found");
     }
+    const itemToUpdate = order.items.find(
+      (item) => item.productId._id.toString() === productId
+    );
+    
+    if (!itemToUpdate) {
+      return res.status(404).send("Product not found in order");
+    }
+    
+    const originalPrice = parseFloat(itemToUpdate.productId.price?.toString().replace(/,/g, "")) || 0;
+    const discountMatch = itemToUpdate.productId.offer ? itemToUpdate.productId.offer.match(/\d+/) : null;
+    const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
+    const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+    
+    let total = discountedPrice * itemToUpdate.quantity;
+    
+    total -= order?.coupon?.discountValue || 0;
+
+
+console.log("total",total);
+
 
     const paymentMethod = order.paymentMethod;
 
-    if (paymentMethod == "razorpay" ||paymentMethod == "wallet") {
+    if (paymentMethod == "razorpay" ||paymentMethod == "Wallet") {
 
       const transId = `txn_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
        
-      const amount = order.totalAmount;
+      const amount = total
 
       const payment = new payments({
         method:paymentMethod,
@@ -477,14 +497,9 @@ const cancellOrder = async (req, res) => {
       wallet.save();
     }
 
-    const itemToUpdate = order.items.find(
-      (item) => item.productId._id.toString() === productId
-    );
+  
 
-    if (!itemToUpdate) {
-      return res.status(404).send("Product not found in order");
-    }
-
+    
     itemToUpdate.productId.stock += quantity;
 
     itemToUpdate.shippingDetails.status = newStatus;

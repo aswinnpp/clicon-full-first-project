@@ -10,6 +10,16 @@ const returnController = require("../controller/adminController/returnsControlle
 const multer = require("../utils/multter");
 const adminauth = require("../middleware/adminauth");
 
+
+
+const PDFDocument = require('pdfkit');
+const ExcelJS = require('exceljs');
+const path = require('path');
+const fs = require('fs');
+
+
+
+
 router.get("/login",adminauth.isLogin, authController.loadLogin);
 router.post("/login", authController.login);
 router.get("/adminlogout", authController.adminLogout);
@@ -56,6 +66,9 @@ router.get("/download-report",adminauth.checkSession,authController.downloadSale
 router.post("/couponcreate",couponController.couponCreate)
 
 router.get("/returns",adminauth.checkSession,returnController.loadReturns)
+
+router.post("/productApprove",returnController.productApprove)
+router.post("/productRejected",returnController.productRejected)
 
 // 404 Handler
 router.get("*", (req, res) => {

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const paymentSchema = new mongoose.Schema({
-  transId: { type: String, unique: true,  }, 
+  transId: { type: String,   }, 
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User",  },
   method: { type: String, enum: ["cod", "Wallet", "razorpay", "Cash on Delivery"],   }, 
   status: { type: String, enum: ["pending", "completed", "failed"],  }, 

@@ -80,55 +80,41 @@
         <form id="sign-up-form" action="/signup" method="post">
           <div class="mb-3">
             <label for="sign-up-name" class="form-label">Name</label>
-            <input
-              type="text"
-              name="name"
-              class="form-control"
-              id="sign-up-name"
-              placeholder="Enter your name"
-            />
+            <input type="text" name="name" class="form-control" id="sign-up-name" placeholder="Enter your name" required />
           </div>
+        
           <div class="mb-3">
             <label for="sign-up-email" class="form-label">Email address</label>
-            <input
-              type="email"
-              name="email"
-              class="form-control"
-              id="sign-up-email"
-              placeholder="Enter your email"
-            />
+            <input type="email" name="email" class="form-control" id="sign-up-email" placeholder="Enter your email" required />
           </div>
-
+        
           <div class="mb-3">
             <label for="sign-up-password" class="form-label">Password</label>
             <div class="input-group">
-              <input
-                type="password"
-                class="form-control"
-                id="sign-up-password"
-                placeholder="Enter your password"
-                name="password"
-              />
+              <input type="password" class="form-control" id="sign-up-password" placeholder="Enter your password" name="password" required />
               <button type="button" id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 18px; cursor: pointer;">
                 👁️
               </button>
             </div>
           </div>
-
+        
           <div class="mb-3">
-            <label for="sign-up-confirm-password" class="form-label"
-              >Confirm Password</label
-            >
-
-            <input
-              type="password"
-              name="Confirmpassword"
-              class="form-control"
-              id="sign-up-confirm-password"
-              placeholder="Confirm your password"
-            />
+            <label for="sign-up-confirm-password" class="form-label">Confirm Password</label>
+            <input type="password" name="Confirmpassword" class="form-control" id="sign-up-confirm-password" placeholder="Confirm your password" required />
           </div>
-
+        
+          <!-- Referral Checkbox -->
+          <div class="mb-3">
+            <input type="checkbox" id="useReferral" />
+            <label for="useReferral">I have a referral code</label>
+          </div>
+        
+          <!-- Referral Code Input (Disabled by Default) -->
+          <div class="mb-3" id="referralInputDiv" style="display: none;">
+            <label for="sign-up-referral-code" class="form-label">Referral Code</label>
+            <input type="text" name="referralCode" class="form-control" id="sign-up-referral-code" placeholder="Enter referral code" />
+          </div>
+        
           <button type="submit" class="btn btn-primary">Sign Up</button>
         </form>
         <div class="container">
@@ -291,6 +277,21 @@ const togglePasswordBtn = document.getElementById('togglePassword');
         console.error("Error:", error);
       });
   }
+
+  document.getElementById("useReferral").addEventListener("change", function () {
+    let referralInputDiv = document.getElementById("referralInputDiv");
+    let referralInput = document.getElementById("sign-up-referral-code");
+
+    if (this.checked) {
+      referralInputDiv.style.display = "block"; 
+      referralInput.required = true;
+    } else {
+      referralInputDiv.style.display = "none"; 
+      referralInput.required = false;
+      referralInput.value = ""; 
+    }
+  });
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

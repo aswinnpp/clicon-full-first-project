@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema({
     default:''
    
   },
+  referralCode: { 
+    type: String,
+    unique: true 
+  },
   role: {
     type: String,
     enum: ["user", "admin"],  

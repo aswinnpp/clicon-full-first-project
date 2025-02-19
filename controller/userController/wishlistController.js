@@ -45,19 +45,22 @@ const wishlist = async (req, res) => {
     
 
     if (!email) {
-      return res.status(400).json({ message: "User email not found in session" });
+      res.redirect("/signin")
+      return
     }
 
     const user = await userModel.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: "User not found" });
+      res.redirect("/signin")
+      return
     }
 
     
 
     if (!user._id) {
-      return res.status(400).json({ message: "User ID is missing" });
+      res.redirect("/signin")
+      return 
     }
 
     let wishlist = await wishlistModel.findOne({ userId: user._id });
@@ -70,11 +73,16 @@ const wishlist = async (req, res) => {
       const productIncart = cart?.items.some(item => item.productId.toString() === productId);
 
       if (productExists) {
-        return res.status(400).json({ message: "Product is already in wishlist" });
+        req.flash("cart", "Product is already in wishlist" );
+        res.redirect("/")
+        return
       }
 
       if (productIncart) {
-        return res.status(400).json({ message: "Product is already in cart" });
+      req.flash("cart", "Product is already in cart" );
+      res.redirect("/")
+      return
+      
       }
 
       wishlist.items.push({ productId });
@@ -87,7 +95,7 @@ const wishlist = async (req, res) => {
       });
 
       await wishlist.save();
-      console.log("New wishlist created and product added");
+      console.log("New wishlist created and product added",wishlist);
     }
 
     res.redirect("/wishlist")
