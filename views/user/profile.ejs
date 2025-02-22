@@ -38,20 +38,17 @@
 <body>
 
 <style>
-/* Reset and Base Styles */
 body {
     font-family: 'Arial', sans-serif;
     background: #f8f9fa;
 }
 
-/* Layout Components */
 .container {
     max-width: 1200px;
     margin: auto;
     padding: 0 15px;
 }
 
-/* Profile Section Styles */
 .profile-section {
     background-color: #ffffff;
     border-radius: 12px;
@@ -76,7 +73,6 @@ body {
     object-fit: cover;
 }
 
-/* Sidebar Navigation */
 .profile-sidebar {
     background: #fff;
     border-radius: 12px;
@@ -108,7 +104,6 @@ body {
     text-align: center;
 }
 
-/* Address Card Styles */
 .address-card {
     background: #fff;
     border-radius: 12px;
@@ -120,7 +115,6 @@ body {
 }
 
 
-/* Action Buttons Container */
 .address-actions {
     position: absolute;
     top: 10px;
@@ -129,7 +123,6 @@ body {
     gap: 8px;
 }
 
-/* Icon Button Styles */
 .btn-icon {
     width: 32px;
     height: 32px;
@@ -162,7 +155,6 @@ body {
     color: #fff;
 }
 
-/* Button Styles */
 .custom-btn {
     padding: 10px 20px;
     border-radius: 8px;
@@ -184,7 +176,6 @@ body {
     background-color: #dc3545;
 }
 
-/* Modal Styles */
 .modal-content {
     border-radius: 12px;
     border: none;
@@ -200,7 +191,6 @@ body {
     padding: 25px;
 }
 
-/* Share Button */
 .share-btn-wrapper {
     position: fixed;
     bottom: 30px;
@@ -222,7 +212,6 @@ body {
     box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
 }
 
-/* Responsive Adjustments */
 @media (max-width: 768px) {
     .profile-sidebar {
         margin-bottom: 20px;
@@ -584,6 +573,7 @@ body {
                                         <tbody>
                                           
                                           <% let rowCount = 1; %>
+
                                           <% orders?.sort((a, b) => new Date(b.orderDate) - new Date(a?.orderDate)).forEach(order => { %>
                                             <% order?.items?.forEach(item => { %>
                                               
@@ -595,6 +585,7 @@ body {
                                       const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
                                       const total = (discountedPrice*item.quantity)-(order.coupon?.discountValue||0)
                                     %>
+                                 
                                               <tr id="row<%= rowCount %>" style="border-bottom: 1px solid #ddd;">
                                                 <td style="padding: 12px; color: #333;"><%= item?.productId?.productname %></td>
                                               
@@ -952,7 +943,7 @@ document.getElementById('profileImage').addEventListener('change', function(even
     };
     reader.readAsDataURL(file);
   }
-});
+}); 
 
 
 
@@ -1403,8 +1394,9 @@ document.addEventListener('DOMContentLoaded', function() {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="profile-edit-form" action="/edit-profile" method="POST" enctype="multipart/form-data">
+        <form id="profile-edit-form" action="/update-profile" method="POST" enctype="multipart/form-data">
           <div class="mb-3">
+            <input type="hidden" name="userId" value="<%=user._id %>">
             <label for="profile-name" class="form-label">Name</label>
             <input type="text" class="form-control" id="profile-name" name="name" value="<%= user?.name %>">
           </div>
@@ -1421,6 +1413,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <label class="form-check-label" for="changePassword">Change Password</label>
           </div>
           <div id="passwordFields" style="display: none;">
+            <div class="mb-3">
+                <label for="profile-password" class="form-label">current Password</label>
+                <input type="password" class="form-control" id="profile-password" name="currentPassword">
+              </div>
             <div class="mb-3">
               <label for="profile-password" class="form-label">New Password</label>
               <input type="password" class="form-control" id="profile-password" name="password">

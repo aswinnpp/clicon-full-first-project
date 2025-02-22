@@ -373,8 +373,8 @@
                     <img src="/uploads/<%= item?.productId.image[0] %>" class="product-image me-4" alt="Product">
                  
                     <% 
-                    const originalPrice = parseFloat(item.productId.price.replace(/,/g, "")) || 0;
-                    const discountMatch = item.productId.offer ? item.productId.offer.match(/\d+/) : null;
+                    const originalPrice = parseFloat(item.price) || 0;
+                    const discountMatch = item.offer ? item.offer.match(/\d+/) : null;
                     const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
                     const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
                     
@@ -431,21 +431,21 @@
    
         <div class="row mb-2">
             <div class="col-6"> Unit Price After    Discount:</div>
-            <div class="col-6 text-end">-₹<%= discountedPrice %></div>
+            <div class="col-6 text-end">₹<%= discountedPrice %></div>
         </div>
 
         <div class="row mb-2">
             <div class="col-6">Coupon Applied:</div>
-            <div class="col-6 text-end">-₹<%= order.coupon?.discountValue||0 %></div>
+            <div class="col-6 text-end">-₹<%= item.coupons ||0 %></div>
         </div>
   
         <div class="row pt-3 border-top">
             <div class="col-6 fw-bold">Total:</div>
             <div class="col-6 text-end fw-bold">
                 <% if (order.paymentMethod && (order.paymentMethod === "razorpay" || order.paymentMethod === "Wallet")) { %>
-                    <div style="color: rgb(113, 113, 34);">Paid </div> ₹<%= total %>
+                    <div style="color: rgb(113, 113, 34);">Paid </div> ₹ <%= Math.floor(total)  %>
                 <% } else { %>
-                    ₹<%= total %>
+                    ₹ <%= Math.floor(total)  %>
                 <% } %>
             </div>
         </div>

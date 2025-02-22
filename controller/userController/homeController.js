@@ -1,27 +1,29 @@
 const Product = require("../../models/productmodel");
 const Category = require("../../models/categorymodel");
 const userSchema = require("../../models/usermodel")
+const Order =require("../../models/orderdetails")
 const mongoose  = require("mongoose")
 
 
-  const loadHome = async (req, res) => {
-    try {
-      const products = await Product.find({ isDeleted: false });
-      const categories = await Category.find({ isDeleted: false });
-      const message = req.flash("cart")
+const loadHome = async (req, res) => {
+  try {
+    const products = await Product.find({ isDeleted: false }).sort({ createdAt: -1 });
 
-        const email = req.session?.details?.email
-            console.log(email);
-            
-            const userr = await userSchema.findOne({email})
+    const categories = await Category.find({ isDeleted: false });
+    const message = req.flash("cart")
+
+      const email = req.session?.details?.email
+          console.log(email);
+          
+          const userr = await userSchema.findOne({email})
 
 
-      res.render("user/user_home", { product: products,userr,message, category: categories, user: req.session.details });
-    } catch (error) {
-      console.error("Home load error:", error);
-      res.status(500).send("Server Error");
-    }
-  };
+    res.render("user/user_home", { product: products,userr,message, category: categories, user: req.session.details });
+  } catch (error) {
+    console.error("Home load error:", error);
+    res.status(500).send("Server Error");
+  }
+};
 
   const searchProducts = async (req, res) => {
     try {
@@ -61,46 +63,92 @@ const mongoose  = require("mongoose")
 
   const productList = async (req, res) => {
     try {
-      const message = req.flash("count");
-      const searchQuery = req.query.q?.trim().toLowerCase() || "";
-      const selectedCategories = req.query.category?.split(",").map(cat => cat.trim()) || [];
-      const minPrice = parseFloat(req.query.minPrice) || 0;
-      const maxPrice = parseFloat(req.query.maxPrice) || 1000000;
-      const sortOrder = req.query.sort || 'az';
-  
-      let products = await Product.find({ isDeleted: false });
-  
-      products = products.filter(product => 
-        (!selectedCategories.length || selectedCategories.includes(product.category)) &&
-        product.productname.toLowerCase().includes(searchQuery) &&
-        (parseFloat(product.price.replace(/[^0-9.]/g, '')) >= minPrice && parseFloat(product.price.replace(/[^0-9.]/g, '')) <= maxPrice)
-      );
-  
-      const sortOptions = {
-        'az': (a, b) => a.productname.localeCompare(b.productname),
-        'za': (a, b) => b.productname.localeCompare(a.productname),
-        'price-low': (a, b) => parseFloat(a.price) - parseFloat(b.price),
-        'price-high': (a, b) => parseFloat(b.price) - parseFloat(a.price),
-      };
-  
-      products.sort(sortOptions[sortOrder] || (() => 0));
-      
-      res.render("user/productlist", {
-        product: products,
-        category: await Category.find({ isDeleted: false }),
-        user: req.session.details,
-        message,
-        searchQuery,
-        selectedCategories,
-        minPrice,
-        maxPrice,
-        sortOrder
-      });
+        const message = req.flash("count");
+        const page = parseInt(req.query.page) || 1;
+        const limit = 4; 
+        const searchQuery = req.query.q || "";
+        const selectedCategories = req.query.category ? req.query.category.split(",") : [];
+        const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 0;
+        const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : 1000000;
+        const sortOrder = req.query.sort || 'az';
+
+        console.log('Received query params:', {
+            page, searchQuery, selectedCategories, minPrice, maxPrice, sortOrder
+        });
+
+        let query = { isDeleted: false };
+
+        if (searchQuery) {
+            query.productname = { $regex: searchQuery, $options: 'i' };
+        }
+
+        if (selectedCategories.length > 0) {
+            query.category = { $in: selectedCategories };
+        }
+
+        query.price = { $gte: minPrice, $lte: maxPrice }; 
+
+
+        let sortOptions = {};
+        switch (sortOrder) {
+            case 'az':
+                sortOptions = { productname: 1 };
+                break;
+            case 'za':
+                sortOptions = { productname: -1 };
+                break;
+            case 'price-low':
+                sortOptions = { price: 1 };
+                break;
+            case 'price-high':
+                sortOptions = { price: -1 };
+                break;
+            default:
+                sortOptions = { _id: -1 }; 
+        }
+
+        const totalProducts = await Product.countDocuments({isDeleted:false});
+        console.log("totalProducts",totalProducts);
+        
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        const products = await Product.find({isDeleted:false})
+            .sort(sortOptions)
+            .skip((page - 1) * limit)
+            .limit(limit);
+
+
+            console.log(",",products.length);
+            
+        const categories = await Category.find({ isDeleted: false });
+
+        console.log('Sending to template:', {
+            productsCount: products.length,
+            currentPage: page,
+            totalPages,
+            totalProducts
+        });
+
+        res.render("user/productlist", {
+            product: products,
+            currentPage: page,
+            totalPages,
+            message,
+            searchQuery,
+            selectedCategories,
+            minPrice,
+            maxPrice,
+            sortOrder,
+            category: categories,
+            user: req.session.details
+        });
+
     } catch (error) {
-      console.error("user productList error:", error);
-      res.status(500).send("Server Error");
+        console.error("Product list error:", error);
+        res.status(500).send("Server Error");
     }
-  };
+};
+
 
 
 

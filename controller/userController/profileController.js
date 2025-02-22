@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const path = require("path");
 const fs = require("fs");
 
-// Load Profile
+
 const loadProfile = async (req, res) => {
   try {
     const id = req.params.id;
@@ -32,7 +32,8 @@ const loadProfile = async (req, res) => {
   }
 };
 
-// Add Address
+
+
 const addAddress = async (req, res) => {
   try {
     console.log(req.body);
@@ -89,12 +90,12 @@ const editProfile = async (req, res) => {
       images = "/uploads/" + req.file.originalname;
     }
 
-    // Update fields
-    user.name = name || user.name;
-    user.email = email || user.email;
-    user.password = hashedPassword || user.password;
-    user.image = images || user.image;
-    user.phone = phone || user.phone;
+    
+    user.name = name || user?.name;
+    user.email = email || user?.email;
+    user.password = hashedPassword || user?.password;
+    user.image = images || user?.image;
+    user.phone = phone || user?.phone;
 
     // Save changes
     await user.save();

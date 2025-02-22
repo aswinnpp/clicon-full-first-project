@@ -209,7 +209,7 @@
                               <% if (userr && userr.image) { %>
                                 <img 
                                   style="border-radius: 50%; width: 50px; height: 50px; object-fit: cover;" 
-                                  src="<%= userr.image?.startsWith('http') ? userr.image : `https:${userr.image}` %>" 
+                                  src="<%= userr.image?.startsWith('http') ? userr.image : userr.image %>" 
                                   alt="Profile Image" 
                                   onerror="this.onerror=null; this.src='/images/profile.avif';">
                               <% } else { %>
@@ -429,8 +429,8 @@
 
                 <div id="search-results" style="display: none;">
                     <div class="container">
-                        <h2 class="title text-center mb-4">Search Results</h2>
-                        <div class="row" id="search-results-container"></div>
+                        <h2 class="title text-center mb-4">Search eeeeeee</h2>
+                        <div class="row" id="search-results-container">eeeeeeeeeeee</div>
                     </div>
                 </div>
 
@@ -494,7 +494,7 @@
                                         <h3 class="product-title"><a href="/productview/<%= product._id %>"><%= product.productname %></a></h3>
                                         <div class="product-price">
                                             <span style="text-decoration: line-through; color: red;">
-                                                <%= product.price %>
+                                                <%= originalPrice %>
                                             </span>
                                             <span style="margin-left: 10px; font-weight: bold;">
                                                 <%= Math.floor(discountedPrice)  %>
@@ -662,101 +662,70 @@
                     </div><!-- End .heading-left -->
 
                    <div class="heading-right">
-                        <a href="#" class="title-link">View All Recommendadion <i class="icon-long-arrow-right"></i></a>
+                        <a href="#" class="title-link">View All Recommendations <i class="icon-long-arrow-right"></i></a>
                    </div><!-- End .heading-right -->
                 </div><!-- End .heading -->
 
                 <div class="products">
                     <div class="row justify-content-center">
-
-                        <% product.forEach(product=> {%>
-                            
-                           
-                        <div class="col-7 col-md-3 col-lg-2">
-                            <div class="product product-2">
-                                <figure class="product-media">
-                                    <a href="http://localhost:3000/productview/<%= product._id %>">
-                                        <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
-                                    </a>
-                                    
-
+                        <% product.forEach(product => { %>
+                            <div class="col-7 col-md-3 col-lg-2">
+                                <div class="product product-2">
+                                    <figure class="product-media">
+                                        <a href="http://localhost:3000/productview/<%= product._id %>">
+                                            <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
+                                        </a>
                                         <div class="product-action-vertical">
-                                            <form action="/wishlist?productId=<%= product._id%>" method="post">
-                                            <button type="submit" class="btn-product-icon btn-wishlist" title="Add to wishlist"></button>
-                                            <form action="/wishlist?productId=<%= product._id%>" method="post">
+                                            <form action="/wishlist?productId=<%= product._id %>" method="post">
+                                                <button type="submit" class="btn-product-icon btn-wishlist" title="Add to wishlist"></button>
+                                            </form>
                                         </div><!-- End .product-action -->
-    
-                                   
-                                   
-                                    <div class="product-action">
-                                        <form action="/cart" method="post" id="addToCartForm" >
-                                            <input type="hidden" name="productId" value="<%=product?._id %>">
-                                            <input type="hidden" name="quantity" value="1">
-                                            <input type="hidden" value="<%= product.stock %>"  name="stock">
-                                          
-                                            <button type="submit" class="btn-product btn-cart " style="width: 275px; border: none;" title="Add to cart"><span>add to cart</span></button>
-                                        </form>
-                                       
-                                       
-                                    </div><!-- End .product-action -->
-                                </figure><!-- End .product-media -->
+                                        <div class="product-action">
+                                            <form action="/cart" method="post" id="addToCartForm">
+                                                <input type="hidden" name="productId" value="<%= product?._id %>">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <input type="hidden" value="<%= product.stock %>" name="stock">
+                                                <button type="submit" class="btn-product btn-cart" style="width: 275px; border: none;" title="Add to cart"><span>Add to Cart</span></button>
+                                            </form>
+                                        </div><!-- End .product-action -->
+                                    </figure><!-- End .product-media -->
 
-                                
-                                <% 
-                                          
-                                const originalPrice = parseFloat(product.price.replace(/,/g, '')) || 0; 
-                                const discountMatch = product.offer ? product.offer.match(/\d+/) : null;
-                                const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0; 
-                                const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
-                            %>
+                                    <% 
+                                        const originalPrice = parseFloat(product.price.replace(/,/g, '')) || 0; 
+                                        const discountMatch = product.offer ? product.offer.match(/\d+/) : null;
+                                        const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0; 
+                                        const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+                                    %>
 
-                                <div class="product-body">
-                                    <div class="product-cat">
-                                        <a href="#"><%= product.category %></a>
-                                    </div><!-- End .product-cat -->
-                                    <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
-                                    <div class="product-price">
-                                        <span style="text-decoration: line-through; color: red;">
-                                            <%= product.price %>
-                                        </span>
-                                        <span style="margin-left: 10px; font-weight: bold;">
-                                            <%= Math.floor(discountedPrice)  %>
-                                        </span>
-                                    </div>
-                                    <div>
-                                        
-                                    </div>
-
-                                    <div class="product-price">
-                                        <%= product.offer %> <p style="color: green; font-size: larger;" >Off</p>
-                                     </div>
-                                     
-                                     <div class="ratings-container">
-                                        <div class="ratings">
-                                            <div class="ratings-val" style="width: <%= product.rating * 20 %>%;"></div>
+                                    <div class="product-body">
+                                        <div class="product-cat">
+                                            <a href="#"><%= product.category %></a>
+                                        </div><!-- End .product-cat -->
+                                        <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
+                                        <div class="product-price">
+                                            <span style="text-decoration: line-through; color: red;">
+                                                <%= product.price %>
+                                            </span>
+                                            <span style="margin-left: 10px; font-weight: bold;">
+                                                <%= Math.floor(discountedPrice)  %>
+                                            </span>
                                         </div>
-                                        <span class="ratings-text"><%= product.rating %> </span>
-                                    </div>
-
-                                </div><!-- End .product-body -->
-
-
-                            </div><!-- End .product -->
-                        </div>
-                        
-                        
-                        
-                        <%})%>
-
-                     
+                                        <div class="product-price">
+                                            <%= product.offer %> <p style="color: green; font-size: larger;">Off</p>
+                                        </div>
+                                        <div class="ratings-container">
+                                            <div class="ratings">
+                                                <div class="ratings-val" style="width: <%= product.rating * 20 %>%;"></div>
+                                            </div>
+                                            <span class="ratings-text"><%= product.rating %> </span>
+                                        </div>
+                                    </div><!-- End .product-body -->
+                                </div><!-- End .product -->
+                            </div>
+                        <% }) %>
                     </div><!-- End .row -->
                 </div><!-- End .products -->
-
-
-
-
-                
-            </div><!-- End .container -->
+            </div><!-- End .for-you -->
 
             <div class="mb-4"></div><!-- End .mb-4 -->
 
@@ -1218,9 +1187,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 <a href="/productview/${product._id}">${product.productname}</a>
                                             </h3>
                                             <div class="product-price">
-                                                <span>${product.price}</span>
+                                                <span> ${Math.floor(data.offerprice[index])}</span>
                                                 <span style="text-decoration: line-through; color: red; margin-left:5px;">
-                                          ${Math.floor(data.offerprice[index])}
+                                         ${product.price}
                                         </span>
                                             </div>
 
@@ -1255,6 +1224,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
     // ============================================  
+    
     
     document.addEventListener("DOMContentLoaded", function () {
     const message = document.getElementById("cartlimit").textContent.trim();

@@ -1,10 +1,19 @@
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
 
 const orderDetailsSchema = new mongoose.Schema({
   customerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User', 
     required: true,
+  },
+   customOrderId: {
+    type: String,
+    unique: true,
+    required: true,
+    default: function () {
+      return `ORD-${Date.now()}-${uuidv4().slice(0, 8).toUpperCase()}`;
+    }
   },
   orderDate: {
     type: Date,
@@ -43,11 +52,24 @@ const orderDetailsSchema = new mongoose.Schema({
     
       min: [1, 'Quantity must be at least 1'],
     }, 
+      price: {
+      type: Number,
+      
+    }, 
+    offer: {
+      type: String,
+      
+    }, 
      color:{
       type:String,
       require:true
       
-    },
+    }, 
+    coupons: {
+      type: Number,
+      default:0
+      
+    }, 
     
     shippingDetails: {
       origin: { type: String, required: true, default: "India" }, 
@@ -71,3 +93,5 @@ const orderDetailsSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('OrderDetails', orderDetailsSchema);
+
+

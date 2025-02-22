@@ -201,7 +201,8 @@ const loadProductview = async (req, res) => {
 const productDelete = async (req, res) => {
   try {
     const productId = req.params.id;
-    await Product.findByIdAndUpdate(productId, { isDeleted: true });
+    const product = await Product.findById(productId);
+    await Product.findByIdAndUpdate(productId, { isDeleted: !product.isDeleted });
     res.json({ success: true });
   } catch (error) {
     console.log(error);

@@ -43,8 +43,8 @@
           <% order.items.forEach(item => { %>
                              
         <% 
-        const originalPrice = parseFloat(item.productId?.price.replace(/,/g, "")) || 0;
-        const discountMatch = item.productId?.offer ? item?.productId.offer.match(/\d+/) : null;
+        const originalPrice = parseFloat(item?.price) || 0;
+        const discountMatch = item?.offer ? item?.offer.match(/\d+/) : null;
         const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
         const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
         const total = (discountedPrice*item.quantity)-(order.coupon?.discountValue||0)

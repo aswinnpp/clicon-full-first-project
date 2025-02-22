@@ -10,7 +10,7 @@
   
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">Order ID: <%= order._id %></h5>
+        <h5 class="card-title">Order ID: <%= order.customOrderId %></h5>
      
         <p class="card-text"><strong>Order Date:</strong> <%= new Date(order.orderDate).toLocaleDateString() %></p>
         <p class="card-text"><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
@@ -38,33 +38,36 @@
       </div>
     </div>
   
-    <!-- Product Details Section -->
-    <div class="card mt-4">
-      <div class="card-body">
-        <h5 class="card-title">Product Details</h5>
-        <p class="card-text"><strong>Product Name:</strong> <%= item.productId.productname %></p>
-        <p class="card-text"><strong>Quantity:</strong> <%= item.quantity %></p>
-        
-        <% 
-          const originalPrice = parseFloat(item.productId.price.replace(/,/g, "")) || 0;
-          const discountMatch = item.productId.offer ? item.productId.offer.match(/\d+/) : null;
-          const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
-          const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
-          const finalAmount = discountedPrice -(order.coupon?.discountValue  ||0)
-        %>
-    
-        <p class="card-text"><strong>Original Price:</strong><%=  Math.floor(originalPrice) %></p>
-        <p class="card-text"><strong>Discount:</strong> <%= discountPercentage %>%</p>
-        <p class="card-text"><strong>Coupon Discount:</strong> <%= order.coupon?.discountValue||0 %> rs</p>
+ <!-- Product Details Section -->
+<div class="card mt-4">
+  <div class="card-body">
+    <h5 class="card-title">Product Details</h5>
 
-        
-        <p class="card-text"><strong>Price After Discount:</strong> <%= Math.floor(finalAmount)  %></p>
-    
-        <p class="card-text"><strong>Total Amount:</strong> <%= Math.floor(discountedPrice * item.quantity)-(order.coupon?.discountValue  ||0) %></p>
-        <p class="card-text"><strong>Status:</strong> <%= item.shippingDetails.status %></p>
-      </div>
+    <!-- Product Image -->
+    <div class="text-center mb-3">
+      <img src="/uploads/<%= item.productId.image[0] %>" alt="Product Image" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
     </div>
-    
+
+    <p class="card-text"><strong>Product Name:</strong> <%= item.productId.productname %></p>
+    <p class="card-text"><strong>Quantity:</strong> <%= item.quantity %></p>
+
+    <% 
+      const originalPrice = parseFloat(item.productId.price.replace(/,/g, "")) || 0;
+      const discountMatch = item.productId.offer ? item.productId.offer.match(/\d+/) : null;
+      const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
+      const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+      const finalAmount = discountedPrice - (order.coupon?.discountValue || 0);
+    %>
+
+    <p class="card-text"><strong>Original Price:</strong> <%= Math.floor(originalPrice) %></p>
+    <p class="card-text"><strong>Discount:</strong> <%= discountPercentage %>%</p>
+    <p class="card-text"><strong>Coupon Discount:</strong> <%= order.coupon?.discountValue || 0 %> rs</p>
+    <p class="card-text"><strong>Price After Discount:</strong> <%= Math.floor(finalAmount) %></p>
+    <p class="card-text"><strong>Total Amount:</strong> <%= Math.floor(discountedPrice * item.quantity) - (order.coupon?.discountValue || 0) %></p>
+    <p class="card-text"><strong>Status:</strong> <%= item.shippingDetails.status %></p>
+  </div>
+</div>
+
   
     <!-- Shipping Details Section -->
     <div class="card mt-4">

@@ -60,7 +60,7 @@ router.get("/buynow/:id", orderController.buyNow);
 router.get("/checkout", userauth.checkSession, userauth.isBan, orderController.loadCheckout);
 router.post("/checkout", orderController.CheckOut);
 router.get("/orderview/:orderId/:productId",userauth.checkSession, userauth.isBan, orderController.OrderView);
-router.get("/update-order-status", orderController.cancellOrder);
+router.get("/update-order-status",userauth.checkSession, userauth.isBan, orderController.cancellOrder);
 router.get("/ordersuccess", userauth.checkSession, userauth.isBan,orderController.orderSuccess);
 
 
@@ -76,7 +76,7 @@ router.post("/wishlist",userauth.checkSession,wishlistController.wishlist)
 router.post("/wishlist/remove",wishlistController.removeProduct)
 
 router.post("/create-order", orderController.razorpay)
-router.get("/wallet",userauth.checkSession, WalletController.loadWallet)
+router.get("/wallet",userauth.checkSession, userauth.isBan, WalletController.loadWallet)
 
 router.post ("/returns",orderController.productReturns )
 

@@ -7,6 +7,7 @@ const PDFDocument = require("pdfkit");
 const ExcelJS = require("exceljs");
 const fs = require("fs");
 const path = require("path");
+const { log } = require("console");
 
 
 
@@ -45,174 +46,194 @@ const login = async (req, res) => {
   }
 };
 
-
 const getSalesData = async (startDate, endDate) => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  const orders = await Order.find({ createdAt: { $gte: start, $lt: end } })
-    .populate('customerId')  
+  const orders = await Order.find({ createdAt: { $gte: startDate, $lt: endDate } })
+    .populate('customerId')
     .populate('coupon')
-    .populate('items.productId'); 
+    .populate('items.productId');
+console.log("orders?.items?",orders);
 
-  let totalOrders = 0;
+  let totalOrders =orders.reduce((acc, order) => acc + order.items.length, 0)
   let totalRevenue = 0;
   let totalCouponDiscount = 0;
   let totalProductDiscount = 0;
 
   orders.forEach(order => {
-    totalOrders++;
     totalRevenue += order.totalAmount;
-
-    if (order.coupon) {
-      totalCouponDiscount += order.coupon.discountValue;
-    }
+    if (order.coupon) totalCouponDiscount += order.coupon.discountValue;
 
     order.items.forEach(item => {
-      const offer = item.productId.offer;
-      const offerPercentage = offer ? parseFloat(offer) / 100 : 0;
-
       const productPrice = parseFloat(item.productId.price.replace(/,/g, ''));
-      const itemDiscount = offerPercentage * productPrice;
-
-      totalProductDiscount += itemDiscount;
+      const offerPercentage = item.productId.offer ? parseFloat(item.productId.offer) / 100 : 0;
+      totalProductDiscount += offerPercentage * productPrice;
     });
   });
 
-  
+  return totalOrders > 0 ? { totalOrders, totalRevenue, totalCouponDiscount, totalProductDiscount } : null;
+};
+const getDailySales = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+  const firstOrder = await Order.findOne().sort({ createdAt: 1 });
+  if (!firstOrder) return [];
+
+  const startDate = new Date(firstOrder.createdAt);
+  const endDate = new Date();
+  const dailySales = [];
+
+  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    let startOfDay = new Date(d);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    let endOfDay = new Date(startOfDay);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    const salesData = await getSalesData(startOfDay, endOfDay);
+    if (salesData) {
+      dailySales.push({ date: startOfDay.toDateString(), ...salesData });
+    }
+  }
+
+  dailySales.sort((a, b) => new Date(b.date) - new Date(a.date));
+
   return {
-    totalOrders,
-    totalRevenue,
-    totalCouponDiscount,
-    totalProductDiscount
+    data: dailySales.slice(skip, skip + limit),
+    totalPages: Math.ceil(dailySales.length / limit),
   };
 };
 
-const getWeeklySales = async () => {
+const getWeeklySales = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+  const firstOrder = await Order.findOne().sort({ createdAt: 1 });
+  if (!firstOrder) return [];
+
+  const startDate = new Date(firstOrder.createdAt);
+  const endDate = new Date();
   const weeklySales = [];
 
-  for (let i = 6; i >= 0; i--) {
-    let startOfDay = new Date();
-startOfDay.setHours(0, 0, 0, 0);
-    startOfDay.setDate(new Date().getDate() - i);
-    let endOfDay = new Date(startOfDay);
-    endOfDay.setHours(23, 59, 59, 999);
+  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 7)) {
+    let startOfWeek = new Date(d);
+    startOfWeek.setUTCHours(0, 0, 0, 0);
+    let endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setUTCHours(23, 59, 59, 999);
 
-    const dailySales = await getSalesData(startOfDay, endOfDay);
-    weeklySales.push(dailySales);
+    const salesData = await getSalesData(startOfWeek, endOfWeek);
+    if (salesData) {
+      weeklySales.push({ startDate: startOfWeek.toDateString(), endDate: endOfWeek.toDateString(), ...salesData });
+    }
   }
 
-  return weeklySales;
+  weeklySales.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+
+  return {
+    data: weeklySales.slice(skip, skip + limit),
+    totalPages: Math.ceil(weeklySales.length / limit),
+  };
 };
 
-const getMonthlySales = async () => {
+
+
+const getMonthlySales = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+  const firstOrder = await Order.findOne().sort({ createdAt: 1 });
+  if (!firstOrder) return { data: [], totalPages: 0 };
+
+  const startDate = new Date(firstOrder.createdAt);
+  const endDate = new Date();
   const monthlySales = [];
 
-  for (let i = 11; i >= 0; i--) {
-    const startOfMonth = new Date();
-   
-    startOfMonth.setHours(0, 0, 0, 0);
-    startOfMonth.setMonth(startOfMonth.getMonth() - i);
-    startOfMonth.setDate(1);
-    const endOfMonth = new Date(startOfMonth);
-    endOfMonth.setMonth(endOfMonth.getMonth() + 1);
-    endOfMonth.setDate(0);
-    endOfMonth.setHours(23, 59, 59, 999);
+  for (let d = new Date(startDate); d <= endDate; d.setMonth(d.getMonth() + 1)) {
+    let startOfMonth = new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0, 0);
+    let endOfMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
 
-    const monthlySalesData = await getSalesData(startOfMonth, endOfMonth);
-    monthlySales.push(monthlySalesData);
+    const salesData = await getSalesData(startOfMonth, endOfMonth);
+    if (salesData) {
+      monthlySales.push({
+        year: startOfMonth.getFullYear(),
+        month: startOfMonth.getMonth() + 1,
+        ...salesData,
+      });
+    }
   }
 
-  return monthlySales;
+  monthlySales.sort((a, b) => new Date(b.year, b.month - 1) - new Date(a.year, a.month - 1));
+
+  return {
+    data: monthlySales.slice(skip, skip + limit),
+    totalPages: Math.ceil(monthlySales.length / limit),
+  };
 };
 
-const getYearlySales = async () => {
+const getYearlySales = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+  const firstOrder = await Order.findOne().sort({ createdAt: 1 });
+  if (!firstOrder) return { data: [], totalPages: 0 };
+
+  const startYear = firstOrder.createdAt.getFullYear();
+  const currentYear = new Date().getFullYear();
   const yearlySales = [];
 
-  for (let i = 4; i >= 0; i--) {
-    const startOfYear = new Date();
-    startOfYear.setHours(0, 0, 0, 0);
+  for (let year = startYear; year <= currentYear; year++) {
+    let startOfYear = new Date(year, 0, 1, 0, 0, 0, 0);
+    let endOfYear = new Date(year + 1, 0, 1, 0, 0, 0, -1);
 
-    startOfYear.setFullYear(startOfYear.getFullYear() - i);
-    startOfYear.setMonth(0);
-    startOfYear.setDate(1);
-    const endOfYear = new Date(startOfYear);
-    endOfYear.setFullYear(endOfYear.getFullYear() + 1);
-    endOfYear.setDate(0);
-    endOfYear.setHours(23, 59, 59, 999);
-
-    const yearlySalesData = await getSalesData(startOfYear, endOfYear);
-    yearlySales.push(yearlySalesData);
+    const salesData = await getSalesData(startOfYear, endOfYear);
+    if (salesData) {
+      yearlySales.push({ year, ...salesData });
+    }
   }
 
-  return yearlySales;
+  yearlySales.sort((a, b) => b.year - a.year);
+
+  return {
+    data: yearlySales.slice(skip, skip + limit),
+    totalPages: Math.ceil(yearlySales.length / limit),
+  };
 };
 
 const loadDashboard = async (req, res) => {
   try {
-    const totalOrders = await Order.aggregate([
-      { $count: 'total' } 
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const [totalOrdersData, totalUsersData, totalRevenueData, dailySalesData, weeklySalesData, monthlySalesData, yearlySalesData] = await Promise.all([
+      Order.aggregate([{ $count: 'total' }]),
+      User.aggregate([{ $match: { role: 'user' } }, { $count: ' ' }]),
+      Order.aggregate([{ $group: { _id: null, total: { $sum: '$totalAmount' } } }]),
+      getDailySales(page, limit),
+      getWeeklySales(page, limit),
+      getMonthlySales(page, limit),
+      getYearlySales(page, limit),
     ]);
-    
-    const totalOrdersCount = totalOrders.length ? totalOrders[0].total : 0;
 
-    const totalUsers = await User.aggregate([
-      { $match: { role: 'user' } },
-      { $count: 'total' } 
-    ]);
-    
-   
-    const totalUsersCount = totalUsers.length ? totalUsers[0].total : 0;
-
-    const getTotalRevenue = async () => {
-      const result = await Order.aggregate([
-        { $group: { _id: null, total: { $sum: '$totalAmount' } } },
-      ]);
-    
-      return result.length ? result[0].total : 0; 
-    };
-
-    const totalRevenue = await getTotalRevenue(); 
-    const today = new Date();
-   console.log("totalOrdersPromise",totalOrders);
-   
-
-    const dailySales = [];
-    for (let i = 6; i >= 0; i--) {
-      let startOfDay = new Date();
-      startOfDay.setHours(0, 0, 0, 0);
-      startOfDay.setDate(today.getDate() - i);
-      let endOfDay = new Date(startOfDay);
-      endOfDay.setHours(23, 59, 59, 999);
-      
-      const daySales = await getSalesData(startOfDay, endOfDay);
-      dailySales.push({
-        date: startOfDay.toDateString(),
-        totalOrders: daySales.totalOrders,
-        totalRevenue: daySales.totalRevenue,
-        totalCouponDiscount: daySales.totalCouponDiscount,
-        totalProductDiscount: daySales.totalProductDiscount,
-      });
-    }
-     
-
-    const weeklySales = await getWeeklySales();
-    const monthlySales = await getMonthlySales();
-    const yearlySales = await getYearlySales();
+    const totalOrders = totalOrdersData.length ? totalOrdersData[0].total : 0;
+    const totalUsers = await User.countDocuments();
+    const totalRevenue = totalRevenueData.length ? totalRevenueData[0].total : 0;
 
     return res.render('admin/dashboard', {
-      totalUsers: totalUsersCount,
-      totalOrders: totalOrdersCount,
-      totalRevenue: totalRevenue,
-      dailySales,
-      weeklySales,
-      monthlySales,
-      yearlySales,
+      totalUsers,
+      totalOrders,
+      totalRevenue,
+
+      dailySales: dailySalesData.data,
+      weeklySales: weeklySalesData.data,
+      monthlySales: monthlySalesData.data,
+      yearlySales: yearlySalesData.data,
+
+      currentPage: page,
+      totalPages: {
+        daily: Math.max(dailySalesData.totalPages, 1),
+        weekly: Math.max(weeklySalesData.totalPages, 1),
+        monthly: Math.max(monthlySalesData.totalPages, 1),
+        yearly: Math.max(yearlySalesData.totalPages, 1),
+      },
     });
   } catch (error) {
     console.error('Error loading dashboard:', error);
     res.status(500).send('Server Error');
   }
 };
+
+
 
 
 

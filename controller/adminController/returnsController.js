@@ -89,7 +89,6 @@ const productApprove = async (req, res) => {
 
             const paymentMethod = order.paymentMethod;
 
-            if (paymentMethod === "razorpay" || paymentMethod === "Wallet") {
                 const transId = `txn_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
                 const amount = total;
 
@@ -106,7 +105,7 @@ const productApprove = async (req, res) => {
                 await payment.save(); 
 
                 await Wallet.updateOne({ userId: user._id }, { $inc: { balance: amount } });
-            }
+            
         }
 
         res.redirect("/admin/returns");

@@ -74,6 +74,10 @@ const loadOtp = (req, res) => {
   res.render("user/otpverify", { OTP: req.flash("OTP") });
 };
 
+
+const generateReferralCode = () => Math.random().toString(36).substr(2, 8).toUpperCase();
+
+
 const verifyOTP = async (req, res) => {
   const { otp } = req.body;
   
@@ -87,7 +91,7 @@ const verifyOTP = async (req, res) => {
     const referralCode = req.session.referralCode
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const generateReferralCode = () => Math.random().toString(36).substr(2, 8).toUpperCase();
+    
     const userReferralCode = generateReferralCode();
 
     let referredBy = null;
@@ -177,10 +181,12 @@ const authsignup = async (req, res) => {
     return res.json({ status: "not done" });
   } else {
     console.log(data);
+  let userReferralCode =  generateReferralCode()
     const newUser = new userSchema({
       email: data.email,
       name: data.name,
       image: data.imageUrl,
+      referralCode: userReferralCode, 
     });
     
     const newWallet = new wallet({

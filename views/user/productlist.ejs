@@ -130,6 +130,47 @@ border-color: #ced4da;
     background-color: #007bff;
     color: white;
   }
+
+.pagination-container {
+    text-align: center;
+    margin-top: 20px;
+    position: relative;
+    bottom: 0; /* Set to 0 to keep it at the bottom of the viewport */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 100%;
+}
+
+.pagination {
+    display: inline-block;
+}
+
+.pagination a {
+    padding: 8px 12px;
+    margin: 0 5px;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    color: #333;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination a.active {
+    font-weight: bold;
+    background-color: #39f;
+    color: white;
+    border-color: #39f;
+}
+
+.pagination a.prev, .pagination a.next {
+    font-weight: bold;
+}
 </style>
 
 <div class="page-wrapper">
@@ -316,6 +357,8 @@ border-color: #ced4da;
                                         <select name="sortby" id="sortby" class="form-control">
                                             <option value="az">A-Z</option>
                                             <option value="za">Z-A</option>
+                                            <option value="price-low">Price: Low to High</option>
+                                            <option value="price-high">Price: High to Low</option>
                                         </select>
                                     </div>
                                 </div>
@@ -372,7 +415,26 @@ border-color: #ced4da;
                                 <% }) %>
                             </div>
 
-                           
+                            
+                        </div>
+                        
+                        <div class="pagination-container">
+                            <div class="pagination">
+                                <% if (currentPage > 1) { %>
+                                    <a href="?page=<%= currentPage - 1 %>&q=<%= searchQuery %>&category=<%= selectedCategories %>&minPrice=<%= minPrice %>&maxPrice=<%= maxPrice %>&sort=<%= sortOrder %>" class="prev">Previous</a>
+                                <% } %>
+                                
+                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                    <a href="?page=<%= i %>&q=<%= searchQuery %>&category=<%= selectedCategories %>&minPrice=<%= minPrice %>&maxPrice=<%= maxPrice %>&sort=<%= sortOrder %>"
+                                       class="<%= i === currentPage ? 'active' : '' %>">
+                                        <%= i %>
+                                    </a>
+                                <% } %>
+                                    
+                                <% if (currentPage < totalPages) { %>
+                                    <a href="?page=<%= currentPage + 1 %>&q=<%= searchQuery %>&category=<%= selectedCategories %>&minPrice=<%= minPrice %>&maxPrice=<%= maxPrice %>&sort=<%= sortOrder %>" class="next">Next</a>
+                                <% } %>
+                            </div>
                         </div>
                     </div>
 
@@ -391,37 +453,21 @@ border-color: #ced4da;
                                         Category
                                     </a>
                                 </h3>
-    
                                 <div class="collapse show" id="widget-1">
                                     <div class="widget-body">
-                                        <div class="filter-items filter-items-count">
-                                            <div class="filter-item">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input category-filter" id="cat-1" value="Mobiles">
-                                                    <label class="custom-control-label" for="cat-1">Mobiles</label>
+                                        <div class="filter-items filter-items-count" style="margin-left: 30px;">
+                                            <% category.forEach(category => { %>
+                                                <div class="filter-item" style="line-height: 50px;">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input category-filter" id="cat-<%= category._id %>" value="<%= category.name %>">
+                                                        <label class="custom-control-label" for="cat-<%= category._id %>"></label> <%= category.name %>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="filter-item">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input category-filter" id="cat-2" value="Computers">
-                                                    <label class="custom-control-label" for="cat-2">Computers</label>
-                                                </div>
-                                            </div>
-                                            <div class="filter-item">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input category-filter" id="cat-3" value="Gaming">
-                                                    <label class="custom-control-label" for="cat-3">Gaming</label>
-                                                </div>
-                                            </div>
-                                            <div class="filter-item">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input category-filter" id="cat-4" value="Audio">
-                                                    <label class="custom-control-label" for="cat-4">Audio</label>
-                                                </div>
-                                            </div>
+                                            <% }) %>
                                         </div>
                                     </div>
                                 </div>
+                                
                             </div>
 
                             <div class="widget widget-collapsible">
@@ -430,6 +476,8 @@ border-color: #ced4da;
                                         Price Range
                                     </a>
                                 </h3>
+
+
 
                                 <div class="collapse show" id="widget-2">
                                     <div class="widget-body">
@@ -464,11 +512,15 @@ border-color: #ced4da;
                                             </div>
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <small class="text-muted">Range: ₹0 - ₹10,00,000</small>
-                                                <button id="apply-price" class="btn btn-sm btn-primary">Apply</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
+                                <button id="apply-price" class="btn btn-sm btn-primary">Apply</button>
+
+
+
                             </div>
                         </div>
 
@@ -864,6 +916,184 @@ border-color: #ced4da;
 <script src="assets/js/main.js"></script>
 
 <script>
+// Utility function to update URL and reload page with filters
+function updateURLAndReload(params) {
+  const url = new URL(window.location.href);
+  // Clear existing parameters
+  url.search = '';
+  
+  // Add new parameters
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== null && value !== undefined && value !== '') {
+      url.searchParams.set(key, value);
+    }
+  });
+  
+  // Navigate to new URL
+  window.location.href = url.toString();
+}
+
+// Handle pagination clicks
+function navigateWithFilters(page) {
+  if (!page || page < 1) return;
+  
+  // Get current filter values
+  const minPrice = document.getElementById('min-price')?.value || '';
+  const maxPrice = document.getElementById('max-price')?.value || '';
+  const searchQuery = document.getElementById('q')?.value || '';
+  const sortOrder = document.getElementById('sortby')?.value || 'az';
+  
+  // Get selected categories
+  const categoryCheckboxes = document.querySelectorAll('.category-filter:checked');
+  const categories = Array.from(categoryCheckboxes)
+    .map(cb => cb.value)
+    .join(',');
+
+  // Update URL with all current filters and new page
+  updateURLAndReload({
+    page,
+    q: searchQuery,
+    category: categories,
+    minPrice,
+    maxPrice,
+    sort: sortOrder
+  });
+}
+
+// Initialize page on load
+document.addEventListener('DOMContentLoaded', function() {
+  // Set initial values from URL params
+  const params = new URLSearchParams(window.location.search);
+  
+  // Initialize price inputs
+  const minPrice = params.get('minPrice');
+  const maxPrice = params.get('maxPrice');
+  if (minPrice) document.getElementById('min-price').value = minPrice;
+  if (maxPrice) document.getElementById('max-price').value = maxPrice;
+  
+  // Initialize category checkboxes
+  const categories = params.get('category')?.split(',') || [];
+  categories.forEach(category => {
+    const checkbox = document.querySelector(`.category-filter[value="${category}"]`);
+    if (checkbox) checkbox.checked = true;
+  });
+  
+  // Initialize sort select
+  const sort = params.get('sort');
+  if (sort) document.getElementById('sortby').value = sort;
+  
+  // Initialize search input
+  const search = params.get('q');
+  if (search) document.getElementById('q').value = search;
+  
+ 
+  // Category filters
+  document.querySelectorAll('.category-filter').forEach(checkbox => {
+    checkbox.addEventListener('change', () => navigateWithFilters(1));
+  });
+  
+  // Sort select
+  document.getElementById('sortby')?.addEventListener('change', () => {
+    navigateWithFilters(1);
+  });
+  
+  // Search form
+  document.querySelector('form[action="#"]')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    navigateWithFilters(1);
+  });
+});
+
+
+
+// Filter products based on price range
+function filterProductsByPrice() {
+    const minPrice = parseFloat(document.getElementById('min-price').value) || 0;
+    const maxPrice = parseFloat(document.getElementById('max-price').value) || Infinity;
+
+    const productCards = document.querySelectorAll(".product-card");
+    let visibleCount = 0;
+
+    productCards.forEach(card => {
+        const price = extractPrice(card.querySelector('.product-price')); // Use the extractPrice function
+        if (price >= minPrice && price <= maxPrice) {
+            card.style.display = "block";
+            visibleCount++;
+        } else {
+            card.style.display = "none";
+        }
+    });
+
+    document.getElementById("product-count").textContent = `${visibleCount} of ${productCards.length} Products`;
+}
+
+// Call filter function on price change
+document.getElementById('min-price').addEventListener('change', filterProductsByPrice);
+document.getElementById('max-price').addEventListener('change', filterProductsByPrice);
+
+// Add this helper function at the top
+function extractPrice(priceElement) {
+    // Get the discounted price (second span element)
+    const priceText = priceElement.querySelector('span:nth-child(2)').textContent.trim();
+    // Convert price string to number, removing any currency symbols and commas
+    return parseFloat(priceText.replace(/[₹,]/g, '')) || 0;
+}
+
+function sortProducts(order) {
+    const productList = document.getElementById("product-list");
+    let productsArray = Array.from(document.querySelectorAll(".product-card"));
+
+    productsArray.sort((a, b) => {
+        switch(order) {
+            case "price-low":
+                const priceA = extractPrice(a.querySelector('.product-price'));
+                const priceB = extractPrice(b.querySelector('.product-price'));
+                return priceA - priceB;
+            case "price-high":
+                const priceHighA = extractPrice(a.querySelector('.product-price'));
+                const priceHighB = extractPrice(b.querySelector('.product-price'));
+                return priceHighB - priceHighA;
+            case "az":
+                return a.dataset.name.toLowerCase().localeCompare(b.dataset.name.toLowerCase());
+            case "za":
+                return b.dataset.name.toLowerCase().localeCompare(a.dataset.name.toLowerCase());
+            default:
+                return 0;
+        }
+    });
+
+    // Clear and re-append sorted items
+    productList.innerHTML = "";
+    productsArray.forEach(card => productList.appendChild(card));
+}
+
+// Update the existing sort event listener
+document.getElementById('sortby')?.addEventListener('change', function() {
+    const sortOrder = this.value;
+    sortProducts(sortOrder);
+    
+    // Update URL to persist sort order
+    const currentUrl = new URL(window.location.href);
+    const params = new URLSearchParams(currentUrl.search);
+    params.set('sort', sortOrder);
+    
+    // Preserve other parameters
+    if (params.has('minPrice')) params.set('minPrice', params.get('minPrice'));
+    if (params.has('maxPrice')) params.set('maxPrice', params.get('maxPrice'));
+    if (params.has('category')) params.set('category', params.get('category'));
+    if (params.has('q')) params.set('q', params.get('q'));
+    
+    window.location.href = `${currentUrl.pathname}?${params.toString()}`;
+});
+
+// Initialize sorting on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const sortOrder = params.get('sort') || 'az';
+    document.getElementById('sortby').value = sortOrder;
+    sortProducts(sortOrder);
+});
+
 document.addEventListener("DOMContentLoaded", function () {
 const categoryFilters = document.querySelectorAll(".category-filter");
 const sortSelect = document.getElementById("sortby");
@@ -988,7 +1218,6 @@ if (message) {
 document.addEventListener('DOMContentLoaded', function() {
 const minPriceInput = document.getElementById('min-price');
 const maxPriceInput = document.getElementById('max-price');
-const applyButton = document.getElementById('apply-price');
 
 // Input validation and synchronization
 function validatePriceInputs() {
@@ -996,7 +1225,7 @@ function validatePriceInputs() {
     let maxValue = Number(maxPriceInput.value);
 
     // Ensure values are within bounds
-    minValue = Math.max(0, Math.min(minValue, 1000000));
+    minValue = Math.max(0, Math.min(minValue, 0));
     maxValue = Math.max(0, Math.min(maxValue, 1000000));
 
     // Ensure min doesn't exceed max
@@ -1022,19 +1251,7 @@ function validatePriceInputs() {
     });
 });
 
-applyButton.addEventListener('click', function() {
-    const currentUrl = new URL(window.location.href);
-    const params = new URLSearchParams(currentUrl.search);
-    
-    params.set('minPrice', minPriceInput.value);
-    params.set('maxPrice', maxPriceInput.value);
-    
-    if (params.has('q')) params.set('q', params.get('q'));
-    if (params.has('category')) params.set('category', params.get('category'));
-    if (params.has('sort')) params.set('sort', params.get('sort'));
-    
-    window.location.href = `${currentUrl.pathname}?${params.toString()}`;
-});
+
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -1086,6 +1303,135 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+
+
+// Add this helper function at the top
+function extractPrice(priceElement) {
+    // Get the discounted price (second span element)
+    const priceText = priceElement.querySelector('span:nth-child(2)').textContent.trim();
+    // Convert price string to number, removing any currency symbols and commas
+    return parseFloat(priceText.replace(/[₹,]/g, '')) || 0;
+}
+
+function sortProducts(order) {
+    const productList = document.getElementById("product-list");
+    let productsArray = Array.from(document.querySelectorAll(".product-card"));
+
+    productsArray.sort((a, b) => {
+        switch(order) {
+            case "price-low":
+                const priceA = extractPrice(a.querySelector('.product-price'));
+                const priceB = extractPrice(b.querySelector('.product-price'));
+                return priceA - priceB;
+            case "price-high":
+                const priceHighA = extractPrice(a.querySelector('.product-price'));
+                const priceHighB = extractPrice(b.querySelector('.product-price'));
+                return priceHighB - priceHighA;
+            case "az":
+                return a.dataset.name.toLowerCase().localeCompare(b.dataset.name.toLowerCase());
+            case "za":
+                return b.dataset.name.toLowerCase().localeCompare(a.dataset.name.toLowerCase());
+            default:
+                return 0;
+        }
+    });
+
+    // Clear and re-append sorted items
+    productList.innerHTML = "";
+    productsArray.forEach(card => productList.appendChild(card));
+}
+
+// Update the existing sort event listener
+document.getElementById('sortby')?.addEventListener('change', function() {
+    const sortOrder = this.value;
+    sortProducts(sortOrder);
+    
+    // Update URL to persist sort order
+    const currentUrl = new URL(window.location.href);
+    const params = new URLSearchParams(currentUrl.search);
+    params.set('sort', sortOrder);
+    
+    // Preserve other parameters
+    if (params.has('minPrice')) params.set('minPrice', params.get('minPrice'));
+    if (params.has('maxPrice')) params.set('maxPrice', params.get('maxPrice'));
+    if (params.has('category')) params.set('category', params.get('category'));
+    if (params.has('q')) params.set('q', params.get('q'));
+    
+    window.location.href = `${currentUrl.pathname}?${params.toString()}`;
+});
+
+// Initialize sorting on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const sortOrder = params.get('sort') || 'az';
+    document.getElementById('sortby').value = sortOrder;
+    sortProducts(sortOrder);
+});
+
+// Functionality for the Apply button
+document.getElementById('apply-price').addEventListener('click', function() {
+    const minPrice = parseFloat(document.getElementById('min-price').value) || 0;
+    const maxPrice = parseFloat(document.getElementById('max-price').value) || Infinity;
+
+    // Get selected categories
+    const categoryCheckboxes = document.querySelectorAll('.category-filter:checked');
+    const selectedCategories = Array.from(categoryCheckboxes).map(cb => cb.value);
+
+    // Update URL with filters
+    const params = new URLSearchParams(window.location.search);
+    params.set('minPrice', minPrice);
+    params.set('maxPrice', maxPrice);
+    if (selectedCategories.length > 0) {
+        params.set('category', selectedCategories.join(','));
+    } else {
+        params.delete('category');
+    }
+
+    // Navigate to new URL
+    window.location.href = `${window.location.pathname}?${params.toString()}`;
+});
+
+// Function to filter products based on selected categories and price range
+function filterProducts() {
+    const minPrice = parseFloat(document.getElementById('min-price').value) || 0;
+    const maxPrice = parseFloat(document.getElementById('max-price').value) || Infinity;
+
+    const categoryCheckboxes = document.querySelectorAll('.category-filter:checked');
+    const selectedCategories = Array.from(categoryCheckboxes).map(cb => cb.value);
+
+    const productCards = document.querySelectorAll(".product-card");
+    let visibleCount = 0;
+
+    productCards.forEach(card => {
+        const price = extractPrice(card.querySelector('.product-price'));
+        const category = card.dataset.category;
+
+        // Check if the product matches the selected categories and price range
+        const isCategoryMatch = selectedCategories.length === 0 || selectedCategories.includes(category);
+        const isPriceMatch = price >= minPrice && price <= maxPrice;
+
+        if (isCategoryMatch && isPriceMatch) {
+            card.style.display = "block";
+            visibleCount++;
+        } else {
+            card.style.display = "none";
+        }
+    });
+
+    document.getElementById("product-count").textContent = `${visibleCount} of ${productCards.length} Products`;
+}
+
+// Call filter function on price change
+document.getElementById('min-price').addEventListener('change', filterProducts);
+document.getElementById('max-price').addEventListener('change', filterProducts);
+
+// Call filter function on category change
+document.querySelectorAll('.category-filter').forEach(checkbox => {
+    checkbox.addEventListener('change', filterProducts);
+});
+
+// Initialize filtering on page load
+document.addEventListener('DOMContentLoaded', filterProducts);
 </script>
 
 </body>

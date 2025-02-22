@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 const Orders = require("../../models/orderdetails");
 const Wallet = require("../../models/walletmodel");
 const { orderView } = require("../adminController/orderController");
-
+require("dotenv").config();
 const Razorpay = require("razorpay");
 
 const razorpayInstance = new Razorpay({
@@ -225,12 +225,21 @@ const CheckOut = async (req, res) => {
       country,
       name,
       street,
+      price,
+      offer,
       city,
       state,
       postcode,
       selectedCoupon,
       phone,
     } = req.body;
+
+
+
+    console.log("price",price,offer);
+    
+
+
 
     let finalTotal = totalValue;
     console.log("customerId", customerId);
@@ -311,17 +320,25 @@ const wallet = await Wallet.findOne({userId:customerId.trim()})
       items = catqty.map((quantity, index) => ({
         productId: new mongoose.Types.ObjectId(cartid[index]),
         quantity: quantity,
+        price: parseFloat(price[index]?.replace(/,/g, '') || 0),  
+        offer: offer[index] || offer[0], 
+        coupons: coupon?.discountValue,
         color: Array.isArray(color) ? color[index] || color[0] : color,
       }));
+      
     } else {
       console.log("Single Item Checkout");
       items = [
         {
           productId: new mongoose.Types.ObjectId(cartid),
           quantity: Number(catqty) || 1,
+          price: parseFloat(price?.replace(/,/g, '') || 0),  
+          offer: offer || offer,
+          coupons: coupon?.discountValue,
           color: Array.isArray(color) ? color[0] : color,
         },
       ];
+      
     }
 
     for (const item of items) {
@@ -522,23 +539,34 @@ const orderSuccess = async (req, res) => {
   res.render("user/ordersuccess", { userid });
 };
 
-const razorpay =  async (req, res) => {
+const razorpay = async (req, res) => {
   try {
-      const { amount, currency } = req.body;
-      console.log("jjjj",amount);
+      const { amount, currency, Discount } = req.body;
+      console.log("nnnnnnnnnnn Amount:", Discount);
+      
+   
+              discountAmount = amount - Discount
+      
+
+      let newAmount = Math.floor(discountAmount); 
+      console.log("Final Amount:", newAmount);
+
       
       const order = await razorpayInstance.orders.create({
-          amount: amount * 100, // Razorpay expects amount in paisa
+          amount: newAmount * 100, 
           currency: currency || "INR",
-          receipt: `receipt_${Date.now()}`,
+          receipt: `receipt_${Date.now()}`
       });
 
-      res.json(order);
+      console.log("Response Sent:", { order, key: process.env.RAZORPAY_KEY_ID })
+
+      res.json({ order, key: process.env.RAZORPAY_KEY_ID });
+
   } catch (error) {
-      console.error("Razorpay Order Creation Failed", error);
+      console.error("Razorpay Order Creation Failed:", error.message);
       res.status(500).json({ error: "Failed to create order" });
   }
-} 
+};
 
 const productReturns = async (req,res)=>{
   try {

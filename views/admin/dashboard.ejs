@@ -56,7 +56,7 @@
         </div>
         <div class="d-block">
           <div class="btn-group" role="group" aria-label="Download reports">
-            <button type="button" class="btn btn-success custom-btn" onclick="downloadExcel()">
+            <button type="button" class="btn btn-success custom-btn" onclick="showReport(document.getElementById('daily-report'))">
               <i class="bi bi-file-earmark-excel"></i> Excel
             </button>
             <button type="button" class="btn btn-danger custom-btn" onclick="downloadPDF()">
@@ -66,113 +66,169 @@
         </div>
       </div>
 
-      <!-- Report Sections (Initially Hidden) -->
-      <div id="daily-report" style="display:none;">
-        <section class="sales">
-          <h2>Daily Sales</h2>
-          <table class="table table-striped table-bordered">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Total Orders</th>
-                <th>Total Revenue</th>
-                <th>Total Coupon Discount</th>
-                <th>Total Product Discount</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% dailySales.forEach(sale => { %>
-                <tr>
-                  <td><%= sale.date %></td>
-                  <td><%= sale.totalOrders %></td>
-                  <td><%= sale.totalRevenue.toFixed(2) %></td>
-                  <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
-                  <td><%= sale.totalProductDiscount.toFixed(2) %></td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        </section>
-      </div>
+     <!-- Daily Sales Report -->
+<div id="daily-report" style="display:none;">
+  <section class="sales">
+    <h2>Daily Sales</h2>
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Total Orders</th>
+          <th>Total Revenue</th>
+          <th>Total Coupon Discount</th>
+          <th>Total Product Discount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% dailySales?.forEach(sale => { %>
+          <tr>
+            <td><%= sale.date %></td>
+            <td><%= sale.totalOrders %></td>
+            <td><%= sale.totalRevenue.toFixed(2) %></td>
+            <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
+            <td><%= sale.totalProductDiscount.toFixed(2) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
 
-      <div id="weekly-report" style="display:none;">
-        <section class="sales">
-          <h2>Weekly Sales</h2>
-          <table class="table table-striped table-bordered">
-            <thead>
-              <tr>
-                <th>Total Orders</th>
-                <th>Total Revenue</th>
-                <th>Total Coupon Discount</th>
-                <th>Total Product Discount</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% weeklySales.forEach(sale => { %>
-                <tr>
-           
-                  <td><%= sale.totalOrders %></td>
-                  <td><%= sale.totalRevenue.toFixed(2) %></td>
-                  <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
-                  <td><%= sale.totalProductDiscount.toFixed(2) %></td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        </section>
-      </div>
+    <div>
 
-      <div id="monthly-report" style="display:none;">
-        <section class="sales">
-          <h2>Monthly Sales</h2>
-          <table class="table table-striped table-bordered">
-            <thead>
-              <tr>
-                <th>Total Orders</th>
-                <th>Total Revenue</th>
-                <th>Total Coupon Discount</th>
-                <th>Total Product Discount</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% monthlySales.forEach(sale => { %>
-                <tr>
-                  <td><%= sale.totalOrders %></td>
-                  <td><%= sale.totalRevenue.toFixed(2) %></td>
-                  <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
-                  <td><%= sale.totalProductDiscount.toFixed(2) %></td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        </section>
-      </div>
+      <% if (currentPage.daily ) { %>
+        <a href="?page=<%= currentPage.daily - 1 %>&limit=10&type=daily">Previous</a>
+      <% } %>
+      <span>Page<%= totalPages.daily %> of <%= totalPages.daily %></span>
+      <% if (currentPage.daily < totalPages.daily) { %>
+        <a href="?page=<%= currentPage.daily + 1 %>&limit=10&type=daily">Next</a>
+      <% } %>
+    </div>
 
-      <div id="yearly-report" style="display:none;">
-        <section class="sales">
-          <h2>Yearly Sales</h2>
-          <table class="table table-striped table-bordered">
-            <thead>
-              <tr>
-                <th>Total Orders</th>
-                <th>Total Revenue</th>
-                <th>Total Coupon Discount</th>
-                <th>Total Product Discount</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% yearlySales.forEach(sale => { %>
-                <tr>
-                  <td><%= sale.totalOrders %></td>
-                  <td><%= sale.totalRevenue.toFixed(2) %></td>
-                  <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
-                  <td><%= sale.totalProductDiscount.toFixed(2) %></td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        </section>
-      </div>
+  </section>
+  
+ 
+</div>
+
+<!-- Weekly Sales Report -->
+<div id="weekly-report" style="display:none;">
+  <section class="sales">
+    <h2>Weekly Sales</h2>
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Period</th>
+          <th>Total Orders</th>
+          <th>Total Revenue</th>
+          <th>Total Coupon Discount</th>
+          <th>Total Product Discount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% weeklySales?.forEach(sale => { %>
+          <tr>
+            <td><%= sale.startDate %> to <%= sale.endDate %></td>
+            <td><%= sale.totalOrders %></td>
+            <td><%= sale.totalRevenue.toFixed(2) %></td>
+            <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
+            <td><%= sale.totalProductDiscount.toFixed(2) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <!-- Weekly Sales Pagination -->
+    <div>
+      <% if (currentPage.weekly > 1) { %>
+        <a href="?page=<%= currentPage.weekly - 1 %>&limit=10&type=weekly">Previous</a>
+      <% } %>
+      <span>Page <%= currentPage.weekly %> of <%= totalPages.weekly %></span>
+      <% if (currentPage.weekly < totalPages.weekly) { %>
+        <a href="?page=<%= currentPage.weekly + 1 %>&limit=10&type=weekly">Next</a>
+      <% } %>
+    </div>
+  </section>
+</div>
+
+<!-- Monthly Sales Report -->
+<div id="monthly-report" style="display:none;">
+  <section class="sales">
+    <h2>Monthly Sales</h2>
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Total Orders</th>
+          <th>Total Revenue</th>
+          <th>Total Coupon Discount</th>
+          <th>Total Product Discount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% monthlySales?.forEach(sale => { %>
+          <tr>
+            <td><%= new Date(sale.year, sale.month - 1).toLocaleString('default', { month: 'long' }) %></td>
+            <td><%= sale.totalOrders %></td>
+            <td><%= sale.totalRevenue.toFixed(2) %></td>
+            <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
+            <td><%= sale.totalProductDiscount.toFixed(2) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <!-- Monthly Sales Pagination -->
+    <div>
+      <% if (currentPage.monthly > 1) { %>
+        <a href="?page=<%= currentPage.monthly - 1 %>&limit=10&type=monthly">Previous</a>
+      <% } %>
+      <span>Page <%= currentPage.monthly %> of <%= totalPages.monthly %></span>
+      <% if (currentPage.monthly < totalPages.monthly) { %>
+        <a href="?page=<%= currentPage.monthly + 1 %>&limit=10&type=monthly">Next</a>
+      <% } %>
+    </div>
+  </section>
+</div>
+
+<!-- Yearly Sales Report -->
+<div id="yearly-report" style="display:none;">
+  <section class="sales">
+    <h2>Yearly Sales</h2>
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Total Orders</th>
+          <th>Total Revenue</th>
+          <th>Total Coupon Discount</th>
+          <th>Total Product Discount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% yearlySales?.forEach(sale => { %>
+          <tr>
+            <td><%= sale.year %></td>
+            <td><%= sale.totalOrders %></td>
+            <td><%= sale.totalRevenue.toFixed(2) %></td>
+            <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
+            <td><%= sale.totalProductDiscount.toFixed(2) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <!-- Yearly Sales Pagination -->
+    <div>
+      <% if (currentPage.yearly > 1) { %>
+        <a href="?page=<%= currentPage.yearly - 1 %>&limit=10&type=yearly">Previous</a>
+      <% } %>
+      <span>Page <%= currentPage.yearly %> of <%= totalPages.yearly %></span>
+      <% if (currentPage.yearly < totalPages.yearly) { %>
+        <a href="?page=<%= currentPage.yearly + 1 %>&limit=10&type=yearly">Next</a>
+      <% } %>
+    </div>
+  </section>
+</div>
+
 
       <style>
         .custom-btn {
@@ -279,7 +335,84 @@
         document.addEventListener("DOMContentLoaded", function () {
           showReport("daily");
         });
-      </script> 
+    
+
+function exportTableToPDF(tableElement, filename = 'table-report.pdf') {
+  if (!tableElement) {
+    console.error('No table element provided');
+    return;
+  }
+
+  // Clone the table to avoid modifying the original
+  const tableClone = tableElement.cloneNode(true);
+
+  // Remove unnecessary elements like export buttons and controls
+  const exportButtons = tableClone.querySelector('.mt-4.d-flex.justify-content-end');
+  if (exportButtons) exportButtons.remove();
+
+  const reportControls = tableClone.querySelector('.report-controls');
+  if (reportControls) reportControls.remove();
+
+  // Configure PDF options
+  const opt = {
+    margin: 0,
+    filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { 
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff' // Pure white background
+    },
+    jsPDF: { 
+      unit: 'mm', 
+      format: 'a4', 
+      orientation: 'portrait'
+    },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+
+  // Style adjustments for proper rendering
+  tableClone.style.backgroundColor = '#ffffff';
+  tableClone.style.padding = '20px';
+  tableClone.style.width = '210mm'; // A4 width
+  tableClone.style.display = 'flex';
+  tableClone.style.flexDirection = 'column';
+
+  // Ensure all parent elements have a white background
+  const allElements = tableClone.getElementsByTagName('*');
+  for (let el of allElements) {
+    const bg = window.getComputedStyle(el).backgroundColor;
+    if (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
+      el.style.backgroundColor = '#ffffff';
+    }
+  }
+
+  // Generate PDF
+  html2pdf().set(opt).from(tableClone).save()
+    .then(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'PDF downloaded successfully!',
+        background: '#191c24',
+        color: '#fff'
+      });
+    })
+    .catch(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to generate PDF',
+        background: '#191c24',
+        color: '#fff'
+      });
+      console.error('PDF generation error:', error);
+    });
+}
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     </main>
   </div>
 </div>

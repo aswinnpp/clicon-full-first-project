@@ -265,13 +265,13 @@
                                                         <input type="radio" 
                                                             name="selectedCoupon" 
                                                             value='<%=coupon.code%>' 
-                                                            id="coupon-<%= coupon.code %>" 
+                                                            id="couponID" 
                                                             class="mr-2" 
                                                             data-checked="false"
                                                             onclick="handleCouponSelection(this, <%= coupon.discountValue %>)">
                                                         <label for="coupon-<%= coupon.code %>">
                                                             <strong class="text-primary"><%= coupon.code %></strong>
-                                                            <div class="ml-2"> Rs <%= coupon.discountValue %> OFF</div>
+                                                            <div class="ml-2" > Rs <%= coupon.discountValue %> OFF</div>
                                                         </label>
                                                     </div>
                                                     <small class="text-muted">
@@ -295,11 +295,16 @@
                                     <input type="hidden" value="<%= item.productId._id %>" name="cartid">
                                     <input type="hidden" value="<%= item.quantity %>" name="catqty">
                                     <input type="hidden" value="<%= color %>" name="color">
+                                    <input type="hidden" value="<%=  item.productId.price %>" name="price">
+                                    <input type="hidden" value="<%=  item.productId.offer %>" name="offer">
+
                                 <% }) %>
                             <% } else if (product) { %>
                                 <!-- For a single product -->
                                 <input type="hidden" value="<%= product._id %>" name="cartid">
                                 <input type="hidden" value="<%= quantity %>" name="catqty">
+                                <input type="hidden" value="<%=  product.price %>" name="price">
+                                <input type="hidden" value="<%= product.offer %>" name="offer">
                                 
                             <% } %>
                             
@@ -859,9 +864,10 @@ function fillAddress(street, city, state, country, postalCode, phone) {
 
 let total = <%= Math.floor(totalValue) %>;
 let discount = <%= Math.floor(totalDiscount) %>;
-
+let couponDiscount=0
 function handleCouponSelection(radio, discountValue) {
-    // If the radio is already checked, uncheck it
+    couponDiscount=discountValue
+   
     if (radio.getAttribute('data-checked') === 'true') {
         radio.checked = false;
         radio.setAttribute('data-checked', 'false');
@@ -986,7 +992,9 @@ function he() {
         isValid = false;
     }
 
-    const amount = document.getElementById("totalValue").value;
+    const amount = document.getElementById("totalValue")?.value;
+    
+
     console.log("amount",amount);
     
     if (!amount || amount <= 0) {
@@ -1005,45 +1013,53 @@ function he() {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ amount: amount, currency: "INR" }),
+        body: JSON.stringify({ amount: amount, currency: "INR", Discount: couponDiscount }),
     })
     .then(response => response.json())
-    .then(order => {
+    .then(orderData => {
+        console.log("Received Order Data:", orderData); 
+
         const options = {
-            key: "rzp_test_tiBBaN9rBkAr9r",
-            amount: order.amount, 
-            currency: order.currency,
+            key: orderData.key, 
+            amount: orderData.order.amount, 
+            currency: orderData.order.currency,
             name: "Your Store",
             description: "Purchase of Electronics",
-            order_id: order.id, 
+            order_id: orderData.order.id, 
             handler: function (response) {
-                if (response.razorpay_payment_id) {
-                    Swal.fire({
-                        title: "Payment Successful!",
-                        text: "Your order has been placed successfully.",
-                        icon: "success",
-                        confirmButtonText: "OK"
-                    }).then(()=>{
-                        form.submit();
-                    })
-                    
-                } else {
-                    document.getElementById("errorMsg").innerHTML = "Payment failed. Please try again.";
-                    document.getElementById("errorMsg").style.color = "red";
-                }
+             
+                Swal.fire({
+                    title: "Payment Successful!",
+                    text: "Your order has been placed successfully.",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    form.submit();
+                });
             },
-            theme: { color: "#3399cc" }
+            modal:{
+                escape:false,
+                closed:function(){
+                    alert('hyrgvfcd')
+                }
+
+            } ,
+            theme: { color: "#3399cc" } 
         };
+
+        console.log("Razorpay Options:", options); 
         const rzp = new Razorpay(options);
         rzp.open();
     })
     .catch(error => {
         console.error("Error creating Razorpay order:", error);
-        document.getElementById("errorMsg").innerHTML = "Payment initialization failed.";
+        document.getElementById("errorMsg").innerHTML = "Payment failed. Please try again.";
+        document.getElementById("errorMsg").style.color = "red";
     });
-}else{
-    form.submit()
+} else {
+    form.submit();
 }
+
 
 }
 
