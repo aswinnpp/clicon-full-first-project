@@ -12,23 +12,24 @@ const loadReturns = async (req, res) => {
         let limit = 5; 
         let skip = (page - 1) * limit;
 
-        // Fetch returns with population
+      
         let returns = await Returns.find({})
-           
-             .populate({ path: "userId", select: "name email" })
-            .populate({ path: "productId", select: "productname price images" })
-            .populate({ path: "orderId", select: "totalAmount createdAt" })
+            .populate("userId")  
+            .populate("productId") 
+            .populate("orderId")
             .skip(skip)
             .limit(limit)
             .lean();
 
-        // Manual sorting for populated `orderId.createdAt`
+
+            
         returns.sort((a, b) => {
             if (a.orderId?.createdAt && b.orderId?.createdAt) {
                 return new Date(b.orderId.createdAt) - new Date(a.orderId.createdAt);
             }
-            return 0; // Keep order if no order date
+            return 0; 
         });
+console.log(returns);
 
         const totalReturns = await Returns.countDocuments();
         const totalPages = Math.ceil(totalReturns / limit);
@@ -44,6 +45,7 @@ const loadReturns = async (req, res) => {
         res.status(500).send("Server Error");
     }
 };
+
 
 
 const productApprove = async (req, res) => {
