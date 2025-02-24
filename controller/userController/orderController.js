@@ -125,10 +125,6 @@ const loadCheckout = async (req, res) => {
       }
 
       let color = req.query.color.split(",");
-
-
-   
-
       console.log("Cart Items:", color);
 
       let originalTotal = 0;
@@ -144,8 +140,9 @@ const loadCheckout = async (req, res) => {
         const discountPercentage = discountMatch
           ? parseFloat(discountMatch[0])
           : 0;
-        const discountedPrice =
-          originalPrice - (originalPrice * discountPercentage) / 100;
+        const discountedPrice = Math.floor(
+          originalPrice - (originalPrice * discountPercentage) / 100
+        );
 
         const quantity = Number(item.quantity);
         const itemTotalOriginal = originalPrice * quantity;
@@ -173,7 +170,6 @@ const loadCheckout = async (req, res) => {
         wallet
       });
     }
-
     if (check === "buyNow") {
       const productId = req.session?.productId;
       const qty = req.session?.quantity || 1;
@@ -183,17 +179,18 @@ const loadCheckout = async (req, res) => {
       const product = await Product.findById(productId);
       if (!product) return res.redirect("/");
 
-      const originalPrice = parseFloat(product.price.replace(/,/g, "")) || 0;
+      const originalPrice = Math.floor(parseFloat(product.price.replace(/,/g, "")) || 0);
       const discountMatch = product.offer ? product.offer.match(/\d+/) : null;
-      const discountPercentage = discountMatch
+      const discountPercentage = Math.floor(discountMatch
         ? parseFloat(discountMatch[0])
-        : 0;
-      const discountedPrice =
-        originalPrice - (originalPrice * discountPercentage) / 100;
-      const quantity = parseInt(qty, 10);
-      const totalOriginal = originalPrice * quantity;
-      const totalDiscount = (originalPrice - discountedPrice) * quantity;
-      const finalTotal = discountedPrice * quantity;
+        : 0);
+      const discountedPrice = Math.floor(
+        originalPrice - (originalPrice * discountPercentage) / 100
+      );
+      const quantity = Math.floor(parseInt(qty, 10));
+      const totalOriginal = Math.floor(originalPrice * quantity);
+      const totalDiscount = Math.floor((originalPrice - discountedPrice) * quantity);
+      const finalTotal = Math.floor(discountedPrice * quantity);
 
       res.render("user/checkout", {
         address,

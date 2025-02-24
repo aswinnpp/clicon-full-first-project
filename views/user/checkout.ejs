@@ -246,7 +246,7 @@
                             <h4 class="coupon-title">Available Coupons</h4>
                             <% 
                                     const filteredCoupons = availableCoupons.filter(coupon => 
-                                        totalValue >= coupon.minOrderAmount &&  
+                                        Math.floor(totalValue) >= Math.floor(coupon.minOrderAmount) &&  
                                         !coupon.users.includes(user._id) && 
                                         coupon.isActive === true &&  
                                         coupon.usageLimit > 0 &&

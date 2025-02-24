@@ -12,7 +12,7 @@ const loadUserManage = async (req, res) => {
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
-    const totalUsers = await User.countDocuments();
+    const totalUsers = await User.countDocuments({ role: "user" });
     const totalPages = Math.ceil(totalUsers / limit);
 
     res.render("admin/usermanage", {

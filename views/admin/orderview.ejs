@@ -1,88 +1,145 @@
 <%- include('../partials/admin/header') %>
 
-<link rel="stylesheet" href="../../css/styles/orderview.css">
+<link rel="stylesheet" href="../../css/styles/orderview.css" />
 
 <!-- Main Content -->
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h1 class="h2">Order Details</h1>
-    </div>
-  
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Order ID: <%= order.customOrderId %></h5>
-     
-        <p class="card-text"><strong>Order Date:</strong> <%= new Date(order.orderDate).toLocaleDateString() %></p>
-        <p class="card-text"><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-        <p class="card-text"><strong>Payment Status:<strong>
-            <%= item.shippingDetails.status === 'Delivered' ? 'Completed' 
-                : order.paymentMethod ==="razorpay"?"Completed"
-                : item.shippingDetails.status === 'Cancelled' ? 'Failed' 
-                : 'Pending' %>
-          </strong>
-        </p>
-      </div>
-    </div>
-  
-    <!-- Billing Address Section -->
-    <div class="card mt-4">
-      <div class="card-body">
-        <h5 class="card-title">Billing Address</h5>
-        <p class="card-text"><strong>Name:</strong> <%= order.billingAddress.name %></p>
-        <p class="card-text"><strong>Street:</strong> <%= order.billingAddress.street %></p>
-        <p class="card-text"><strong>City:</strong> <%= order.billingAddress.city %></p>
-        <p class="card-text"><strong>State:</strong> <%= order.billingAddress.state %></p>
-        <p class="card-text"><strong>Country:</strong> <%= order.billingAddress.country %></p>
-        <p class="card-text"><strong>Postcode:</strong> <%= order.billingAddress.postcode %></p>
-        <p class="card-text"><strong>Phone:</strong> <%= order.billingAddress.phone %></p>
-      </div>
-    </div>
-  
- <!-- Product Details Section -->
-<div class="card mt-4">
-  <div class="card-body">
-    <h5 class="card-title">Product Details</h5>
-
-    <!-- Product Image -->
-    <div class="text-center mb-3">
-      <img src="/uploads/<%= item.productId.image[0] %>" alt="Product Image" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
-    </div>
-
-    <p class="card-text"><strong>Product Name:</strong> <%= item.productId.productname %></p>
-    <p class="card-text"><strong>Quantity:</strong> <%= item.quantity %></p>
-
-    <% 
-      const originalPrice = parseFloat(item.productId.price.replace(/,/g, "")) || 0;
-      const discountMatch = item.productId.offer ? item.productId.offer.match(/\d+/) : null;
-      const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
-      const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
-      const finalAmount = discountedPrice - (order.coupon?.discountValue || 0);
-    %>
-
-    <p class="card-text"><strong>Original Price:</strong> <%= Math.floor(originalPrice) %></p>
-    <p class="card-text"><strong>Discount:</strong> <%= discountPercentage %>%</p>
-    <p class="card-text"><strong>Coupon Discount:</strong> <%= order.coupon?.discountValue || 0 %> rs</p>
-    <p class="card-text"><strong>Price After Discount:</strong> <%= Math.floor(finalAmount) %></p>
-    <p class="card-text"><strong>Total Amount:</strong> <%= Math.floor(discountedPrice * item.quantity) - (order.coupon?.discountValue || 0) %></p>
-    <p class="card-text"><strong>Status:</strong> <%= item.shippingDetails.status %></p>
+  <div
+    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+  >
+    <h1 class="h2">Order Details</h1>
   </div>
-</div>
 
-  
-    <!-- Shipping Details Section -->
-    <div class="card mt-4">
-      <div class="card-body">
-        <h5 class="card-title">Shipping Details</h5>
-        <p class="card-text"><strong>Origin:</strong> <%= item.shippingDetails.origin %></p>
-        <p class="card-text"><strong>Estimated Arrival:</strong> <%= new Date(item.shippingDetails.estimatedArrival).toLocaleDateString() %></p>
-        <p class="card-text"><strong>Status:</strong> <%= item.shippingDetails.status %></p>
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Order ID: <%= order.customOrderId %></h5>
+      <p class="card-text">
+        <strong>Order Date:</strong> <%= new
+        Date(order.orderDate).toLocaleDateString() %>
+      </p>
+      <p class="card-text">
+        <strong>Payment Method:</strong> <%= order.paymentMethod %>
+      </p>
+      <p class="card-text">
+        <strong>Payment Status:</strong>
+        <span
+          class="badge <%= item.shippingDetails.status === 'Delivered' ? 'bg-success' : item.shippingDetails.status === 'Cancelled' ? 'bg-danger' : 'bg-warning' %>"
+        >
+          <%= item.shippingDetails.status === 'Delivered' ? 'Completed' :
+          order.paymentMethod === "razorpay" ? "Completed" :
+          item.shippingDetails.status === 'Cancelled' ? 'Failed' : 'Pending' %>
+        </span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Billing Address Section -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Billing Address</h5>
+      <p class="card-text">
+        <strong>Name:</strong> <%= order.billingAddress.name %>
+      </p>
+      <p class="card-text">
+        <strong>Street:</strong> <%= order.billingAddress.street %>
+      </p>
+      <p class="card-text">
+        <strong>City:</strong> <%= order.billingAddress.city %>
+      </p>
+      <p class="card-text">
+        <strong>State:</strong> <%= order.billingAddress.state %>
+      </p>
+      <p class="card-text">
+        <strong>Country:</strong> <%= order.billingAddress.country %>
+      </p>
+      <p class="card-text">
+        <strong>Postcode:</strong> <%= order.billingAddress.postcode %>
+      </p>
+      <p class="card-text">
+        <strong>Phone:</strong> <%= order.billingAddress.phone %>
+      </p>
+    </div>
+  </div>
+
+  <!-- Product Details Section -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Product Details</h5>
+
+      <!-- Product Image -->
+      <div class="text-center mb-3">
+        <img
+          src="/uploads/<%= item.productId.image[0] %>"
+          alt="Product Image"
+          class="img-fluid rounded"
+          style="max-width: 200px; max-height: 200px"
+        />
       </div>
+
+      <p class="card-text">
+        <strong>Product Name:</strong> <%= item.productId.productname %>
+      </p>
+      <p class="card-text"><strong>Quantity:</strong> <%= item.quantity %></p>
+
+      <% const originalPrice = parseFloat(item.productId.price.replace(/,/g,
+      "")) || 0; const discountMatch = item.productId.offer ?
+      item.productId.offer.match(/\d+/) : null; const discountPercentage =
+      discountMatch ? parseFloat(discountMatch[0]) : 0; const discountedPrice =
+      originalPrice - (originalPrice * discountPercentage / 100); const
+      finalAmount = discountedPrice - (order.coupon?.discountValue || 0); %>
+
+      <p class="card-text">
+        <strong>Original Price:</strong> ₹<%= Math.floor(originalPrice) %>
+      </p>
+      <p class="card-text">
+        <strong>Discount:</strong> <%= discountPercentage %>%
+      </p>
+      <p class="card-text">
+        <strong>Coupon Discount:</strong> ₹<%= order.coupon?.discountValue || 0
+        %>
+      </p>
+      <p class="card-text">
+        <strong>Price After Discount:</strong> ₹<%= Math.floor(finalAmount) %>
+      </p>
+      <p class="card-text">
+        <strong>Total Amount:</strong> ₹<%= Math.floor(discountedPrice *
+        item.quantity) - (order.coupon?.discountValue || 0) %>
+      </p>
+      <p class="card-text">
+        <strong>Status:</strong>
+        <span
+          class="badge <%= item.shippingDetails.status === 'Delivered' ? 'bg-success' : item.shippingDetails.status === 'Cancelled' ? 'bg-danger' : 'bg-warning' %>"
+          ><%= item.shippingDetails.status %></span
+        >
+      </p>
     </div>
-  
-    <div class="mt-4">
-      <a href="/admin/ordermanage" class="btn btn-secondary">Back to Orders</a>
+  </div>
+
+  <!-- Shipping Details Section -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Shipping Details</h5>
+      <p class="card-text">
+        <strong>Origin:</strong> <%= item.shippingDetails.origin %>
+      </p>
+      <p class="card-text">
+        <strong>Estimated Arrival:</strong> <%= new Date(new
+        Date(order.orderDate).setDate(new Date(order.orderDate).getDate() +
+        7)).toLocaleDateString() %>
+      </p>
+      <p class="card-text">
+        <strong>Status:</strong>
+        <span
+          class="badge <%= item.shippingDetails.status === 'Delivered' ? 'bg-success' : item.shippingDetails.status === 'Cancelled' ? 'bg-danger' : 'bg-warning' %>"
+          ><%= item.shippingDetails.status %></span
+        >
+      </p>
     </div>
-  </main>
-  
+  </div>
+
+  <div class="mt-4">
+    <a href="/admin/ordermanage" class="btn btn-secondary">Back to Orders</a>
+  </div>
+</main>
 
 <%- include('../partials/admin/footer') %>

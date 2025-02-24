@@ -70,12 +70,18 @@
       .product-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
+        gap: 2rem;
+        margin-bottom: 2rem;
       }
 
       @media (max-width: 768px) {
         .product-grid {
           grid-template-columns: 1fr;
+        }
+        
+        .variant-specs {
+          flex-direction: column;
+          gap: 0.5rem;
         }
       }
 
@@ -83,16 +89,15 @@
         background: white;
         border-radius: 15px;
         padding: 1.5rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       }
 
       .image-section {
-        text-align: center;
-        position: relative;
         background: #f8f9fa;
         border-radius: 12px;
         padding: 1rem;
         margin-bottom: 1rem;
+        text-align: center;
       }
 
       .main-image {
@@ -101,7 +106,7 @@
         max-height: 400px;
         object-fit: contain;
         border-radius: 8px;
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
       }
 
       .thumbnail-container {
@@ -129,12 +134,16 @@
 
       .info-group {
         margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 10px;
       }
 
       .info-label {
         font-size: 0.9rem;
         color: #6c757d;
         margin-bottom: 0.5rem;
+        font-weight: 500;
       }
 
       .info-value {
@@ -153,39 +162,73 @@
         padding: 0.5rem 1rem;
         border-radius: 20px;
         font-weight: 500;
+        display: inline-block;
       }
 
-      .specs-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0 8px;
+      .variants-section {
+        margin-top: 2rem;
       }
 
-      .specs-table td {
-        padding: 12px;
-        background: #f8f9fa;
-        border-radius: 8px;
-      }
-
-      .specs-table td:first-child {
-        font-weight: 500;
-        color: #495057;
-        width: 140px;
+      .variants-grid {
+        display: grid;
+        gap: 1rem;
+        margin-top: 1rem;
       }
 
       .variant-card {
-        background: #f8f9fa;
+        background: white;
         border-radius: 8px;
         padding: 1rem;
-        margin-bottom: 1rem;
+        border: 1px solid #dee2e6;
+      }
+
+      .variant-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .variant-color {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .variant-stock {
+        font-weight: 500;
+      }
+
+      .low-stock {
+        color: #dc3545;
+      }
+
+      .variant-specs {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid #dee2e6;
+      }
+
+      .spec-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #6c757d;
       }
 
       .description-card {
         background: white;
         border-radius: 15px;
         padding: 1.5rem;
-        margin-top: 1.5rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        margin-top: 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .description-content {
+        line-height: 1.6;
+        color: #4a4a4a;
       }
 
       .rating-stars {
@@ -220,9 +263,7 @@
       <div class="product-header">
         <nav aria-label="breadcrumb" class="breadcrumb-custom">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="/admin/productmanage">Products</a></li>
-            <li class="breadcrumb-item active">Product Details</li>
+            <h3 class="breadcrumb-item active">Product Details</h3>
           </ol>
         </nav>
         <div class="product-title">
@@ -265,6 +306,14 @@
 
         <!-- Right Column -->
         <div class="product-card">
+          <!-- Basic Info Section -->
+          <div class="info-group">
+            <div class="info-label">Status</div>
+            <span class="badge-custom <%= product[0]?.isDeleted ? 'bg-danger ' : 'bg-success' %>">
+              <%= product[0]?.isDeleted ? 'Unlisted ' : 'Listed' %>
+            </span>
+          </div>
+
           <div class="info-group">
             <div class="info-label">Category</div>
             <span class="badge-custom bg-info"><%= product[0]?.category %></span>
@@ -275,8 +324,9 @@
             <div class="price-tag">₹<%= product[0]?.price %></div>
           </div>
 
+
           <div class="info-group">
-            <div class="info-label">Rating</div>
+            <div class="info-label">Rating & Reviews</div>
             <div class="rating-stars">
               <% for(let i = 0; i < Math.floor(product[0]?.rating); i++) { %>
                 <i class="bi bi-star-fill"></i>
@@ -295,32 +345,46 @@
             <div class="info-value"><%= product[0]?.warranty %> year(s)</div>
           </div>
 
-          <% if (product[0] && product[0].variants) { %>
-            <div class="info-group">
-              <div class="info-label">Variants</div>
-              <% product[0].variants.forEach(variant => { %>
-                <div class="variant-card">
-                  <div class="d-flex justify-content-between mb-2">
-                    <span>Color: <%= variant.color %></span>
-                    <span>Stock: <%= variant.stock %></span>
-                  </div>
-                  <% if (product[0].category === "computers" || product[0].category === "mobiles") { %>
-                    <div class="d-flex justify-content-between">
-                      <span>Storage: <%= variant.storage %></span>
-                      <span>RAM: <%= variant.ram %></span>
+          <!-- Variants Section -->
+        
+            <div class="info-group variants-section">
+              <div class="variants-grid">
+              
+                  <div class="variant-card">
+                    <div class="variant-header">
+                      <span class="variant-color">
+                        <i class="bi bi-circle-fill" style="color: <%= product[0].color %>"></i>
+                        <%= product[0].color %>
+                      </span>
+                      <span class="variant-stock <%= parseInt(product[0].stock) < 10 ? 'low-stock' : '' %>">
+                        Stock: <%= product[0].stock %>
+                      </span>
                     </div>
-                  <% } %>
-                </div>
-              <% }); %>
+                    <% if (product[0].category === "computers" || product[0].category === "mobiles") { %>
+                      <div class="variant-specs">
+                        <span class="spec-item">
+                          <i class="bi bi-device-hdd"></i>
+                          <%= product[0].storage %>
+                        </span>
+                        <span class="spec-item">
+                          <i class="bi bi-memory"></i>
+                          <%=   product[0].ram %>
+                        </span>
+                      </div>
+                    <% } %>
+                  </div>
+              </div>
             </div>
-          <% } %>
+       
         </div>
       </div>
 
       <!-- Description Section -->
       <div class="description-card">
         <h4 class="mb-3">Product Description</h4>
-        <p class="mb-0"><%= product[0]?.description %></p>
+        <div class="description-content">
+          <%= product[0]?.description %>
+        </div>
       </div>
     </div>
 

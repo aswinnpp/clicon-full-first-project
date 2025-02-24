@@ -71,32 +71,61 @@ console.log("orders?.items?",orders);
 
   return totalOrders > 0 ? { totalOrders, totalRevenue, totalCouponDiscount, totalProductDiscount } : null;
 };
+
+
 const getDailySales = async (page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
-  const firstOrder = await Order.findOne().sort({ createdAt: 1 });
-  if (!firstOrder) return [];
-
-  const startDate = new Date(firstOrder.createdAt);
-  const endDate = new Date();
   const dailySales = [];
 
-  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-    let startOfDay = new Date(d);
+  // Get today's date in UTC
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+
+  // Add a console.log to debug
+  console.log('Initial today:', today);
+
+  // Look back 31 days to ensure we get enough data
+  for (let i = 0; i < 31; i++) {
+    const startOfDay = new Date(today);
+    startOfDay.setDate(today.getDate() - i);
     startOfDay.setUTCHours(0, 0, 0, 0);
-    let endOfDay = new Date(startOfDay);
+
+    const endOfDay = new Date(startOfDay);
     endOfDay.setUTCHours(23, 59, 59, 999);
+
+    // Add console.logs for debugging
+    console.log(`Day ${i}:`, startOfDay, 'to', endOfDay);
 
     const salesData = await getSalesData(startOfDay, endOfDay);
     if (salesData) {
-      dailySales.push({ date: startOfDay.toDateString(), ...salesData });
+      dailySales.push({
+        date: startOfDay.toISOString().split('T')[0],
+        daysAgo: i,
+        ...salesData
+      });
     }
   }
 
+  // Log the length of dailySales before sorting
+  console.log('Total daily sales before sorting:', dailySales.length);
+
+  // Sort by date in descending order (most recent first)
   dailySales.sort((a, b) => new Date(b.date) - new Date(a.date));
 
+  // Calculate total pages
+  const totalPages = Math.ceil(dailySales.length / limit);
+
+  // Get the slice of data for the current page
+  const paginatedData = dailySales.slice(skip, skip + limit);
+
+  // Log final data
+  console.log('Paginated data length:', paginatedData.length);
+  console.log('Skip:', skip);
+  console.log('Limit:', limit);
+
   return {
-    data: dailySales.slice(skip, skip + limit),
-    totalPages: Math.ceil(dailySales.length / limit),
+    data: paginatedData,
+    totalPages: totalPages,
   };
 };
 
@@ -195,6 +224,8 @@ const loadDashboard = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
+    const orders = await Order.find({})
+
     const [totalOrdersData, totalUsersData, totalRevenueData, dailySalesData, weeklySalesData, monthlySalesData, yearlySalesData] = await Promise.all([
       Order.aggregate([{ $count: 'total' }]),
       User.aggregate([{ $match: { role: 'user' } }, { $count: ' ' }]),
@@ -205,8 +236,8 @@ const loadDashboard = async (req, res) => {
       getYearlySales(page, limit),
     ]);
 
-    const totalOrders = totalOrdersData.length ? totalOrdersData[0].total : 0;
-    const totalUsers = await User.countDocuments();
+    const totalOrders = orders.reduce((acc, order) => acc + order.items.length, 0)
+    const totalUsers = await User.countDocuments({ role: "user" });
     const totalRevenue = totalRevenueData.length ? totalRevenueData[0].total : 0;
 
     return res.render('admin/dashboard', {

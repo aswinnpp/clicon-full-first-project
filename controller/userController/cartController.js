@@ -19,7 +19,7 @@ const loadCart = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const cart = await Cart.findOne({ userId: user._id }).populate({
-      path: "items.productId",
+      path: "items.productId", 
       model: "Product",
     });
 
@@ -52,8 +52,9 @@ const loadCart = async (req, res) => {
         ? parseFloat(discountMatch[0])
         : 0;
 
-      const discountedPrice =
-        originalPrice - (originalPrice * discountPercentage) / 100;
+      const discountedPrice = Math.floor(
+        originalPrice - originalPrice * discountPercentage / 100
+      );
 
       return sum + discountedPrice * (item.quantity || 1);
     }, 0);
@@ -143,7 +144,7 @@ const Carts = async (req, res) => {
     const discountMatch = product.offer ? product.offer.match(/\d+/) : null;
     const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
 
-    let finalPrice = price - (price * discountPercentage) / 100;
+    let finalPrice = Math.floor(price - (price * discountPercentage) / 100);
 
     console.log(
       `Original Price: ${price}, Discount: ${discountPercentage}%, Final Price: ${finalPrice}`
@@ -172,7 +173,52 @@ const cartDelete = async (req, res) => {
   }
 };
 
+const updateCart = async (req, res) => {
+  try {
+    const { productId, quantity } = req.body; 
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    } 
+    const user= await userSchema.findOne({email:req.session.details.email})
+    const cart = await Cart.findOne({ userId: user._id });
+    if (!cart) {
+      return res.status(404).json({ success: false, message: "Cart not found" });
+    } 
+
+    const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
+    if (itemIndex === -1) {
+      return res.status(404).json({ success: false, message: "Item not found in cart" });
+    } 
+
+    const newQuantity = Number(quantity);
+
+    if (newQuantity > 5) {
+      return res.status(400).json({ success: false, message: "Quantity cannot exceed 5" });
+    }  
+
+    if (newQuantity > product.stock) {
+      return res.status(400).json({ success: false, message: `Stock limit exceeded. Only ${product.stock} items available` });
+    } 
+
+    cart.items[itemIndex].quantity = newQuantity;
+    await cart.save();    
+
+    return res.status(200).json({ success: true, message: "Cart updated successfully" });
+  } catch (error) {
+    console.error("Update cart error:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+    
+
+
+
+
+
 module.exports = {
+  updateCart,
   loadCart,
   Carts,
   cartDelete,

@@ -16,9 +16,7 @@
   <!-- Product Management Header -->
   <div class="d-flex justify-content-between mb-3">
     <h2>Product Returns</h2>
-    <form action="/admin/productcreate" method="get">
-      <button class="btn btn-warning">Create</button>
-    </form>
+    
   </div>
 
   <!-- Live Search Input -->
@@ -41,6 +39,7 @@
           <th>Return Status</th>
           <th>Requested Date</th>
           <th>Actions</th>
+          <th>View</th>
         </tr>
       </thead>
       <tbody id="returnsTableBody">
@@ -85,9 +84,13 @@
             
               <% } else { %>
                 <button class="btn btn-secondary btn-sm" disabled>No Action</button>
+
+
               <% } %>
             </td>
-            
+            <td>
+              <a href="/admin/orderview/<%=product.orderId?._id %>/<%= product.productId?._id %>" class="btn btn-info">View</a>
+            </td>
           </tr>
         <% }) %>
       </tbody>

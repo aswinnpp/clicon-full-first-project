@@ -31,6 +31,41 @@
 </head>
 
 <body>
+
+    <style>
+        .custom-notification {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease-out;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .custom-notification.active {
+            bottom: 20px;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .custom-notification::before {
+            content: '✓';
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
     <div class="page-wrapper">
         
         <header class="header">
@@ -191,9 +226,9 @@
           <thead>
             <tr>
               <th>Product</th>
-              <th>Price</th>
-              <th>Quantity</th>
-              <th>Total</th>
+              <th style="width: 120px;">Price</th>
+              <th style="text-align: center; padding-right: 20px;">Quantity</th>
+              <th style="width: 120px; padding-left: 20px;">Total</th>
               <th></th>
             </tr>
           </thead>
@@ -206,12 +241,14 @@
                   const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
               
                 
-                  const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+                  const discountedPrice = Math.floor(originalPrice - (originalPrice * discountPercentage / 100));
               
-              
+                  // Save discount percentage and original price as data attributes
                   const totalPrice = discountedPrice * item?.quantity;
                 %>
-                  <tr>
+                  <tr data-product-id="<%= item.productId._id %>" 
+                      data-original-price="<%= originalPrice %>"
+                      data-discount-percentage="<%= discountPercentage %>">
                     <td class="product-col">
                       <div class="product">
                         <figure class="product-media">
@@ -224,26 +261,28 @@
                         </h3>
                       </div>
                     </td>
-                    <td class="price-col">
+                    <td class="price-col" style="width: 120px;">
                         ₹<%=  Math.floor(discountedPrice) %>
                       <br>
                       <span style="color: green; font-weight: bold;">
                         
                       </span>
                     </td>
-                    <td class="quantity-col">
-                      <div class="cart-product-quantity">
-                        <input
-                          style="border: none;"
-                          type="text"
-                          class="form-control"
-                          value="<%= item.quantity %>"
-                          min="1"
-                          required
-                          inputmode="numeric">
+                    <td class="quantity-col" style="text-align: center; padding-right: 20px;">
+                      <input type="hidden" class="stock-value" value="<%=item.productId.stock%>">
+                      <div class="details-filter-row details-row-size d-flex justify-content-center align-items-center" data-stock="<%= item.productId.stock %>">
+                        <div class="product-details-quantity" style="transform: scale(0.9);">
+                          <input type="number" name="quantity" class="qty-input form-control text-center" 
+                                 value="<%= item.quantity %>" min="1" max="5" step="1" required 
+                                 style="width: 80px;" />
+                        </div>
+                      </div>
+                      <!-- Notification Box -->
+                      <div class="custom-notification" id="customNotification">
+                        <span class="notification-message"></span>
                       </div>
                     </td>
-                    <td class="total-col">
+                    <td class="total-col" style="width: 120px; padding-left: 20px;">
                       ₹<%= Math.floor( totalPrice) %>
                     </td>
                     <td class="remove-col">
@@ -273,7 +312,7 @@
                 <%= currentPage === 1 ? 'disabled' : '' %>>
                 Previous
               </button>
-            </form>
+          
 
             <span>Page <%= currentPage %> of <%= totalPages %></span>
 
@@ -292,22 +331,21 @@
 
       <!-- Right Section: Summary -->
       <aside class="col-lg-3">
-        <div class="summary summary-cart p-3 border rounded">
+        <div class="summary summary-cart p-3 border rounded " i>
           <h3 class="summary-title mb-3">Cart Total</h3>
           <table class="table table-summary">
-            <tbody>
+            <tbody class="summary-cart tbody">
               <% 
                 let originalTotal = 0;
                 let totalDiscount = 0;  
                 let finalTotal = 0;
                 let colors=[]     
-      
                 items.forEach(item => {
                   const originalPrice = parseFloat(item.productId?.price.replace(/,/g, '')) || 0;
                   const discountMatch = item.productId?.offer ? item.productId.offer.match(/\d+/) : null;
                   const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
       
-                  const discountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+                  const discountedPrice = Math.floor(originalPrice - (originalPrice * discountPercentage / 100));
                   const itemTotalOriginal = originalPrice * item.quantity; 
                   const itemTotalDiscounted = discountedPrice * item.quantity; 
                   const discountAmount = itemTotalOriginal - itemTotalDiscounted;
@@ -431,7 +469,6 @@
 	        			<img src="assets/images/payments.png" alt="Payment methods" width="272" height="20">
 	        		</figure><!-- End .footer-payments -->
 	        	</div><!-- End .container -->
-	        </div><!-- End .footer-bottom -->
         </footer><!-- End .footer -->
     </div><!-- End .page-wrapper -->
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
@@ -755,6 +792,128 @@
       }
     });
   }
+    
+    
+    
+  document.addEventListener("DOMContentLoaded", function () {
+    const qtyInputs = document.querySelectorAll(".qty-input");
+    
+    qtyInputs.forEach(qtyInput => {
+        const stockInput = qtyInput.closest('.quantity-col').querySelector('.stock-value');
+        const stock = parseInt(stockInput.value);
+        
+        function checkMaxLimit() {
+            const maxQty = 5;
+            const currentQty = parseInt(qtyInput.value, 10);
+            
+            if (currentQty > stock) {
+                qtyInput.value = stock;
+                qtyInput.setAttribute("max", stock);
+                qtyInput.setAttribute("readonly", "true");
+                showCustomAlert(`Stock limit exceeded. Only ${stock} available`);
+            } else if (currentQty == maxQty) {
+                qtyInput.value = maxQty;
+                showCustomAlert(`Maximum quantity allowed is ${maxQty}`);
+            } else {
+                const productId = qtyInput.closest('tr').getAttribute('data-product-id');
+                
+                fetch('/updatecart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        quantity: qtyInput.value
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the row total
+                        const row = qtyInput.closest('tr');
+                        const priceCell = row.querySelector('.price-col');
+                        const totalCell = row.querySelector('.total-col');
+                        const price = parseFloat(priceCell.textContent.replace('₹', ''));
+                        const newTotal = price * currentQty;
+                        totalCell.textContent = `₹${Math.floor(newTotal)}`;
+
+                        // Update summary section
+                        updateCartSummary();
+                    } else {
+                        showCustomAlert(data.message || 'Error updating cart');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showCustomAlert('Error updating cart quantity');
+                });
+            }
+        }
+
+        qtyInput.addEventListener("input", checkMaxLimit);
+        qtyInput.addEventListener("change", checkMaxLimit);
+    });
+});
+
+function showCustomAlert(message) {
+   
+    const notification = document.getElementById("customNotification");
+    const messageElement = notification.querySelector(".notification-message");
+
+    messageElement.textContent = message;
+    notification.classList.add("active");
+
+    setTimeout(() => {
+        notification.classList.remove("active");
+    }, 5000);
+      // Hide after 3 seconds
+}
+   
+
+function updateCartSummary() {
+    // Get all cart item rows
+    const cartRows = document.querySelectorAll('tr[data-product-id]');
+    let originalTotal = 0;
+    let totalDiscount = 0;
+    let finalTotal = 0;
+    let totalItems = 0;
+
+    cartRows.forEach(row => {
+        const quantity = parseInt(row.querySelector('input[type="number"]').value);
+        const originalPrice = parseFloat(row.getAttribute('data-original-price'));
+        const discountPercentage = parseFloat(row.getAttribute('data-discount-percentage'));
+        
+        const itemOriginalTotal = originalPrice * quantity;
+        const discountedPrice = Math.floor(originalPrice - (originalPrice * discountPercentage / 100));
+        const itemFinalTotal = discountedPrice * quantity;
+        
+        originalTotal += itemOriginalTotal;
+        totalDiscount += Math.floor(itemOriginalTotal - itemFinalTotal);
+        finalTotal += itemFinalTotal;
+        totalItems += quantity;
+    });
+
+    // Update summary table values
+    const summaryTable = document.querySelector('.table-summary tbody');
+    const rows = summaryTable.querySelectorAll('tr');
+    
+    // Update Original Total
+    rows[0].querySelector('td:last-child').textContent = `₹${Math.floor(originalTotal)}`;
+    
+    // Update Total Discount
+    rows[1].querySelector('td:last-child').textContent = `- ₹${Math.floor(totalDiscount)}`;
+    
+    // Update Final Total and Items Count
+    rows[2].querySelector('td:first-child').textContent = `Total: (${totalItems} items)`;
+    rows[2].querySelector('td:last-child').textContent = `₹${Math.floor(finalTotal)}`;
+
+    // Update checkout button visibility
+    const checkoutButton = document.querySelector('a[href^="/checkout"]');
+    if (checkoutButton) {
+        checkoutButton.style.display = totalItems === 0 ? 'none' : '';
+    }
+}
     </script>
 </body>
 

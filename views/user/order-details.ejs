@@ -325,7 +325,7 @@
                 </span>
                 <div class="timeline-content">
                     <strong>Processing</strong>
-                    <p><%= item?.shippingDetails.processingDate %></p>
+                    <!-- <p><%= order.updatedAt %></p> -->
                 </div>
             </li>
 
@@ -336,7 +336,7 @@
                 </span>
                 <div class="timeline-content">
                     <strong>Shipped</strong>
-                    <p><%= item?.shippingDetails.shippedDate %></p>
+                    <p><%= item?.shippingDetails.updatedAt %></p>
                 </div>
             </li>
 
@@ -347,7 +347,7 @@
                 </span>
                 <div class="timeline-content">
                     <strong>Delivered</strong>
-                    <p><%= item?.shippingDetails.deliveryDate %></p>
+                    <p><%= item?.shippingDetails.updatedAt %></p>
                 </div>
             </li>
 
@@ -385,7 +385,7 @@
                         <h5 class="mb-2"><%= item?.productId.productname %></h5>
                         <p class="text-muted mb-2"><%= item?.productId.description %></p>
                         <span class="price-tag ">₹<%= Math.floor(discountedPrice)  %></span>
-                        <div class="mt-3">Delivery by <%= new Date(item.shippingDetails.estimatedArrival).toLocaleDateString() %></div>
+                        <p class="card-text"><strong>Estimated Arrival:</strong> <%= new Date(new Date(order.orderDate).setDate(new Date(order.orderDate).getDate() + 7)).toLocaleDateString() %></p>
                     </div>
                 </div>
             </div>

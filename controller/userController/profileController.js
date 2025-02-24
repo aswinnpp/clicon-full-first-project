@@ -70,7 +70,7 @@ const removeAdrress = async (req, res) => {
 
 const editProfile = async (req, res) => {
   try {
-    const { userId, name, email, password, phone } = req.body;
+    const { userId, name, email, password, phone ,currentPassword } = req.body;
 
     console.log("00000000000000 ", req.file);
 
@@ -97,7 +97,7 @@ const editProfile = async (req, res) => {
     user.image = images || user?.image;
     user.phone = phone || user?.phone;
 
-    // Save changes
+    
     await user.save();
 
     res.redirect(`/profile/${userId}`);
@@ -111,14 +111,14 @@ const editAddress = async (req, res) => {
   const { adressaId, street, city, state, Country, postalCode, phone, userId } =
     req.body;
 
-  const updatedAddress = await Address.findByIdAndUpdate(adressaId, {
-    street,
-    city,
-    state,
-    Country,
-    postalCode,
-    phone,
-  });
+       const updatedAddress = await Address.findByIdAndUpdate(adressaId, {
+            street,
+            city,
+            state,
+            Country,
+            postalCode,
+            phone,
+          });
 
   res.redirect(`/profile/${userId}`);
 };
