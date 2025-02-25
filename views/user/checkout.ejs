@@ -1021,8 +1021,6 @@ function he() {
 
         const options = {
             key: orderData.key, 
-            amount: orderData.order.amount, 
-            currency: orderData.order.currency,
             name: "Your Store",
             description: "Purchase of Electronics",
             order_id: orderData.order.id, 
@@ -1051,7 +1049,7 @@ function he() {
         const rzp = new Razorpay(options);
         rzp.open();
     })
-    .catch(error => {
+   . catch(error => {
         console.error("Error creating Razorpay order:", error);
         document.getElementById("errorMsg").innerHTML = "Payment failed. Please try again.";
         document.getElementById("errorMsg").style.color = "red";

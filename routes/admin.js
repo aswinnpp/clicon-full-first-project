@@ -62,7 +62,6 @@ router.delete("/coupondelete" , couponController.deleteCoupon)
 router.post("/couponedit",  adminauth.checkSession,couponController.updateCoupon);
 
 
-router.get("/download-report",adminauth.checkSession,authController.downloadSalesPDF)
 router.post("/couponcreate",couponController.couponCreate)
 
 router.get("/returns",adminauth.checkSession,returnController.loadReturns)

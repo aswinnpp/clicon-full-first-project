@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #1e1e2d;
+            margin: 0;
+            padding: 2rem;
+            color: #ffffff;
+        }
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #151521;
+            box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+        }
+        h1 {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            padding: 1rem;
+            background: #151521;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .time-period-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #1a1a27;
+            padding: 10px;
+            border-radius: 8px;
+            justify-content: center;
+        }
+        .time-period-selector button {
+            padding: 8px 16px;
+            background: #2a2a3e;
+            border: none;
+            color: #ffffff;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+        .time-period-selector button:hover {
+            background: #435ebe;
+        }
+        .time-period-selector button.active {
+            background: #435ebe;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Profile Visit</h1>
+        <div class="time-period-selector">
+            <button onclick="updateChart('daily')" class="active">Daily</button>
+            <button onclick="updateChart('weekly')">Weekly</button>
+            <button onclick="updateChart('monthly')">Monthly</button>
+            <button onclick="updateChart('yearly')">Yearly</button>
+        </div>
+        <div class="chart-container">
+            <canvas id="visitChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const chartData = {
+            daily: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                data: [15, 25, 20, 30, 25, 35, 28]
+            },
+            weekly: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                data: [85, 120, 95, 130]
+            },
+            monthly: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                data: [8, 20, 28, 20, 10, 20, 28, 20, 10, 20, 28, 20]
+            },
+            yearly: {
+                labels: ['2020', '2021', '2022', '2023', '2024'],
+                data: [320, 450, 580, 720, 850]
+            }
+        };
+
+        let currentChart = null;
+
+        function updateChart(period) {
+            // Update active button
+            document.querySelectorAll('.time-period-selector button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`button[onclick="updateChart('${period}')"]`).classList.add('active');
+
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            const config = {
+                type: 'bar',
+                data: {
+                    labels: chartData[period].labels,
+                    datasets: [{
+                        label: 'Profile Visits',
+                        data: chartData[period].data,
+                        backgroundColor: '#435ebe',
+                        borderRadius: 4,
+                        barThickness: 30,
+                        maxBarThickness: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#ffffff',
+                                font: {
+                                    family: "'Nunito', sans-serif",
+                                    size: 12
+                                }
+                            },
+                            border: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#ffffff',
+                                font: {
+                                    family: "'Nunito', sans-serif",
+                                    size: 12
+                                }
+                            },
+                            border: {
+                                display: false
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 20,
+                            right: 20,
+                            bottom: 20,
+                            left: 20
+                        }
+                    }
+                }
+            };
+
+            currentChart = new Chart(
+                document.getElementById('visitChart'),
+                config
+            );
+        }
+
+        // Initialize with daily data
+        document.addEventListener('DOMContentLoaded', () => {
+            updateChart('daily');
+        });
+    </script>
+</body>
+</html> 

@@ -18,6 +18,7 @@
 
   .card {
     width: 100%;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   }
 
   .card-header {
@@ -160,6 +161,63 @@
       print-color-adjust: exact !important;
     }
   }
+
+  /* Add these styles for pagination */
+  .pagination {
+    margin: 20px 0;
+  }
+
+  .pagination .page-link {
+    color: #0d6efd;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    padding: 0.375rem 0.75rem;
+  }
+
+  .pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+  }
+
+  .pagination .page-link:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    color: #0d6efd;
+  }
+
+  .pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #fff;
+    border-color: #dee2e6;
+  }
+
+  .table-responsive {
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (max-width: 768px) {
+    .btn-group {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+    
+    .custom-btn {
+      flex: 1;
+      white-space: nowrap;
+    }
+    
+    .card-body {
+      padding: 1rem;
+    }
+  }
+
+  .bi {
+    opacity: 0.8;
+  }
 </style>
    
 <div class="container-fluid">
@@ -177,414 +235,502 @@
         <h1 class="h2">Dashboard</h1>
       </div>
 
-    <!-- Dynamic Dashboard Widgets -->
-    <div class="row">
-      <div class="col-md-3 mb-4">
-        <div class="card text-white bg-primary">
-          <div class="card-body">
-            <h5 class="card-title">Users</h5>
-            <p class="card-text">Total Users: <%= totalUsers %></p>
+      <!-- Dashboard Cards Row -->
+      <div class="row g-4 mb-4">
+        <!-- Users Card -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card text-white bg-primary h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="card-title mb-0">Total Users</h6>
+                  <h2 class="mt-2 mb-0"><%= totalUsers %></h2>
+                </div>
+                <i class="bi bi-people fs-1"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Orders Card -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card text-white bg-success h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="card-title mb-0">Total Orders</h6>
+                  <h2 class="mt-2 mb-0"><%= totalOrders %></h2>
+                </div>
+                <i class="bi bi-cart-check fs-1"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Revenue Card -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card text-white bg-warning h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="card-title mb-0">Total Revenue</h6>
+                  <h2 class="mt-2 mb-0">₹<%= Math.floor(totalRevenue) %></h2>
+                </div>
+                <i class="bi bi-currency-rupee fs-1"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Returns Card -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card text-white bg-danger h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="card-title mb-0">Total Returns</h6>
+                  <h2 class="mt-2 mb-0"><%= totalReturns %></h2>
+                </div>
+                <i class="bi bi-arrow-return-left fs-1"></i>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-md-3 mb-4">
-        <div class="card text-white bg-success">
-          <div class="card-body">
-            <h5 class="card-title">Orders</h5>
-            <p class="card-text">Completed Orders: <%=totalOrders %></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-4">
-        <div class="card text-white bg-warning">
-          <div class="card-body">
-            <h5 class="card-title">Revenue</h5>
-            <p class="card-text">Revenue: <%=Math.floor( totalRevenue) %></p>
-          </div>
-        </div>
-      </div>
-    </div>
 
       <!-- Sales Report Section -->
-      <h4 class="mt-4 text-center">Sales Report</h4>
-
-      <!-- Report Type Buttons -->
-      <div class="text-center mb-4">
-        <div class="btn-group mb-3" role="group" aria-label="Sales report period">
-          <button type="button" class="btn btn-outline-primary custom-btn" onclick="showReport('daily')">Daily</button>
-          <button type="button" class="btn btn-outline-primary custom-btn" onclick="showReport('weekly')">Weekly</button>
-          <button type="button" class="btn btn-outline-primary custom-btn" onclick="showReport('monthly')">Monthly</button>
-          <button type="button" class="btn btn-outline-primary custom-btn" onclick="showReport('yearly')">Yearly</button>
+      <div class="card mt-4">
+        <div class="card-header bg-light">
+          <h4 class="card-title mb-0">Sales Report</h4>
         </div>
-        <div class="d-block">
-          <div class="btn-group" role="group" aria-label="Download reports">
-            <button type="button" class="btn btn-success custom-btn" onclick="exportToExcel()">
-              <i class="bi bi-file-earmark-excel"></i> Excel
-            </button>
-            <button type="button" class="btn btn-danger custom-btn" onclick="exportCurrentTableToPDF()">
-              <i class="bi bi-file-earmark-pdf"></i> PDF
-            </button>
+        <div class="card-body">
+          <!-- Report Type Buttons -->
+          <div class="d-flex flex-column align-items-center mb-4">
+            <div class="btn-group mb-3" role="group" aria-label="Sales report period">
+              <button type="button" class="btn btn-outline-primary custom-btn" onclick="showReport('daily')">Daily</button>
+              <button type="button" class="btn btn-outline-primary custom-btn" onclick="showReport('weekly')">Weekly</button>
+              <button type="button" class="btn btn-outline-primary custom-btn" onclick="showReport('monthly')">Monthly</button>
+              <button type="button" class="btn btn-outline-primary custom-btn" onclick="showReport('yearly')">Yearly</button>
+            </div>
+            <div class="btn-group" role="group" aria-label="Download reports">
+              <button type="button" class="btn btn-success custom-btn" onclick="exportToExcel()">
+                <i class="bi bi-file-earmark-excel"></i> Excel
+              </button>
+              <button type="button" class="btn btn-danger custom-btn" onclick="exportCurrentTableToPDF()">
+                <i class="bi bi-file-earmark-pdf"></i> PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- Reports Container -->
+          <div class="table-responsive">
+            <!-- Daily Sales Report -->
+            <div id="daily-report" style="display:none;">
+              <section class="sales">
+                <h2>Daily Sales</h2>
+                <table class="table table-striped table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Total Orders</th>
+                      <th>Total Revenue</th>
+                      <th>Total Coupon Discount</th>
+                      <th>Total Product Discount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% dailySales?.forEach(sale => { %>
+                      <tr>
+                        <td><%= sale.date %></td>
+                        <td><%= sale.totalOrders %></td>
+                        <td><%= sale.totalRevenue.toFixed(2) %></td>
+                        <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
+                        <td><%= sale.totalProductDiscount.toFixed(2) %></td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+
+                <!-- Styled Pagination -->
+                <div class="d-flex justify-content-center mt-4">
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                      <% if (currentPage.daily > 1) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage.daily - 1 %>&type=daily" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                      <% } %>
+
+                      <% for(let i = 1; i <= totalPages.daily; i++) { %>
+                        <li class="page-item <%= currentPage.daily === i ? 'active' : '' %>">
+                          <a class="page-link" href="?page=<%= i %>&type=daily"><%= i %></a>
+                        </li>
+                      <% } %>
+
+                      <% if (currentPage.daily < totalPages.daily) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage.daily + 1 %>&type=daily" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      <% } %>
+                    </ul>
+                  </nav>
+                </div>
+              </section>
+            </div>
+
+            <!-- Weekly Sales Report -->
+            <div id="weekly-report" style="display:none;">
+              <section class="sales">
+                <h2>Weekly Sales</h2>
+                <table class="table table-striped table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Period</th>
+                      <th>Total Orders</th>
+                      <th>Total Revenue</th>
+                      <th>Total Coupon Discount</th>
+                      <th>Total Product Discount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% weeklySales?.forEach(sale => { %>
+                      <tr>
+                        <td><%= sale.startDate %> to <%= sale.endDate %></td>
+                        <td><%= sale.totalOrders %></td>
+                        <td><%= sale.totalRevenue.toFixed(2) %></td>
+                        <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
+                        <td><%= sale.totalProductDiscount.toFixed(2) %></td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+
+                <div class="d-flex justify-content-center mt-4">
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                      <% if (currentPage.weekly > 1) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage.weekly - 1 %>&type=weekly" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                      <% } %>
+
+                      <% for(let i = 1; i <= totalPages.weekly; i++) { %>
+                        <li class="page-item <%= currentPage.weekly === i ? 'active' : '' %>">
+                          <a class="page-link" href="?page=<%= i %>&type=weekly"><%= i %></a>
+                        </li>
+                      <% } %>
+
+                      <% if (currentPage.weekly < totalPages.weekly) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage.weekly + 1 %>&type=weekly" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      <% } %>
+                    </ul>
+                  </nav>
+                </div>
+              </section>
+            </div>
+
+            <!-- Monthly Sales Report -->
+            <div id="monthly-report" style="display:none;">
+              <section class="sales">
+                <h2>Monthly Sales</h2>
+                <table class="table table-striped table-bordered"  id="salestable">
+                  <thead>
+                    <tr>
+                      <th>Month</th>
+                      <th>Total Orders</th>
+                      <th>Total Revenue</th>
+                      <th>Total Coupon Discount</th>
+                      <th>Total Product Discount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% monthlySales?.forEach(sale => { %>
+                      <tr>
+                        <td><%= new Date(sale.year, sale.month - 1).toLocaleString('default', { month: 'long' }) %></td>
+                        <td><%= sale.totalOrders %></td>
+                        <td><%= sale.totalRevenue.toFixed(2) %></td>
+                        <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
+                        <td><%= sale.totalProductDiscount.toFixed(2) %></td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+
+                <div class="d-flex justify-content-center mt-4">
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                      <% if (currentPage.monthly > 1) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage.monthly - 1 %>&type=monthly" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                      <% } %>
+
+                      <% for(let i = 1; i <= totalPages.monthly; i++) { %>
+                        <li class="page-item <%= currentPage.monthly === i ? 'active' : '' %>">
+                          <a class="page-link" href="?page=<%= i %>&type=monthly"><%= i %></a>
+                        </li>
+                      <% } %>
+
+                      <% if (currentPage.monthly < totalPages.monthly) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage.monthly + 1 %>&type=monthly" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      <% } %>
+                    </ul>
+                  </nav>
+                </div>
+              </section>
+            </div>
+
+            <!-- Yearly Sales Report -->
+            <div id="yearly-report" style="display:none;">
+              <section class="sales">
+                <h2>Yearly Sales</h2>
+                <table class="table table-striped table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Year</th>
+                      <th>Total Orders</th>
+                      <th>Total Revenue</th>
+                      <th>Total Coupon Discount</th>
+                      <th>Total Product Discount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% yearlySales?.forEach(sale => { %>
+                      <tr>
+                        <td><%= sale.year %></td>
+                        <td><%= sale.totalOrders %></td>
+                        <td><%= sale.totalRevenue.toFixed(2) %></td>
+                        <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
+                        <td><%= sale.totalProductDiscount.toFixed(2) %></td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+
+                <div class="d-flex justify-content-center mt-4">
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                      <% if (currentPage.yearly > 1) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage.yearly - 1 %>&type=yearly" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                      <% } %>
+
+                      <% for(let i = 1; i <= totalPages.yearly; i++) { %>
+                        <li class="page-item <%= currentPage.yearly === i ? 'active' : '' %>">
+                          <a class="page-link" href="?page=<%= i %>&type=yearly"><%= i %></a>
+                        </li>
+                      <% } %>
+
+                      <% if (currentPage.yearly < totalPages.yearly) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage.yearly + 1 %>&type=yearly" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      <% } %>
+                    </ul>
+                  </nav>
+                </div>
+              </section>
+            </div>
           </div>
         </div>
       </div>
-
-     <!-- Daily Sales Report -->
-<div id="daily-report" style="display:none;">
-  <section class="sales">
-    <h2>Daily Sales</h2>
-    <table class="table table-striped table-bordered">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Total Orders</th>
-          <th>Total Revenue</th>
-          <th>Total Coupon Discount</th>
-          <th>Total Product Discount</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% dailySales?.forEach(sale => { %>
-          <tr>
-            <td><%= sale.date %></td>
-            <td><%= sale.totalOrders %></td>
-            <td><%= sale.totalRevenue.toFixed(2) %></td>
-            <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
-            <td><%= sale.totalProductDiscount.toFixed(2) %></td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-
-    <div>
-
-      <% if (currentPage.daily ) { %>
-        <a href="?page=<%= currentPage.daily - 1 %>&limit=10&type=daily">Previous</a>
-      <% } %>
-      <span>Page<%= totalPages.daily %> of <%= totalPages.daily %></span>
-      <% if (currentPage.daily < totalPages.daily) { %>
-        <a href="?page=<%= currentPage.daily + 1 %>&limit=10&type=daily">Next</a>
-      <% } %>
-    </div>
-
-  </section>
-  
- 
-</div>
-
-<!-- Weekly Sales Report -->
-<div id="weekly-report" style="display:none;">
-  <section class="sales">
-    <h2>Weekly Sales</h2>
-    <table class="table table-striped table-bordered">
-      <thead>
-        <tr>
-          <th>Period</th>
-          <th>Total Orders</th>
-          <th>Total Revenue</th>
-          <th>Total Coupon Discount</th>
-          <th>Total Product Discount</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% weeklySales?.forEach(sale => { %>
-          <tr>
-            <td><%= sale.startDate %> to <%= sale.endDate %></td>
-            <td><%= sale.totalOrders %></td>
-            <td><%= sale.totalRevenue.toFixed(2) %></td>
-            <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
-            <td><%= sale.totalProductDiscount.toFixed(2) %></td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-
-    <!-- Weekly Sales Pagination -->
-    <div>
-      <% if (currentPage.weekly > 1) { %>
-        <a href="?page=<%= currentPage.weekly - 1 %>&limit=10&type=weekly">Previous</a>
-      <% } %>
-      <span>Page <%= currentPage.weekly %> of <%= totalPages.weekly %></span>
-      <% if (currentPage.weekly < totalPages.weekly) { %>
-        <a href="?page=<%= currentPage.weekly + 1 %>&limit=10&type=weekly">Next</a>
-      <% } %>
-    </div>
-  </section>
-</div>
-
-<!-- Monthly Sales Report -->
-<div id="monthly-report" style="display:none;">
-  <section class="sales">
-    <h2>Monthly Sales</h2>
-    <table class="table table-striped table-bordered"  id="salestable">
-      <thead>
-        <tr>
-          <th>Month</th>
-          <th>Total Orders</th>
-          <th>Total Revenue</th>
-          <th>Total Coupon Discount</th>
-          <th>Total Product Discount</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% monthlySales?.forEach(sale => { %>
-          <tr>
-            <td><%= new Date(sale.year, sale.month - 1).toLocaleString('default', { month: 'long' }) %></td>
-            <td><%= sale.totalOrders %></td>
-            <td><%= sale.totalRevenue.toFixed(2) %></td>
-            <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
-            <td><%= sale.totalProductDiscount.toFixed(2) %></td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-
-    <!-- Monthly Sales Pagination -->
-    <div>
-      <% if (currentPage.monthly > 1) { %>
-        <a href="?page=<%= currentPage.monthly - 1 %>&limit=10&type=monthly">Previous</a>
-      <% } %>
-      <span>Page <%= currentPage.monthly %> of <%= totalPages.monthly %></span>
-      <% if (currentPage.monthly < totalPages.monthly) { %>
-        <a href="?page=<%= currentPage.monthly + 1 %>&limit=10&type=monthly">Next</a>
-      <% } %>
-    </div>
-  </section>
-</div>
-
-<!-- Yearly Sales Report -->
-<div id="yearly-report" style="display:none;">
-  <section class="sales">
-    <h2>Yearly Sales</h2>
-    <table class="table table-striped table-bordered">
-      <thead>
-        <tr>
-          <th>Year</th>
-          <th>Total Orders</th>
-          <th>Total Revenue</th>
-          <th>Total Coupon Discount</th>
-          <th>Total Product Discount</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% yearlySales?.forEach(sale => { %>
-          <tr>
-            <td><%= sale.year %></td>
-            <td><%= sale.totalOrders %></td>
-            <td><%= sale.totalRevenue.toFixed(2) %></td>
-            <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
-            <td><%= sale.totalProductDiscount.toFixed(2) %></td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-
-    <!-- Yearly Sales Pagination -->
-    <div>
-      <% if (currentPage.yearly > 1) { %>
-        <a href="?page=<%= currentPage.yearly - 1 %>&limit=10&type=yearly">Previous</a>
-      <% } %>
-      <span>Page <%= currentPage.yearly %> of <%= totalPages.yearly %></span>
-      <% if (currentPage.yearly < totalPages.yearly) { %>
-        <a href="?page=<%= currentPage.yearly + 1 %>&limit=10&type=yearly">Next</a>
-      <% } %>
-    </div>
-  </section>
-</div>
-
-
-
-      <script>
-
-
-
-        let selectedReportType = "daily";
-        function showReport(type) {
-          selectedReportType = type;
-
-          document.getElementById("daily-report").style.display = "none";
-          document.getElementById("weekly-report").style.display = "none";
-          document.getElementById("monthly-report").style.display = "none";
-          document.getElementById("yearly-report").style.display = "none";
-
-          const selectedReport = document.getElementById(`${type}-report`);
-          if (selectedReport) {
-            selectedReport.style.display = "block";
-          } else {
-            console.error(`Element with ID '${type}-report' not found.`);
-          }
-
-          const buttons = document.querySelectorAll(".btn-group .btn");
-          buttons.forEach((button) => {
-            button.classList.remove("active");
-            if (button.textContent.toLowerCase().includes(type.toLowerCase())) {
-              button.classList.add("active");
-            }
-          });
-        }
-
-     
-
-        document.addEventListener("DOMContentLoaded", function () {
-          showReport("daily");
-        });
-    
-
-    function exportCurrentTableToPDF() {
-      const currentReport = document.getElementById(`${selectedReportType}-report`);
-      if (!currentReport) {
-        console.error('Current report not found');
-        return;
-      }
-
-     
-      const tableElement = currentReport.querySelector('table').cloneNode(true);
-      const title = currentReport.querySelector('h2').textContent;
-      
-     
-      const wrapper = document.createElement('div');
-      wrapper.className = 'pdf-wrapper';
- 
-      const titleElement = document.createElement('h2');
-      titleElement.textContent = title;
-      titleElement.style.textAlign = 'center';
-      titleElement.style.marginBottom = '20px';
-      wrapper.appendChild(titleElement);
-      
-     
-      tableElement.className = 'pdf-table';
-      wrapper.appendChild(tableElement);
-
-      const opt = {
-        margin: [0.5, 0.5, 0.5, 0.5], 
-        filename: `${selectedReportType}-sales-report.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          logging: true,
-          letterRendering: true
-        },
-        jsPDF: { 
-          unit: 'in', 
-          format: 'a4', 
-          orientation: 'landscape',
-          compress: true
-        }
-      };
-
-    
-      html2pdf().set(opt).from(wrapper).save();
-    }
-
-   
-    function exportToExcel() {
-      const currentReport = document.getElementById(`${selectedReportType}-report`);
-      if (!currentReport) {
-        console.error('Current report not found');
-        return;
-      }
-
-     
-      const title = currentReport.querySelector('h2').textContent;
-      
-    
-      const table = currentReport.querySelector('table');
-      const rows = table.querySelectorAll('tr');
-    
-      const wb = XLSX.utils.book_new();
-      const ws_data = [];
-
-      
-      ws_data.push([title]); 
-      ws_data.push([]); 
-
-      
-      rows.forEach(row => {
-        const rowData = [];
-        row.querySelectorAll('th, td').forEach(cell => {
-          rowData.push(cell.textContent.trim());
-        });
-        ws_data.push(rowData);
-      });
-
-      const ws = XLSX.utils.aoa_to_sheet(ws_data);
-
-    
-      const headerStyle = {
-        font: { bold: true, color: { rgb: "FFFFFF" } },
-        fill: { fgColor: { rgb: "4472C4" } },
-        alignment: { horizontal: "center", vertical: "center" }
-      };
-
-      const titleStyle = {
-        font: { bold: true, sz: 14 },
-        alignment: { horizontal: "center" }
-      };
-
-      const dataStyle = {
-        alignment: { horizontal: "center" },
-        border: {
-          top: { style: "thin" },
-          bottom: { style: "thin" },
-          left: { style: "thin" },
-          right: { style: "thin" }
-        }
-      };
-
-      
-      ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
-      
-     
-      const colWidths = [];
-      ws_data[2].forEach((header, idx) => {
-        const width = Math.max(
-          header.length,
-          ...ws_data.slice(3).map(row => String(row[idx]).length)
-        );
-        colWidths.push({ wch: width + 2 });
-      });
-      ws['!cols'] = colWidths;
-
-     
-      const range = XLSX.utils.decode_range(ws['!ref']);
-      for (let R = range.s.r; R <= range.e.r; R++) {
-        for (let C = range.s.c; C <= range.e.c; C++) {
-          const cell_address = { c: C, r: R };
-          const cell_ref = XLSX.utils.encode_cell(cell_address);
-
-          if (!ws[cell_ref]) continue;
-
-          if (R === 0) {
-            
-            ws[cell_ref].s = titleStyle;
-          } else if (R === 2) {
-           
-            ws[cell_ref].s = headerStyle;
-          } else if (R > 2) {
-            
-            ws[cell_ref].s = dataStyle;
-         
-            const cellValue = ws[cell_ref].v;
-            if (!isNaN(cellValue) && cellValue !== '') {
-              ws[cell_ref].z = cellValue % 1 === 0 ? '#,##0' : '#,##0.00';
-            }
-          }
-        }
-      }
-
-      XLSX.utils.book_append_sheet(wb, ws, `${selectedReportType} Sales`);
-
- 
-      XLSX.writeFile(wb, `${selectedReportType}-sales-report.xlsx`);
-    }
-
- 
-    document.querySelector('.btn-success').onclick = exportToExcel;
-
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     </main>
   </div>
 </div>
 
 <%- include('../partials/admin/footer') %>
+
+<script>
+  let selectedReportType = "daily";
+  function showReport(type) {
+    selectedReportType = type;
+
+    document.getElementById("daily-report").style.display = "none";
+    document.getElementById("weekly-report").style.display = "none";
+    document.getElementById("monthly-report").style.display = "none";
+    document.getElementById("yearly-report").style.display = "none";
+
+    const selectedReport = document.getElementById(`${type}-report`);
+    if (selectedReport) {
+      selectedReport.style.display = "block";
+    } else {
+      console.error(`Element with ID '${type}-report' not found.`);
+    }
+
+    const buttons = document.querySelectorAll(".btn-group .btn");
+    buttons.forEach((button) => {
+      button.classList.remove("active");
+      if (button.textContent.toLowerCase().includes(type.toLowerCase())) {
+        button.classList.add("active");
+      }
+    });
+
+    // Update URL with the current type
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('type', type);
+    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+    history.pushState({}, '', newUrl);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type') || 'daily';
+    showReport(type);
+  });
+
+  function exportCurrentTableToPDF() {
+    const currentReport = document.getElementById(`${selectedReportType}-report`);
+    if (!currentReport) {
+      console.error('Current report not found');
+      return;
+    }
+
+    const tableElement = currentReport.querySelector('table').cloneNode(true);
+    const title = currentReport.querySelector('h2').textContent;
+    
+    const wrapper = document.createElement('div');
+    wrapper.className = 'pdf-wrapper';
+
+    const titleElement = document.createElement('h2');
+    titleElement.textContent = title;
+    titleElement.style.textAlign = 'center';
+    titleElement.style.marginBottom = '20px';
+    wrapper.appendChild(titleElement);
+    
+    tableElement.className = 'pdf-table';
+    wrapper.appendChild(tableElement);
+
+    const opt = {
+      margin: [0.5, 0.5, 0.5, 0.5], 
+      filename: `${selectedReportType}-sales-report.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 2,
+        logging: true,
+        letterRendering: true
+      },
+      jsPDF: { 
+        unit: 'in', 
+        format: 'a4', 
+        orientation: 'landscape',
+        compress: true
+      }
+    };
+
+    html2pdf().set(opt).from(wrapper).save();
+  }
+
+  function exportToExcel() {
+    const currentReport = document.getElementById(`${selectedReportType}-report`);
+    if (!currentReport) {
+      console.error('Current report not found');
+      return;
+    }
+
+    const title = currentReport.querySelector('h2').textContent;
+    
+    const table = currentReport.querySelector('table');
+    const rows = table.querySelectorAll('tr');
+    
+    const wb = XLSX.utils.book_new();
+    const ws_data = [];
+
+    ws_data.push([title]); 
+    ws_data.push([]); 
+
+    rows.forEach(row => {
+      const rowData = [];
+      row.querySelectorAll('th, td').forEach(cell => {
+        rowData.push(cell.textContent.trim());
+      });
+      ws_data.push(rowData);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+    const headerStyle = {
+      font: { bold: true, color: { rgb: "FFFFFF" } },
+      fill: { fgColor: { rgb: "4472C4" } },
+      alignment: { horizontal: "center", vertical: "center" }
+    };
+
+    const titleStyle = {
+      font: { bold: true, sz: 14 },
+      alignment: { horizontal: "center" }
+    };
+
+    const dataStyle = {
+      alignment: { horizontal: "center" },
+      border: {
+        top: { style: "thin" },
+        bottom: { style: "thin" },
+        left: { style: "thin" },
+        right: { style: "thin" }
+      }
+    };
+
+    ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
+    
+    const colWidths = [];
+    ws_data[2].forEach((header, idx) => {
+      const width = Math.max(
+        header.length,
+        ...ws_data.slice(3).map(row => String(row[idx]).length)
+      );
+      colWidths.push({ wch: width + 2 });
+    });
+    ws['!cols'] = colWidths;
+
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let R = range.s.r; R <= range.e.r; R++) {
+      for (let C = range.s.c; C <= range.e.c; C++) {
+        const cell_address = { c: C, r: R };
+        const cell_ref = XLSX.utils.encode_cell(cell_address);
+
+        if (!ws[cell_ref]) continue;
+
+        if (R === 0) {
+          ws[cell_ref].s = titleStyle;
+        } else if (R === 2) {
+          ws[cell_ref].s = headerStyle;
+        } else if (R > 2) {
+          ws[cell_ref].s = dataStyle;
+         
+          const cellValue = ws[cell_ref].v;
+          if (!isNaN(cellValue) && cellValue !== '') {
+            ws[cell_ref].z = cellValue % 1 === 0 ? '#,##0' : '#,##0.00';
+          }
+        }
+      }
+    }
+
+    XLSX.utils.book_append_sheet(wb, ws, `${selectedReportType} Sales`);
+
+    XLSX.writeFile(wb, `${selectedReportType}-sales-report.xlsx`);
+  }
+
+  document.querySelector('.btn-success').onclick = exportToExcel;
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>

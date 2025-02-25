@@ -1,6 +1,7 @@
 const User = require("../../models/usermodel");
 const Order = require("../../models/orderdetails");
 const Coupon = require("../../models/couponmodel");
+const Return = require('../../models/productreturn');
 const Product = require("../../models/productmodel")
 const bcrypt = require("bcrypt");
 const PDFDocument = require("pdfkit");
@@ -72,19 +73,15 @@ console.log("orders?.items?",orders);
   return totalOrders > 0 ? { totalOrders, totalRevenue, totalCouponDiscount, totalProductDiscount } : null;
 };
 
-
 const getDailySales = async (page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
   const dailySales = [];
 
-  // Get today's date in UTC
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
 
-  // Add a console.log to debug
   console.log('Initial today:', today);
 
-  // Look back 31 days to ensure we get enough data
   for (let i = 0; i < 31; i++) {
     const startOfDay = new Date(today);
     startOfDay.setDate(today.getDate() - i);
@@ -93,7 +90,6 @@ const getDailySales = async (page = 1, limit = 10) => {
     const endOfDay = new Date(startOfDay);
     endOfDay.setUTCHours(23, 59, 59, 999);
 
-    // Add console.logs for debugging
     console.log(`Day ${i}:`, startOfDay, 'to', endOfDay);
 
     const salesData = await getSalesData(startOfDay, endOfDay);
@@ -106,19 +102,14 @@ const getDailySales = async (page = 1, limit = 10) => {
     }
   }
 
-  // Log the length of dailySales before sorting
   console.log('Total daily sales before sorting:', dailySales.length);
 
-  // Sort by date in descending order (most recent first)
   dailySales.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  // Calculate total pages
   const totalPages = Math.ceil(dailySales.length / limit);
 
-  // Get the slice of data for the current page
   const paginatedData = dailySales.slice(skip, skip + limit);
 
-  // Log final data
   console.log('Paginated data length:', paginatedData.length);
   console.log('Skip:', skip);
   console.log('Limit:', limit);
@@ -158,8 +149,6 @@ const getWeeklySales = async (page = 1, limit = 10) => {
     totalPages: Math.ceil(weeklySales.length / limit),
   };
 };
-
-
 
 const getMonthlySales = async (page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
@@ -222,13 +211,18 @@ const getYearlySales = async (page = 1, limit = 10) => {
 const loadDashboard = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 4;
+    const skip = (page - 1) * limit;
 
-    const orders = await Order.find({})
+    const totalOrdersCount = await Order.countDocuments();
+    const totalUsers = await User.countDocuments({ role: "user" });
+    const totalReturns = await Return.countDocuments();
 
-    const [totalOrdersData, totalUsersData, totalRevenueData, dailySalesData, weeklySalesData, monthlySalesData, yearlySalesData] = await Promise.all([
+    
+    const orders = await Order.find({}).skip(skip).limit(limit);
+
+    const [totalOrdersData, totalRevenueData, dailySalesData, weeklySalesData, monthlySalesData, yearlySalesData] = await Promise.all([
       Order.aggregate([{ $count: 'total' }]),
-      User.aggregate([{ $match: { role: 'user' } }, { $count: ' ' }]),
       Order.aggregate([{ $group: { _id: null, total: { $sum: '$totalAmount' } } }]),
       getDailySales(page, limit),
       getWeeklySales(page, limit),
@@ -236,14 +230,19 @@ const loadDashboard = async (req, res) => {
       getYearlySales(page, limit),
     ]);
 
-    const totalOrders = orders.reduce((acc, order) => acc + order.items.length, 0)
-    const totalUsers = await User.countDocuments({ role: "user" });
+    const totalOrders = await Order.aggregate([
+      { $unwind: "$items" },
+      { $group: { _id: null, total: { $sum: 1 } } }
+    ]).then(result => result.length ? result[0].total : 0);
+
     const totalRevenue = totalRevenueData.length ? totalRevenueData[0].total : 0;
 
     return res.render('admin/dashboard', {
       totalUsers,
       totalOrders,
       totalRevenue,
+      totalReturns,
+      orders,
 
       dailySales: dailySalesData.data,
       weeklySales: weeklySalesData.data,
@@ -252,6 +251,7 @@ const loadDashboard = async (req, res) => {
 
       currentPage: page,
       totalPages: {
+        orders: Math.ceil(totalOrdersCount / limit),
         daily: Math.max(dailySalesData.totalPages, 1),
         weekly: Math.max(weeklySalesData.totalPages, 1),
         monthly: Math.max(monthlySalesData.totalPages, 1),
@@ -260,77 +260,11 @@ const loadDashboard = async (req, res) => {
     });
   } catch (error) {
     console.error('Error loading dashboard:', error);
-    res.status(500).send('Server Error');
+    res.status(500).render("error", { error: "Failed to load dashboard" });
   }
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-const downloadSalesPDF = async (req, res) => {
-  try {
-    const { startDate, endDate, format } = req.query; 
-    const salesData = await getSalesData(new Date(startDate), new Date(endDate));
-
-    if (format === 'pdf') {
-      // Generate PDF
-      const doc = new PDFDocument();
-      let filename = `Sales_Report_${startDate}_to_${endDate}.pdf`;
-
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename="' + filename + '"');
-
-      doc.pipe(res);
-
-      doc.fontSize(20).text('Sales Report', { align: 'center' });
-      doc.moveDown();
-
-      // Table headers
-      doc.text('Date/Period | Total Orders | Total Revenue | Total Coupon Discount | Total Product Discount');
-      doc.moveDown();
-
-      // Add sales data row
-      const saleRow = `${startDate} - ${endDate} | ${salesData.totalOrders} | $${salesData.totalRevenue.toFixed(2)} | $${salesData.totalCouponDiscount.toFixed(2)} | $${salesData.totalProductDiscount.toFixed(2)}`;
-      doc.text(saleRow);
-
-      doc.end();
-    } else if (format === 'excel') {
-      // Generate Excel
-      const wb = new ExcelJS.Workbook();
-      const ws = wb.addWorksheet('Sales Report');
-
-      ws.addRow(['Date/Period', 'Total Orders', 'Total Revenue', 'Total Coupon Discount', 'Total Product Discount']);
-
-      ws.addRow([
-        `${startDate} - ${endDate}`, 
-        salesData.totalOrders,
-        salesData.totalRevenue.toFixed(2),
-        salesData.totalCouponDiscount.toFixed(2),
-        salesData.totalProductDiscount.toFixed(2),
-      ]);
-
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', 'attachment; filename="Sales_Report.xlsx"');
-
-      await wb.xlsx.write(res);
-      res.end();
-    } else {
-      res.status(400).send('Invalid format. Please specify either pdf or excel.');
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error generating report');
-  }
-};
 
 
 const adminLogout = async (req, res) => {
@@ -338,4 +272,4 @@ const adminLogout = async (req, res) => {
   res.redirect("/admin/login");
 };
 
-module.exports = { loadLogin, login, loadDashboard, adminLogout ,downloadSalesPDF};
+module.exports = { loadLogin, login, loadDashboard, adminLogout };
