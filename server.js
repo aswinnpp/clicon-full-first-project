@@ -17,6 +17,7 @@ app.use(cors({ origin: "*" }));
 
 const cron = require("node-cron");
 const Coupon = require("./models/couponmodel");
+const { strict } = require("assert");
 // const morgan = require('morgan')
 
 cron.schedule("*/10 * * * * *", async () => { 

@@ -1260,16 +1260,47 @@ document.addEventListener("DOMContentLoaded", function() {
   };
 
   // ================== Pagination for Tables ==================
-  function showPage(page) {
-      const rowsPerPage = 3;
-      document.querySelectorAll('tbody tr').forEach((row, index) => {
-          row.style.display = (index >= (page - 1) * rowsPerPage && index < page * rowsPerPage) ? 'table-row' : 'none';
-      });
-      document.getElementById('pageno').textContent = page;
-  }
-  window.pageback = function() { let current = parseInt(document.getElementById('pageno').textContent); if (current > 1) showPage(current - 1); };
-  window.pagenext = function() { let totalRows = document.querySelectorAll('tbody tr').length; let maxPages = Math.ceil(totalRows / 3); let current = parseInt(document.getElementById('pageno').textContent); if (current < maxPages) showPage(current + 1); };
-  showPage(1);
+    // Initialize pagination
+    const ordersTable = document.querySelector('.recent-orders table tbody');
+    const rowsPerPage = 4; // Adjust this number as needed
+    
+    function showOrdersPage(page) {
+        const rows = ordersTable.querySelectorAll('tr');
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        
+        rows.forEach((row, index) => {
+            row.style.display = (index >= start && index < end) ? '' : 'none';
+        });
+        
+        // Update page number display
+        document.getElementById('pageno').textContent = page;
+        
+        // Update button states
+        const totalPages = Math.ceil(rows.length / rowsPerPage);
+        document.getElementById('prevBtn').disabled = page === 1;
+        document.getElementById('nextBtn').disabled = page === totalPages;
+    }
+    
+    // Add click handlers for pagination buttons
+    document.getElementById('prevBtn')?.addEventListener('click', function() {
+        const currentPage = parseInt(document.getElementById('pageno').textContent);
+        if (currentPage > 1) {
+            showOrdersPage(currentPage - 1);
+        }
+    });
+    
+    document.getElementById('nextBtn')?.addEventListener('click', function() {
+        const rows = ordersTable.querySelectorAll('tr');
+        const totalPages = Math.ceil(rows.length / rowsPerPage);
+        const currentPage = parseInt(document.getElementById('pageno').textContent);
+        if (currentPage < totalPages) {
+            showOrdersPage(currentPage + 1);
+        }
+    });
+    
+    // Initialize first page
+    showOrdersPage(1);
 
   // ================== Wallet Section Handling ==================
   document.querySelectorAll('.nav-link')?.forEach(link => {

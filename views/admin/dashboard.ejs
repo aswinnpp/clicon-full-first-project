@@ -1,5 +1,167 @@
 <%- include('../partials/admin/header') %>
 
+
+
+
+<style>
+  .custom-btn {
+    padding: 8px 24px;
+    font-weight: 500;
+    min-width: 120px;
+  }
+
+  .custom-btn.active {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  .card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-group .btn i {
+    margin-right: 5px;
+  }
+
+  .table {
+    margin-top: 20px;
+    font-size: 0.9rem;
+  }
+
+  .table th, .table td {
+    padding: 12px;
+    text-align: center;
+  }
+
+  .table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f2f2f2;
+  }
+
+  .table-bordered {
+    border: 1px solid #ddd;
+  }
+
+  .table-bordered th, .table-bordered td {
+    border: 1px solid #ddd;
+  }
+
+  .table thead th {
+    background-color: #f8f9fa;
+    color: #495057;
+  }
+
+  .table thead th, .table-bordered td, .table-bordered th {
+    vertical-align: middle;
+  }
+
+  .table-striped tbody tr:hover {
+    background-color: #e9ecef;
+  }
+
+  @media (max-width: 768px) {
+    .d-flex.justify-content-center {
+      flex-direction: column;
+      align-items: center;
+    }
+    .btn-group {
+      margin-bottom: 1rem;
+    }
+    .btn-group:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  /* Add these styles for PDF export */
+  @media print {
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    
+    th {
+      background-color: #f8f9fa;
+      font-weight: bold;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  }
+
+  /* PDF-specific styles */
+  .pdf-wrapper {
+    padding: 20px;
+    width: 100%;
+  }
+
+  .pdf-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .pdf-table th,
+  .pdf-table td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: center;
+    word-wrap: break-word;
+    width: 20%; /* Equal width for all columns */
+  }
+
+  .pdf-table th {
+    background-color: #f8f9fa !important;
+    color: #000;
+    font-weight: bold;
+  }
+
+  @media print {
+    .pdf-wrapper {
+      width: 100%;
+      margin: 0;
+      padding: 10px;
+    }
+
+    .pdf-table {
+      width: 100%;
+      margin: 0;
+      border: 1px solid #000;
+    }
+
+    .pdf-table th,
+    .pdf-table td {
+      padding: 8px;
+      border: 1px solid #000;
+      text-align: center;
+      width: 20%; /* Equal width for all columns */
+    }
+
+    .pdf-table th {
+      background-color: #f8f9fa !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Force background colors in PDF */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+  }
+</style>
+   
 <div class="container-fluid">
   <div class="row">
     <button
@@ -56,10 +218,10 @@
         </div>
         <div class="d-block">
           <div class="btn-group" role="group" aria-label="Download reports">
-            <button type="button" class="btn btn-success custom-btn" onclick="showReport(document.getElementById('daily-report'))">
+            <button type="button" class="btn btn-success custom-btn" onclick="exportToExcel()">
               <i class="bi bi-file-earmark-excel"></i> Excel
             </button>
-            <button type="button" class="btn btn-danger custom-btn" onclick="downloadPDF()">
+            <button type="button" class="btn btn-danger custom-btn" onclick="exportCurrentTableToPDF()">
               <i class="bi bi-file-earmark-pdf"></i> PDF
             </button>
           </div>
@@ -153,7 +315,7 @@
 <div id="monthly-report" style="display:none;">
   <section class="sales">
     <h2>Monthly Sales</h2>
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered"  id="salestable">
       <thead>
         <tr>
           <th>Month</th>
@@ -230,81 +392,11 @@
 </div>
 
 
-      <style>
-        .custom-btn {
-          padding: 8px 24px;
-          font-weight: 500;
-          min-width: 120px;
-        }
-
-        .custom-btn.active {
-          background-color: #0d6efd;
-          color: white;
-          border-color: #0d6efd;
-        }
-
-        .card {
-          width: 100%;
-        }
-
-        .card-header {
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-group .btn i {
-          margin-right: 5px;
-        }
-
-        .table {
-          margin-top: 20px;
-          font-size: 0.9rem;
-        }
-
-        .table th, .table td {
-          padding: 12px;
-          text-align: center;
-        }
-
-        .table-striped tbody tr:nth-of-type(odd) {
-          background-color: #f2f2f2;
-        }
-
-        .table-bordered {
-          border: 1px solid #ddd;
-        }
-
-        .table-bordered th, .table-bordered td {
-          border: 1px solid #ddd;
-        }
-
-        .table thead th {
-          background-color: #f8f9fa;
-          color: #495057;
-        }
-
-        .table thead th, .table-bordered td, .table-bordered th {
-          vertical-align: middle;
-        }
-
-        .table-striped tbody tr:hover {
-          background-color: #e9ecef;
-        }
-
-        @media (max-width: 768px) {
-          .d-flex.justify-content-center {
-            flex-direction: column;
-            align-items: center;
-          }
-          .btn-group {
-            margin-bottom: 1rem;
-          }
-          .btn-group:last-child {
-            margin-bottom: 0;
-          }
-        }
-      </style>
 
       <script>
+
+
+
         let selectedReportType = "daily";
         function showReport(type) {
           selectedReportType = type;
@@ -337,82 +429,160 @@
         });
     
 
-function exportTableToPDF(tableElement, filename = 'table-report.pdf') {
-  if (!tableElement) {
-    console.error('No table element provided');
-    return;
-  }
+    function exportCurrentTableToPDF() {
+      const currentReport = document.getElementById(`${selectedReportType}-report`);
+      if (!currentReport) {
+        console.error('Current report not found');
+        return;
+      }
 
-  // Clone the table to avoid modifying the original
-  const tableClone = tableElement.cloneNode(true);
+     
+      const tableElement = currentReport.querySelector('table').cloneNode(true);
+      const title = currentReport.querySelector('h2').textContent;
+      
+     
+      const wrapper = document.createElement('div');
+      wrapper.className = 'pdf-wrapper';
+ 
+      const titleElement = document.createElement('h2');
+      titleElement.textContent = title;
+      titleElement.style.textAlign = 'center';
+      titleElement.style.marginBottom = '20px';
+      wrapper.appendChild(titleElement);
+      
+     
+      tableElement.className = 'pdf-table';
+      wrapper.appendChild(tableElement);
 
-  // Remove unnecessary elements like export buttons and controls
-  const exportButtons = tableClone.querySelector('.mt-4.d-flex.justify-content-end');
-  if (exportButtons) exportButtons.remove();
+      const opt = {
+        margin: [0.5, 0.5, 0.5, 0.5], 
+        filename: `${selectedReportType}-sales-report.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          logging: true,
+          letterRendering: true
+        },
+        jsPDF: { 
+          unit: 'in', 
+          format: 'a4', 
+          orientation: 'landscape',
+          compress: true
+        }
+      };
 
-  const reportControls = tableClone.querySelector('.report-controls');
-  if (reportControls) reportControls.remove();
-
-  // Configure PDF options
-  const opt = {
-    margin: 0,
-    filename,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { 
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff' // Pure white background
-    },
-    jsPDF: { 
-      unit: 'mm', 
-      format: 'a4', 
-      orientation: 'portrait'
-    },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-  };
-
-  // Style adjustments for proper rendering
-  tableClone.style.backgroundColor = '#ffffff';
-  tableClone.style.padding = '20px';
-  tableClone.style.width = '210mm'; // A4 width
-  tableClone.style.display = 'flex';
-  tableClone.style.flexDirection = 'column';
-
-  // Ensure all parent elements have a white background
-  const allElements = tableClone.getElementsByTagName('*');
-  for (let el of allElements) {
-    const bg = window.getComputedStyle(el).backgroundColor;
-    if (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
-      el.style.backgroundColor = '#ffffff';
+    
+      html2pdf().set(opt).from(wrapper).save();
     }
-  }
 
-  // Generate PDF
-  html2pdf().set(opt).from(tableClone).save()
-    .then(() => {
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'PDF downloaded successfully!',
-        background: '#191c24',
-        color: '#fff'
+   
+    function exportToExcel() {
+      const currentReport = document.getElementById(`${selectedReportType}-report`);
+      if (!currentReport) {
+        console.error('Current report not found');
+        return;
+      }
+
+     
+      const title = currentReport.querySelector('h2').textContent;
+      
+    
+      const table = currentReport.querySelector('table');
+      const rows = table.querySelectorAll('tr');
+    
+      const wb = XLSX.utils.book_new();
+      const ws_data = [];
+
+      
+      ws_data.push([title]); 
+      ws_data.push([]); 
+
+      
+      rows.forEach(row => {
+        const rowData = [];
+        row.querySelectorAll('th, td').forEach(cell => {
+          rowData.push(cell.textContent.trim());
+        });
+        ws_data.push(rowData);
       });
-    })
-    .catch(error => {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to generate PDF',
-        background: '#191c24',
-        color: '#fff'
+
+      const ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+    
+      const headerStyle = {
+        font: { bold: true, color: { rgb: "FFFFFF" } },
+        fill: { fgColor: { rgb: "4472C4" } },
+        alignment: { horizontal: "center", vertical: "center" }
+      };
+
+      const titleStyle = {
+        font: { bold: true, sz: 14 },
+        alignment: { horizontal: "center" }
+      };
+
+      const dataStyle = {
+        alignment: { horizontal: "center" },
+        border: {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" }
+        }
+      };
+
+      
+      ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
+      
+     
+      const colWidths = [];
+      ws_data[2].forEach((header, idx) => {
+        const width = Math.max(
+          header.length,
+          ...ws_data.slice(3).map(row => String(row[idx]).length)
+        );
+        colWidths.push({ wch: width + 2 });
       });
-      console.error('PDF generation error:', error);
-    });
-}
+      ws['!cols'] = colWidths;
+
+     
+      const range = XLSX.utils.decode_range(ws['!ref']);
+      for (let R = range.s.r; R <= range.e.r; R++) {
+        for (let C = range.s.c; C <= range.e.c; C++) {
+          const cell_address = { c: C, r: R };
+          const cell_ref = XLSX.utils.encode_cell(cell_address);
+
+          if (!ws[cell_ref]) continue;
+
+          if (R === 0) {
+            
+            ws[cell_ref].s = titleStyle;
+          } else if (R === 2) {
+           
+            ws[cell_ref].s = headerStyle;
+          } else if (R > 2) {
+            
+            ws[cell_ref].s = dataStyle;
+         
+            const cellValue = ws[cell_ref].v;
+            if (!isNaN(cellValue) && cellValue !== '') {
+              ws[cell_ref].z = cellValue % 1 === 0 ? '#,##0' : '#,##0.00';
+            }
+          }
+        }
+      }
+
+      XLSX.utils.book_append_sheet(wb, ws, `${selectedReportType} Sales`);
+
+ 
+      XLSX.writeFile(wb, `${selectedReportType}-sales-report.xlsx`);
+    }
+
+ 
+    document.querySelector('.btn-success').onclick = exportToExcel;
 
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     </main>
   </div>
 </div>
