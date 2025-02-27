@@ -178,6 +178,8 @@
 
             <div class="page-content">
             	<div class="container">
+
+                    
 					<table class="table table-wishlist table-mobile">
 						<thead>
 							<tr>
@@ -222,7 +224,17 @@
                                           <%= isInStock ? 'In stock' : 'Out of stock' %>
                                         </span>
                                       </td>
-                              
+                                      <td class="action-col">
+                                        <form action="/cart" method="post" id="addToCartForm">
+                                          <input type="hidden" name="productId" value="<%= item.productId._id %>">
+                                          <input type="hidden" name="quantity" value="1">
+                                          <input type="hidden" name="stock" value="<%= item.productId?.stock %>">
+                                          <button type="submit" class="btn-product" title="Add to cart" style="border: none; background: none;">
+                                              <i class="icon-shopping-cart" style="font-size: 24px;"></i>
+                                          </button>
+                                        </form>
+                                      </td>
+
                                       <td class="action-col">
                                         <form action="/wishlist/remove?productId=<%= item.productId._id %>&userId=<%= user._id%>" method="POST">
                                           <button type="submit" class="btn btn-link text-danger p-0" style="border: none; background: none;">
@@ -245,6 +257,8 @@
                           
                           
 					</table><!-- End .table table-wishlist -->
+
+
 	            	<div class="wishlist-share">
 	            		<div class="social-icons social-icons-sm mb-2">
 	            			<label class="social-label">Share on:</label>

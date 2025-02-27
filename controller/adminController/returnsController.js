@@ -29,7 +29,7 @@ const loadReturns = async (req, res) => {
             }
             return 0; 
         });
-console.log(returns);
+console.log("lll",returns);
 
         const totalReturns = await Returns.countDocuments();
         const totalPages = Math.ceil(totalReturns / limit);

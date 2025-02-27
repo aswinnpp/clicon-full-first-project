@@ -260,7 +260,7 @@ const loadDashboard = async (req, res) => {
     });
   } catch (error) {
     console.error('Error loading dashboard:', error);
-    res.status(500).render("error", { error: "Failed to load dashboard" });
+    res.status(500).render("admin/404");
   }
 };
 

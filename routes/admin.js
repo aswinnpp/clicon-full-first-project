@@ -33,9 +33,9 @@ router.post("/banuser/:id", userController.banUser);
 
 router.get("/productmanage", adminauth.checkSession, productController.loadProductManage);
 router.get("/productupdate/:id", adminauth.checkSession, productController.loadProductUpdate);
-router.post("/productupdate", multer.uploadMultiple, productController.productUpdate);
+router.post("/productupdate", multer.uploadMultiple, productController. ProductUpdate);
 router.get("/productcreate", adminauth.checkSession, productController.loadProductcreate);
-router.post("/productcreate", multer.upload.array('images', 4), productController.Productcreate);
+router.post("/productcreate", multer.upload.array('images', 4), productController.ProductCreate);
 router.get("/productview/:id", adminauth.checkSession, productController.loadProductview);
 router.post('/productdelete/:id', productController.productDelete);
 

@@ -46,8 +46,8 @@
         <% returns.forEach((product, index) => { %>
           <tr>
             <td><%= index + 1 %></td>
-            <td><%= product.userId.name %></td>
-            <td><%= product.productId.productname %></td>
+            <td><%= product.userId?.name %></td>
+            <td><%= product.productId?.productname %></td>
             <td><%= product.orderId?.customOrderId %></td>
             <td><%= product.reason %></td>
             <td>

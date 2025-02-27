@@ -665,8 +665,8 @@ body {
 
           <div id="passwordFields" style="display: none;">
             <div class="mb-3">
-                <label for="profile-password" class="form-label">Current Password</label>
-                <input type="password" class="form-control" id="profile-password" name="currentPassword">
+                <label for="current-password" class="form-label">Current Password</label>
+                <input type="password" class="form-control" id="current-password" name="currentPassword">
               </div>
             <div class="mb-3">
               <label for="profile-password" class="form-label">New Password</label>
@@ -1192,7 +1192,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!isValidPhone(phone)) return (errorMsg.innerHTML = "Invalid phone number.");
 
         if (changePassword) {
-            if (!password || password.length < 6) return (errorMsg.innerHTML = "Password must be at least 6 characters.");
+            if (!password ) return (errorMsg.innerHTML = " Enter New Password ");
             if (password !== confirmPassword) return (errorMsg.innerHTML = "Passwords do not match.");
         }
 

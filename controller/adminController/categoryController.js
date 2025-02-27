@@ -41,25 +41,39 @@ const loadCategoryCreate = async (req, res) => {
 
 const categoryCreate = async (req, res) => {
   try {
-    const { name, status, description } = req.body;
-    const checkExist = await Category.find({
+    const { name, status, offer } = req.body;
+    
+    const offerValue = parseInt(offer) || 0;
+    if (offerValue < 0 || offerValue > 100) {
+      req.flash("error", "Offer percentage must be between 0 and 100");
+      return res.redirect("/admin/categorycreate");
+    }
+
+    const checkExist = await Category.findOne({
       name: { $regex: new RegExp("^" + name + "$", "i") },
     });
 
-    if (checkExist.length > 0) {
-      req.flash("success", "category already exist");
-      return res.redirect("/admin/categorymanage");
+    if (checkExist) {
+      req.flash("error", "Category already exists");
+      return res.redirect("/admin/categorycreate");
     }
 
-    const newCategory = new Category({ name, status, description });
+    const newCategory = new Category({
+      name,
+      status,
+      offer: offerValue
+    });
+
     await newCategory.save();
-    req.flash("success", "category create successfully");
+    req.flash("success", "Category created successfully");
     res.redirect("/admin/categorymanage");
   } catch (error) {
     console.log(error);
-    res.status(500).send("server error");
+    req.flash("error", "Server error");
+    res.redirect("/admin/categorycreate");
   }
 };
+
 
 const loadCategoryUpdate = async (req, res) => {
   try {
@@ -77,35 +91,76 @@ const loadCategoryUpdate = async (req, res) => {
 
 const CategoryUpdate = async (req, res) => {
   try {
-    const { name, status, id, description } = req.body;
+    const { name, status, id, offer } = req.body;
+
+    const offerValue = parseInt(offer) || 0;
+    if (offerValue < 0 || offerValue > 100) {
+      req.flash("error", "Offer percentage must be between 0 and 100");
+      return res.redirect("/admin/categorymanage");
+    }
+
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).render("admin/404");
     }
 
     const exists = await Category.findOne({
       name: { $regex: new RegExp("^" + name + "$", "i") },
+      _id: { $ne: id }
     });
+
     if (exists) {
-      req.flash("success", "Category name already exists.");
+      req.flash("error", "Category name already exists");
       return res.redirect("/admin/categorymanage");
     }
 
-    const updatedCategory = await Category.findOneAndUpdate(
-      { _id: id },
-      { name, status, description },
+    const updatedCategory = await Category.findByIdAndUpdate(
+      id,
+      { 
+        name, 
+        status, 
+        offer: offerValue 
+      },
       { new: true }
     );
 
     if (!updatedCategory) {
-      req.flash("success", "Category not found");
+      req.flash("error", "Category not found");
       return res.redirect("/admin/categorymanage");
     }
+
+    // Find all products in this category
+    const products = await Product.find({ categoryId: id });
+
+    for (const product of products) {
+      // Get the original product offer from the database
+      const originalProductOffer = parseFloat(product.originalOffer) || parseFloat(product.offer) || 0;
+      
+      // If category offer is greater than product's original offer
+      if (offerValue > originalProductOffer) {
+        await Product.findByIdAndUpdate(product._id, { 
+          offer: `${offerValue}%`,
+          originalOffer: originalProductOffer, // Store the original offer
+          maxOfferApplied: offerValue
+        });
+      } else {
+        // If product's original offer is higher or equal, revert to original offer
+        await Product.findByIdAndUpdate(product._id, { 
+          offer: `${originalProductOffer}%`,
+          originalOffer: originalProductOffer, // Store the original offer
+          maxOfferApplied: originalProductOffer
+        });
+      }
+    }
+
+    req.flash("success", "Category updated successfully.");
     res.redirect("/admin/categorymanage");
   } catch (error) {
     console.log(error);
-    res.status(500).send("server error");
+    req.flash("error", "Server error");
+    res.redirect("/admin/categorymanage");
   }
 };
+
 
 const categoryDelete = async (req, res) => {
   try {

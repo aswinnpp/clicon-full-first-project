@@ -246,7 +246,7 @@
                   // Save discount percentage and original price as data attributes
                   const totalPrice = discountedPrice * item?.quantity;
                 %>
-                  <tr data-product-id="<%= item.productId._id %>" 
+                  <tr data-product-id="<%= item.productId?._id %>" 
                       data-original-price="<%= originalPrice %>"
                       data-discount-percentage="<%= discountPercentage %>">
                     <td class="product-col">
@@ -269,8 +269,8 @@
                       </span>
                     </td>
                     <td class="quantity-col" style="text-align: center; padding-right: 20px;">
-                      <input type="hidden" class="stock-value" value="<%=item.productId.stock%>">
-                      <div class="details-filter-row details-row-size d-flex justify-content-center align-items-center" data-stock="<%= item.productId.stock %>">
+                      <input type="hidden" class="stock-value" value="<%=item.productId?.stock%>">
+                      <div class="details-filter-row details-row-size d-flex justify-content-center align-items-center" data-stock="<%= item.productId?.stock %>">
                         <div class="product-details-quantity" style="transform: scale(0.9);">
                           <input type="number" name="quantity" class="qty-input form-control text-center" 
                                  value="<%= item.quantity %>" min="1" max="5" step="1" required 

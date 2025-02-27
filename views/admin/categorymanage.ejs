@@ -43,6 +43,7 @@
               <th>No</th>
               <th>Name</th>
               <th>Status</th>
+              <th>Offer</th>
               <th>Updated At</th>
               <th>Created At</th>
               <th>Actions</th>
@@ -55,6 +56,7 @@
                 <td><%= startIndex + index + 1 %></td>
                 <td><%= category?.name %></td>
                 <td><%= category?.status %></td>
+                <td><%= category?.offer || 0 %>%</td>
                 <td><%= category?.updatedAt.toISOString().split('T')[0] %></td>
                 <td><%= category?.createdAt.toISOString().split('T')[0] %></td>
                 <td>

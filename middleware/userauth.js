@@ -2,8 +2,7 @@ const User = require("../models/usermodel");
 
 
 const checkSession = (req, res, next) => {
-  console.log('dfcggc vh');
-  console.log(req.session.details);
+ 
   
   
     if (req.session.details) {
@@ -16,7 +15,6 @@ const checkSession = (req, res, next) => {
 
  
   const isLogin = (req, res, next) => {
-    console.log('gbdfsvdcz'+req .session.logged )
     if (req.session.logged) {
       res.redirect("/");
     } else {
@@ -29,7 +27,6 @@ const checkSession = (req, res, next) => {
     try {
       
       if(req.session.details){
-        console.log("jjjjjjjjjjjjjjjjjjjjj",req.session.details)
         const email = req.session.details.email
         const user = await User.findOne({ email })
         if(user?.isBan===true){

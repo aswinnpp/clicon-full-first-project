@@ -25,7 +25,7 @@
         
         
       <label for="categoryName" class="form-label">Category Name</label>
-      <input type="text" class="form-control" id="categoryName" name="name" value="<%= category?.name %>" >
+      <input type="text" class="form-control" id="categoryName" name="name" value="<%=category[0]?.name %>" >
     </div>
 
      <!-- <div>
@@ -41,6 +41,11 @@
         <option value="active" <%= category.status === 'active' ? 'selected' : '' %>>Active</option>
         <option value="inactive" <%= category.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
       </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="categoryOffer" class="form-label">Category Offer (%)</label>
+      <input type="number" class="form-control" id="categoryOffer" name="offer" min="0" max="100" value="<%= category[0]?.offer || 0 %>" required>
     </div>
 
     <button type="submit" class="btn btn-primary">Update Category</button>

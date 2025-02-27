@@ -72,7 +72,12 @@ const productSchema = new mongoose.Schema({
   },
   offer:{
     type:String
-  }
+  },
+  maxOfferApplied: { type: Number, default: 0 },
+  originalOffer: {
+    type: Number,
+    default: 0
+  },
 }, {
   timestamps: true, 
 });

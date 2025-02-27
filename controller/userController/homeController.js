@@ -163,7 +163,7 @@ try {
     return res.status(400).send('Invalid Product ID');
 }
 
-const allproduct =await Product.find({})
+const allproduct =await Product.find({isDeleted:false})
   const product = await Product.find({_id:objectId})
   const user = await userSchema.find({})
   console.log(typeof product)

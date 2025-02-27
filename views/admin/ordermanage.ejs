@@ -62,12 +62,12 @@
         
     
               <td>
-                <form action="/admin/update-product-status/<%= order._id %>/<%= item._id %>" method="POST">
+                <form action="/admin/update-product-status/<%= order?._id %>/<%= item._id %>" method="POST">
                   <% 
                     // Check if the product is returned
                     let isReturned = returns.some(returnItem => 
-                      returnItem.orderId.toString() === order._id.toString() && 
-                      returnItem.productId.toString() === item.productId._id.toString()
+                      returnItem.orderId.toString() === order?._id.toString() && 
+                      returnItem.productId.toString() === item.productId?._id.toString()
                     );
                   %>
               

@@ -63,7 +63,7 @@ const loadProductUpdate = async (req, res) => {
   }
 };
 
-const productUpdate = async (req, res) => {
+const ProductUpdate = async (req, res) => {
   try {
     const croppedImages = Object.keys(req.body).filter(key => key.includes('_cropped'));
     const croppedImageFilenames = {};
@@ -82,6 +82,7 @@ const productUpdate = async (req, res) => {
     });
 
     const { id, productname, category, brand, offer, price, stock, warranty, color, description, rating, ram, storage } = req.body;
+    
     const categoryId = await Category.findOne({
       name: { $regex: new RegExp(`^${category}$`, 'i') },
       isDeleted: false,
@@ -106,6 +107,7 @@ const productUpdate = async (req, res) => {
         category: categoryId.name,
         brand,
         offer,
+        maxOfferApplied: Math.max(parseFloat(currentProduct.maxOfferApplied) || 0, parseFloat(offer) || 0),
         price,
         stock,
         warranty,
@@ -122,12 +124,15 @@ const productUpdate = async (req, res) => {
     if (!updatedProduct) {
       return res.status(404).json({ error: "Failed to update product." });
     }
+    
     res.redirect('/admin/productmanage');
   } catch (err) {
     console.error("Error:", err);
     res.status(500).json({ message: 'Server Error', error: err.message });
   }
 };
+
+
 
 const loadProductcreate = async (req, res) => {
   try {
@@ -139,9 +144,10 @@ const loadProductcreate = async (req, res) => {
   }
 };
 
-const Productcreate = async (req, res) => {
+const ProductCreate = async (req, res) => {
   try {
     const { productname, category, brand, offer, price, stock, warranty, color, description, rating, ram, storage } = req.body;
+    
     const categoryId = await Category.findOne({
       name: { $regex: new RegExp(`^${category}$`, 'i') },
       isDeleted: false,
@@ -168,6 +174,7 @@ const Productcreate = async (req, res) => {
       categoryId: categoryId,
       brand,
       offer,
+      maxOfferApplied: parseFloat(offer) || 0,
       price,
       stock,
       warranty,
@@ -211,11 +218,11 @@ const productDelete = async (req, res) => {
 };
 
 module.exports = {
-  loadProductManage,
+  loadProductManage,  
   loadProductUpdate,
-  productUpdate,
+  ProductUpdate,
   loadProductcreate,
-  Productcreate,
+  ProductCreate,
   loadProductview,
   productDelete
 };
