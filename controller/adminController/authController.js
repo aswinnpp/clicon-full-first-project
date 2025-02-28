@@ -47,6 +47,8 @@ const login = async (req, res) => {
   }
 };
 
+
+
 const getSalesData = async (startDate, endDate) => {
   const orders = await Order.find({ 
     createdAt: { 
@@ -112,13 +114,11 @@ const getDailySales = async (page = 1, limit = 10, startDate = null, endDate = n
   const skip = (page - 1) * limit;
   const dailySales = [];
 
-  // Use provided date range or get all data
   let queryStartDate = startDate ? new Date(startDate) : await Order.findOne().sort({ createdAt: 1 }).then(order => order?.createdAt);
   let queryEndDate = endDate ? new Date(endDate) : new Date();
 
   if (!queryStartDate) return { data: [], totalPages: 0 };
 
-  // Ensure proper time settings
   queryStartDate = new Date(queryStartDate.setHours(0, 0, 0, 0));
   queryEndDate = new Date(queryEndDate.setHours(23, 59, 59, 999));
 
@@ -136,7 +136,6 @@ const getDailySales = async (page = 1, limit = 10, startDate = null, endDate = n
     }
   }
 
-  // Sort by date in descending order
   dailySales.sort((a, b) => new Date(b.date) - new Date(a.date));
 
   return {
@@ -148,7 +147,6 @@ const getDailySales = async (page = 1, limit = 10, startDate = null, endDate = n
 const getWeeklySales = async (page = 1, limit = 10, startDate = null, endDate = null) => {
   const skip = (page - 1) * limit;
   
-  // Use provided date range or get all data
   const queryStartDate = startDate || await Order.findOne().sort({ createdAt: 1 }).then(order => order?.createdAt);
   const queryEndDate = endDate || new Date();
 
@@ -162,7 +160,6 @@ const getWeeklySales = async (page = 1, limit = 10, startDate = null, endDate = 
 
   const weeklySales = [];
 
-  // First check if there are any orders in the date range
   const hasOrders = await Order.findOne({
     createdAt: { 
       $gte: start,
@@ -170,7 +167,6 @@ const getWeeklySales = async (page = 1, limit = 10, startDate = null, endDate = 
     }
   });
 
-  // If no orders in the date range, return empty data
   if (!hasOrders) {
     return {
       data: [],
@@ -204,7 +200,6 @@ const getWeeklySales = async (page = 1, limit = 10, startDate = null, endDate = 
 const getMonthlySales = async (page = 1, limit = 10, startDate = null, endDate = null) => {
   const skip = (page - 1) * limit;
   
-  // Use provided date range or get all data
   const queryStartDate = startDate || await Order.findOne().sort({ createdAt: 1 }).then(order => order?.createdAt);
   const queryEndDate = endDate || new Date();
 
@@ -216,7 +211,6 @@ const getMonthlySales = async (page = 1, limit = 10, startDate = null, endDate =
   const end = new Date(queryEndDate);
   end.setHours(23, 59, 59, 999);
 
-  // First check if there are any orders in the date range
   const hasOrders = await Order.findOne({
     createdAt: { 
       $gte: start,
@@ -224,7 +218,6 @@ const getMonthlySales = async (page = 1, limit = 10, startDate = null, endDate =
     }
   });
 
-  // If no orders in the date range, return empty data
   if (!hasOrders) {
     return {
       data: [],
@@ -257,18 +250,15 @@ const getMonthlySales = async (page = 1, limit = 10, startDate = null, endDate =
 const getYearlySales = async (page = 1, limit = 10, startDate = null, endDate = null) => {
   const skip = (page - 1) * limit;
   
-  // Use provided date range or get all data
   const queryStartDate = startDate || await Order.findOne().sort({ createdAt: 1 }).then(order => order?.createdAt);
   const queryEndDate = endDate || new Date();
 
   if (!queryStartDate) return { data: [], totalPages: 0 };
 
-  // Get full years
   const startYear = new Date(queryStartDate).getFullYear();
   const endYear = new Date(queryEndDate).getFullYear();
   const yearlySales = [];
 
-  // Check if there are any orders in the entire year range
   const hasOrders = await Order.findOne({
     createdAt: { 
       $gte: new Date(startYear, 0, 1),
@@ -284,16 +274,13 @@ const getYearlySales = async (page = 1, limit = 10, startDate = null, endDate = 
     };
   }
 
-  // Process each year
   for (let year = startYear; year <= endYear; year++) {
     let startOfYear = new Date(year, 0, 1, 0, 0, 0, 0);
     let endOfYear = new Date(year, 11, 31, 23, 59, 59, 999);
 
-    // If it's the first year and we have a start date, use it
     if (year === startYear && startDate) {
       startOfYear = new Date(startDate);
     }
-    // If it's the last year and we have an end date, use it
     if (year === endYear && endDate) {
       endOfYear = new Date(endDate);
     }
@@ -309,7 +296,6 @@ const getYearlySales = async (page = 1, limit = 10, startDate = null, endDate = 
     }
   }
 
-  // Sort by year in descending order
   yearlySales.sort((a, b) => b.year - a.year);
 
   console.log('Yearly Sales Found:', {
@@ -319,7 +305,6 @@ const getYearlySales = async (page = 1, limit = 10, startDate = null, endDate = 
     numberOfYears: yearlySales.length
   });
 
-  // If no data was found after processing all years
   if (yearlySales.length === 0) {
     return {
       data: [],
@@ -333,10 +318,12 @@ const getYearlySales = async (page = 1, limit = 10, startDate = null, endDate = 
   };
 };
 
+
+
 const loadDashboard = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 3;
     const skip = (page - 1) * limit;
     
     let startDate = null;
@@ -350,7 +337,6 @@ const loadDashboard = async (req, res) => {
       endDate.setHours(23, 59, 59, 999);
     }
 
-    // Get sales data with date filtering
     const [dailySalesData, weeklySalesData, monthlySalesData, yearlySalesData] = await Promise.all([
       getDailySales(page, limit, startDate, endDate),
       getWeeklySales(page, limit, startDate, endDate),
@@ -358,14 +344,12 @@ const loadDashboard = async (req, res) => {
       getYearlySales(page, limit, startDate, endDate)
     ]);
 
-    // Add console.log for debugging
     console.log('Sales Data Status:', {
       hasDaily: dailySalesData.data.length > 0,
       hasYearly: yearlySalesData.data.length > 0,
       yearlyData: yearlySalesData
     });
 
-    // If daily sales has no data, return empty data for all views
     if (!dailySalesData.data || dailySalesData.data.length === 0) {
       const emptyData = {
         data: [],
@@ -401,7 +385,6 @@ const loadDashboard = async (req, res) => {
       });
     }
 
-    // If daily data exists, proceed with normal data fetching
     let orderQuery = {};
     if (startDate && endDate) {
       orderQuery.createdAt = {
@@ -410,11 +393,9 @@ const loadDashboard = async (req, res) => {
       };
     }
 
-    // Update all aggregations to use the date range
     const totalUsers = await User.countDocuments({ role: "user" });
     const totalReturns = await Return.countDocuments(orderQuery);
 
-    // Update total orders count with date range
     const totalOrdersCount = await Order.aggregate([
       {
         $match: orderQuery
@@ -423,7 +404,6 @@ const loadDashboard = async (req, res) => {
       { $group: { _id: null, total: { $sum: 1 } } }
     ]).then(result => result.length ? result[0].total : 0);
 
-    // Update total products with date range
     const totalProducts = await Order.aggregate([
       {
         $match: orderQuery
@@ -437,7 +417,6 @@ const loadDashboard = async (req, res) => {
       }
     ]).then(result => result.length ? result[0].totalProducts : 0);
 
-    // Update delivered products with date range
     const totalDeliveredProducts = await Order.aggregate([
       {
         $match: {
@@ -459,7 +438,6 @@ const loadDashboard = async (req, res) => {
       }
     ]).then(result => result.length ? result[0].total : 0);
 
-    // Calculate revenue for the filtered date range
     const orders = await Order.find(orderQuery).populate('items.productId').populate('coupon');
     let totalRevenue = 0;
     let totalProductDiscount = 0;

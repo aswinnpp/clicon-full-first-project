@@ -294,8 +294,8 @@
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
-                  <h6 class="card-title mb-0">Total Users</h6>
-                  <h2 class="mt-2 mb-0"><%= totalUsers %></h2>
+                  <h6 class="card-title mb-0">Delivered Products</h6>
+                  <h2 class="mt-2 mb-0"><%= totalDeliveredProducts %></h2>
                 </div>
                 <i class="bi bi-people fs-1"></i>
               </div>
@@ -348,20 +348,8 @@
           </div>
         </div>
 
-        <!-- Delivered Products Card -->
-        <div class="col-12 col-sm-6 col-lg-2">
-          <div class="card text-white bg-info h-100">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center">
-                <div>
-                  <h6 class="card-title mb-0">Delivered Products</h6>
-                  <h2 class="mt-2 mb-0"><%= totalDeliveredProducts %></h2>
-                </div>
-                <i class="bi bi-box-seam fs-1"></i>
-              </div>
-            </div>
-          </div>
-        </div>
+      
+       
       </div>
 
       <!-- Sales Report Section -->
@@ -447,10 +435,10 @@
                 <!-- Styled Pagination -->
                 <div class="d-flex justify-content-center mt-4">
                   <nav aria-label="Page navigation">
-                    <ul class="pagination">
+                    <ul class="pagination" data-report-type="daily">
                       <% if (currentPage.daily > 1) { %>
                         <li class="page-item">
-                          <a class="page-link" href="?page=<%= currentPage.daily - 1 %>&type=daily" aria-label="Previous">
+                          <a class="page-link" href="?page=<%= currentPage.daily - 1 %>&type=daily" onclick="changePage('daily', <%= currentPage.daily - 1 %>); return false;">
                             <span aria-hidden="true">&laquo;</span>
                           </a>
                         </li>
@@ -458,13 +446,13 @@
 
                       <% for(let i = 1; i <= totalPages.daily; i++) { %>
                         <li class="page-item <%= currentPage.daily === i ? 'active' : '' %>">
-                          <a class="page-link" href="?page=<%= i %>&type=daily"><%= i %></a>
+                          <a class="page-link" href="?page=<%= i %>&type=daily" onclick="changePage('daily', <%= i %>); return false;"><%= i %></a>
                         </li>
                       <% } %>
 
                       <% if (currentPage.daily < totalPages.daily) { %>
                         <li class="page-item">
-                          <a class="page-link" href="?page=<%= currentPage.daily + 1 %>&type=daily" aria-label="Next">
+                          <a class="page-link" href="?page=<%= currentPage.daily + 1 %>&type=daily" onclick="changePage('daily', <%= currentPage.daily + 1 %>); return false;">
                             <span aria-hidden="true">&raquo;</span>
                           </a>
                         </li>
@@ -512,10 +500,10 @@
 
                 <div class="d-flex justify-content-center mt-4">
                   <nav aria-label="Page navigation">
-                    <ul class="pagination">
+                    <ul class="pagination" data-report-type="weekly">
                       <% if (currentPage.weekly > 1) { %>
                         <li class="page-item">
-                          <a class="page-link" href="?page=<%= currentPage.weekly - 1 %>&type=weekly" aria-label="Previous">
+                          <a class="page-link" href="?page=<%= currentPage.weekly - 1 %>&type=weekly" onclick="changePage('weekly', <%= currentPage.weekly - 1 %>); return false;">
                             <span aria-hidden="true">&laquo;</span>
                           </a>
                         </li>
@@ -523,13 +511,13 @@
 
                       <% for(let i = 1; i <= totalPages.weekly; i++) { %>
                         <li class="page-item <%= currentPage.weekly === i ? 'active' : '' %>">
-                          <a class="page-link" href="?page=<%= i %>&type=weekly"><%= i %></a>
+                          <a class="page-link" href="?page=<%= i %>&type=weekly" onclick="changePage('weekly', <%= i %>); return false;"><%= i %></a>
                         </li>
                       <% } %>
 
                       <% if (currentPage.weekly < totalPages.weekly) { %>
                         <li class="page-item">
-                          <a class="page-link" href="?page=<%= currentPage.weekly + 1 %>&type=weekly" aria-label="Next">
+                          <a class="page-link" href="?page=<%= currentPage.weekly + 1 %>&type=weekly" onclick="changePage('weekly', <%= currentPage.weekly + 1 %>); return false;">
                             <span aria-hidden="true">&raquo;</span>
                           </a>
                         </li>
@@ -577,10 +565,10 @@
 
                 <div class="d-flex justify-content-center mt-4">
                   <nav aria-label="Page navigation">
-                    <ul class="pagination">
+                    <ul class="pagination" data-report-type="monthly">
                       <% if (currentPage.monthly > 1) { %>
                         <li class="page-item">
-                          <a class="page-link" href="?page=<%= currentPage.monthly - 1 %>&type=monthly" aria-label="Previous">
+                          <a class="page-link" href="?page=<%= currentPage.monthly - 1 %>&type=monthly" onclick="changePage('monthly', <%= currentPage.monthly - 1 %>); return false;">
                             <span aria-hidden="true">&laquo;</span>
                           </a>
                         </li>
@@ -588,13 +576,13 @@
 
                       <% for(let i = 1; i <= totalPages.monthly; i++) { %>
                         <li class="page-item <%= currentPage.monthly === i ? 'active' : '' %>">
-                          <a class="page-link" href="?page=<%= i %>&type=monthly"><%= i %></a>
+                          <a class="page-link" href="?page=<%= i %>&type=monthly" onclick="changePage('monthly', <%= i %>); return false;"><%= i %></a>
                         </li>
                       <% } %>
 
                       <% if (currentPage.monthly < totalPages.monthly) { %>
                         <li class="page-item">
-                          <a class="page-link" href="?page=<%= currentPage.monthly + 1 %>&type=monthly" aria-label="Next">
+                          <a class="page-link" href="?page=<%= currentPage.monthly + 1 %>&type=monthly" onclick="changePage('monthly', <%= currentPage.monthly + 1 %>); return false;">
                             <span aria-hidden="true">&raquo;</span>
                           </a>
                         </li>
@@ -642,10 +630,10 @@
 
                 <div class="d-flex justify-content-center mt-4">
                   <nav aria-label="Page navigation">
-                    <ul class="pagination">
+                    <ul class="pagination" data-report-type="yearly">
                       <% if (currentPage.yearly > 1) { %>
                         <li class="page-item">
-                          <a class="page-link" href="?page=<%= currentPage.yearly - 1 %>&type=yearly" aria-label="Previous">
+                          <a class="page-link" href="?page=<%= currentPage.yearly - 1 %>&type=yearly" onclick="changePage('yearly', <%= currentPage.yearly - 1 %>); return false;">
                             <span aria-hidden="true">&laquo;</span>
                           </a>
                         </li>
@@ -653,13 +641,13 @@
 
                       <% for(let i = 1; i <= totalPages.yearly; i++) { %>
                         <li class="page-item <%= currentPage.yearly === i ? 'active' : '' %>">
-                          <a class="page-link" href="?page=<%= i %>&type=yearly"><%= i %></a>
+                          <a class="page-link" href="?page=<%= i %>&type=yearly" onclick="changePage('yearly', <%= i %>); return false;"><%= i %></a>
                         </li>
                       <% } %>
 
                       <% if (currentPage.yearly < totalPages.yearly) { %>
                         <li class="page-item">
-                          <a class="page-link" href="?page=<%= currentPage.yearly + 1 %>&type=yearly" aria-label="Next">
+                          <a class="page-link" href="?page=<%= currentPage.yearly + 1 %>&type=yearly" onclick="changePage('yearly', <%= currentPage.yearly + 1 %>); return false;">
                             <span aria-hidden="true">&raquo;</span>
                           </a>
                         </li>
@@ -915,6 +903,53 @@
       document.getElementById('endDate').value = endDate;
     }
   }
+
+  // Add this new JavaScript function to your existing script section
+  function changePage(type, page) {
+    // Get current date filters if any
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    // Prepare query parameters
+    const params = new URLSearchParams();
+    params.set('type', type);
+    params.set('page', page);
+    if (startDate) params.set('startDate', startDate);
+    if (endDate) params.set('endDate', endDate);
+
+    // Make AJAX request
+    fetch(`/admin/dashboard?${params.toString()}`, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => response.text())
+    .then(html => {
+      // Update only the report section
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const newReport = doc.getElementById(`${type}-report`);
+      const currentReport = document.getElementById(`${type}-report`);
+      currentReport.innerHTML = newReport.innerHTML;
+
+      // Update URL without page reload
+      window.history.pushState({}, '', `?${params.toString()}`);
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+  // Update the existing pagination links in all reports
+  document.querySelectorAll('.pagination .page-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const page = this.getAttribute('href').split('page=')[1].split('&')[0];
+      const type = this.closest('.pagination').getAttribute('data-report-type') || 
+                  window.location.search.includes('type=') ? 
+                  new URLSearchParams(window.location.search).get('type') : 
+                  'daily';
+      changePage(type, page);
+    });
+  });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
