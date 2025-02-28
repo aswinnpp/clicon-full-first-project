@@ -249,6 +249,20 @@
       max-width: none;
     }
   }
+
+  .btn-icon {
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    border: none;
+    line-height: 1;
+  }
+  .btn-icon:hover {
+    background: #f8f9fa;
+    border-radius: 4px;
+  }
+  .btn-icon i {
+    vertical-align: middle;
+  }
 </style>
    
 <div class="container-fluid">
@@ -262,24 +276,14 @@
     </button>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+
+      
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">Dashboard</h1>
-        <!-- Add date range selector -->
-        <div class="d-flex align-items-center">
-          <div class="input-group me-2">
-            <span class="input-group-text">From</span>
-            <input type="date" class="form-control" id="startDate">
-          </div>
-          <div class="input-group me-2">
-            <span class="input-group-text">To</span>
-            <input type="date" class="form-control" id="endDate">
-          </div>
-          <button class="btn btn-primary me-2" onclick="filterByDateRange()">Filter</button>
-          <!-- Add refresh button -->
-          <button class="btn btn-secondary" onclick="refreshData()">
-            <i class="bi bi-arrow-clockwise"></i> Refresh
-          </button>
-        </div>
+        <!-- Filter controls at the very top right corner -->
+       
+
+
       </div>
 
       <!-- Dashboard Cards Row -->
@@ -382,6 +386,25 @@
                 <i class="bi bi-file-earmark-pdf"></i> PDF
               </button>
             </div>
+
+
+            <div style="position: absolute; top: 0; right: 0; padding: 10px;">
+              <div class="d-flex align-items-center">
+                <div class="input-group input-group-sm me-2" style="max-width: 150px;">
+                  <input type="date" class="form-control" id="startDate">
+                </div>
+                <div class="input-group input-group-sm me-2" style="max-width: 150px;">
+                  <input type="date" class="form-control" id="endDate">
+                </div>
+                <button class="btn btn-icon btn-sm text-dark me-1" onclick="filterByDateRange()" title="Filter">
+                  <i class="bi bi-funnel fs-5"></i>
+                </button>
+                <button class="btn btn-icon btn-sm text-dark" onclick="refreshData()" title="Refresh">
+                  <i class="bi bi-arrow-clockwise fs-5"></i>
+                </button>
+              </div>
+            </div>
+
           </div>
 
           <!-- Reports Container -->
@@ -402,17 +425,18 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <% dailySales?.forEach(sale => { %>
-                      <tr>
-                        <td><%= sale.date %></td>
-                        <td><%= sale.totalOrders %></td>
-                        <td><%= sale.totalDeliveredProducts %></td>
-                        <td><%= sale.totalRevenue.toFixed(2) %></td>
-                        <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
-                        <td><%= sale.totalProductDiscount.toFixed(2) %></td>
-                      </tr>
-                    <% }) %>
-                    <% if (!dailySales || dailySales.length === 0) { %>
+                    <% if (dailySales && dailySales.length > 0) { %>
+                      <% dailySales.forEach(sale => { %>
+                        <tr>
+                          <td><%= sale.date %></td>
+                          <td><%= sale.totalOrders %></td>
+                          <td><%= sale.totalDeliveredProducts %></td>
+                          <td>₹<%= Math.floor(sale.totalRevenue) %></td>
+                          <td>₹<%= Math.floor(sale.totalCouponDiscount) %></td>
+                          <td>₹<%= Math.floor(sale.totalProductDiscount) %></td>
+                        </tr>
+                      <% }) %>
+                    <% } else { %>
                       <tr>
                         <td colspan="5" class="text-center">No daily sales data available</td>
                       </tr>
@@ -473,9 +497,9 @@
                           <td><%= sale.startDate %> to <%= sale.endDate %></td>
                           <td><%= sale.totalOrders %></td>
                           <td><%= sale.totalDeliveredProducts %></td>
-                          <td><%= sale.totalRevenue.toFixed(2) %></td>
-                          <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
-                          <td><%= sale.totalProductDiscount.toFixed(2) %></td>
+                          <td>₹<%= Math.floor(sale.totalRevenue) %></td>
+                          <td>₹<%= Math.floor(sale.totalCouponDiscount) %></td>
+                          <td>₹<%= Math.floor(sale.totalProductDiscount) %></td>
                         </tr>
                       <% }) %>
                     <% } else { %>
@@ -538,9 +562,9 @@
                           <td><%= new Date(sale.year, sale.month - 1).toLocaleString('default', { month: 'long', year: 'numeric' }) %></td>
                           <td><%= sale.totalOrders %></td>
                           <td><%= sale.totalDeliveredProducts %></td>
-                          <td><%= sale.totalRevenue.toFixed(2) %></td>
-                          <td><%= sale.totalCouponDiscount.toFixed(2) %></td>
-                          <td><%= sale.totalProductDiscount.toFixed(2) %></td>
+                          <td>₹<%= Math.floor(sale.totalRevenue) %></td>
+                          <td>₹<%= Math.floor(sale.totalCouponDiscount) %></td>
+                          <td>₹<%= Math.floor(sale.totalProductDiscount) %></td>
                         </tr>
                       <% }) %>
                     <% } else { %>
@@ -602,11 +626,10 @@
                         <tr>
                           <td><%= sale.year %></td>
                           <td><%= sale.totalOrders %></td>
-                         
                           <td><%= sale.totalDeliveredProducts %></td>
-                          <td>₹<%= sale.totalRevenue.toFixed(2) %></td>
-                          <td>₹<%= sale.totalCouponDiscount.toFixed(2) %></td>
-                          <td>₹<%= sale.totalProductDiscount.toFixed(2) %></td>
+                          <td>₹<%= Math.floor(sale.totalRevenue) %></td>
+                          <td>₹<%= Math.floor(sale.totalCouponDiscount) %></td>
+                          <td>₹<%= Math.floor(sale.totalProductDiscount) %></td>
                         </tr>
                       <% }) %>
                     <% } else { %>

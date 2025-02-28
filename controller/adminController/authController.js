@@ -81,7 +81,6 @@ const getSalesData = async (startDate, endDate) => {
 
   orders.forEach(order => {
     order.items.forEach(item => {
-      // Count total products only if delivered
       if (item.quantity && item.shippingDetails && item.shippingDetails.status === 'Delivered') {
         totalProductCount += item.quantity;
         totalDeliveredProducts += item.quantity;
@@ -89,23 +88,23 @@ const getSalesData = async (startDate, endDate) => {
         const productPrice = parseFloat(item.productId.price.replace(/,/g, ''));
         const offerPercentage = item.productId.offer ? parseFloat(item.productId.offer) / 100 : 0;
         
-        totalRevenue += (productPrice - (productPrice * offerPercentage)) * item.quantity;
-        totalProductDiscount += offerPercentage * productPrice * item.quantity;
+        totalRevenue += Math.floor((productPrice - (productPrice * offerPercentage)) * item.quantity);
+        totalProductDiscount += Math.floor(offerPercentage * productPrice * item.quantity);
       }
     });
 
     if (order.coupon) {
-      totalCouponDiscount += order.couponDiscount || 0;
+      totalCouponDiscount += Math.floor(order.couponDiscount || 0);
     }
   });
 
   return { 
-    totalOrders,
-    totalProductCount,
-    totalDeliveredProducts,
-    totalRevenue, 
-    totalCouponDiscount, 
-    totalProductDiscount 
+    totalOrders: Math.floor(totalOrders),
+    totalProductCount: Math.floor(totalProductCount),
+    totalDeliveredProducts: Math.floor(totalDeliveredProducts),
+    totalRevenue: Math.floor(totalRevenue),
+    totalCouponDiscount: Math.floor(totalCouponDiscount),
+    totalProductDiscount: Math.floor(totalProductDiscount)
   };
 };
 
@@ -473,11 +472,11 @@ const loadDashboard = async (req, res) => {
           const quantity = item.quantity || 1;
           const offerPercentage = item.productId.offer ? parseFloat(item.productId.offer) / 100 : 0;
           
-          totalRevenue += (productPrice - (productPrice * offerPercentage)) * quantity;
-          totalProductDiscount += offerPercentage * productPrice * quantity;
+          totalRevenue += Math.floor((productPrice - (productPrice * offerPercentage)) * quantity);
+          totalProductDiscount += Math.floor(offerPercentage * productPrice * quantity);
 
           if (order.coupon) {
-            totalCouponDiscount += (order.couponDiscount || 0) / order.items.length;
+            totalCouponDiscount += Math.floor((order.couponDiscount || 0) / order.items.length);
           }
         }
       });
