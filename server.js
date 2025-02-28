@@ -1,4 +1,5 @@
 const express = require("express");
+const Order = require("./models/orderdetails");
 const app = express();
 const adminRoute = require("./routes/admin");
 const userRoute = require("./routes/user");
@@ -66,7 +67,5 @@ app.use("/", userRoute);
 app.listen(process.env.PORT, () => {
   console.log("PORT connected");
 });
-
-
 
 

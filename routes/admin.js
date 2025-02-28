@@ -24,6 +24,7 @@ router.get("/login",adminauth.isLogin, authController.loadLogin);
 router.post("/login", authController.login);
 router.get("/adminlogout", authController.adminLogout);
 router.get("/dashboard", adminauth.checkSession, authController.loadDashboard);
+// router.get("/dashboard-graph", adminauth.checkSession, authController.loadDashboardGraph);
 
 router.get("/usermanage", adminauth.checkSession, userController.loadUserManage);
 router.get("/userupdate/:id", adminauth.checkSession, userController.loadUserUpdate);

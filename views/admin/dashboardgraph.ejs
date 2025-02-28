@@ -61,134 +61,369 @@
         .time-period-selector button.active {
             background: #435ebe;
         }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 400px;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .summary-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .summary-icon {
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+        .filter-section {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        .chart-type-buttons .btn {
+            margin: 0 0.25rem;
+        }
+        .chart-controls {
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+            .chart-type-buttons {
+                flex-wrap: wrap;
+            }
+            .chart-type-buttons .btn {
+                margin: 0.25rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <h1>Profile Visit</h1>
-        <div class="time-period-selector">
-            <button onclick="updateChart('daily')" class="active">Daily</button>
-            <button onclick="updateChart('weekly')">Weekly</button>
-            <button onclick="updateChart('monthly')">Monthly</button>
-            <button onclick="updateChart('yearly')">Yearly</button>
-        </div>
-        <div class="chart-container">
-            <canvas id="visitChart"></canvas>
+    <%- include('../partials/admin/header') %>
+
+    <div class="container-fluid">
+        <div class="row">
+            <button class="btn btn-dark d-md-none" onclick="toggleSidebar()" style="position: fixed; z-index: 1050">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Sales Analytics</h1>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-sm-6 col-lg-2">
+                        <div class="card bg-primary text-white summary-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Total Revenue</h6>
+                                        <h3 class="mt-2 mb-0">₹<%= totals.revenue.toFixed(2) %></h3>
+                                    </div>
+                                    <i class="bi bi-currency-rupee summary-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-2">
+                        <div class="card bg-success text-white summary-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Total Orders</h6>
+                                        <h3 class="mt-2 mb-0"><%= totals.orders %></h3>
+                                    </div>
+                                    <i class="bi bi-cart-check summary-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-2">
+                        <div class="card bg-info text-white summary-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Total Items</h6>
+                                        <h3 class="mt-2 mb-0"><%= totals.items %></h3>
+                                    </div>
+                                    <i class="bi bi-box summary-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="card bg-warning text-white summary-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Coupon Discounts</h6>
+                                        <h3 class="mt-2 mb-0">₹<%= totals.couponDiscount.toFixed(2) %></h3>
+                                    </div>
+                                    <i class="bi bi-ticket-perforated summary-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="card bg-danger text-white summary-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Product Discounts</h6>
+                                        <h3 class="mt-2 mb-0">₹<%= totals.productDiscount.toFixed(2) %></h3>
+                                    </div>
+                                    <i class="bi bi-percent summary-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Section -->
+                <div class="filter-section">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">Date Range</span>
+                                <input type="date" class="form-control" id="startDateFilter" value="<%= selectedDates.startDate %>">
+                                <span class="input-group-text">to</span>
+                                <input type="date" class="form-control" id="endDateFilter" value="<%= selectedDates.endDate %>">
+                                <button class="btn btn-primary" onclick="applyDateFilter()">
+                                    <i class="bi bi-funnel"></i> Filter
+                                </button>
+                                <button class="btn btn-secondary" onclick="clearDateFilter()">
+                                    <i class="bi bi-x-circle"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="btn-group chart-type-buttons" role="group">
+                                <button type="button" class="btn btn-outline-primary active" onclick="changeTimeFrame('daily')">Daily</button>
+                                <button type="button" class="btn btn-outline-primary" onclick="changeTimeFrame('weekly')">Weekly</button>
+                                <button type="button" class="btn btn-outline-primary" onclick="changeTimeFrame('monthly')">Monthly</button>
+                                <button type="button" class="btn btn-outline-primary" onclick="changeTimeFrame('yearly')">Yearly</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Revenue & Orders Overview</h5>
+                                <div class="chart-controls">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleChartType('line')">
+                                        <i class="bi bi-graph-up"></i> Line
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleChartType('bar')">
+                                        <i class="bi bi-bar-chart"></i> Bar
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="salesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
 
+    <%- include('../partials/admin/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
-        const chartData = {
-            daily: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                data: [15, 25, 20, 30, 25, 35, 28]
-            },
-            weekly: {
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                data: [85, 120, 95, 130]
-            },
-            monthly: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                data: [8, 20, 28, 20, 10, 20, 28, 20, 10, 20, 28, 20]
-            },
-            yearly: {
-                labels: ['2020', '2021', '2022', '2023', '2024'],
-                data: [320, 450, 580, 720, 850]
-            }
-        };
+        const graphData = JSON.parse('<%- JSON.stringify(graphData) %>');
+        let currentTimeFrame = 'daily';
+        let currentChartType = 'line';
+        let salesChart;
 
-        let currentChart = null;
+        function initializeChart() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            const data = graphData[currentTimeFrame];
 
-        function updateChart(period) {
-            // Update active button
-            document.querySelectorAll('.time-period-selector button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`button[onclick="updateChart('${period}')"]`).classList.add('active');
-
-            if (currentChart) {
-                currentChart.destroy();
+            if (!data || !data.labels || !data.revenue || !data.orders) {
+                console.error('Invalid data format:', data);
+                return;
             }
 
-            const config = {
-                type: 'bar',
+            console.log('Initializing chart with data:', data);
+
+            salesChart = new Chart(ctx, {
+                type: currentChartType,
                 data: {
-                    labels: chartData[period].labels,
-                    datasets: [{
-                        label: 'Profile Visits',
-                        data: chartData[period].data,
-                        backgroundColor: '#435ebe',
-                        borderRadius: 4,
-                        barThickness: 30,
-                        maxBarThickness: 30
-                    }]
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Revenue',
+                            data: data.revenue,
+                            borderColor: 'rgb(75, 192, 192)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            yAxisID: 'y',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Orders',
+                            data: data.orders,
+                            borderColor: 'rgb(255, 99, 132)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            yAxisID: 'y1',
+                            tension: 0.4
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
                     plugins: {
-                        legend: {
-                            display: false
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.dataset.yAxisID === 'y') {
+                                        label += '₹' + context.parsed.y.toFixed(2);
+                                    } else {
+                                        label += context.parsed.y;
+                                    }
+                                    return label;
+                                }
+                            }
                         },
-                        title: {
-                            display: false
+                        legend: {
+                            position: 'top',
                         }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true,
+                        x: {
                             grid: {
-                                color: 'rgba(255, 255, 255, 0.1)',
-                                drawBorder: false
-                            },
-                            ticks: {
-                                color: '#ffffff',
-                                font: {
-                                    family: "'Nunito', sans-serif",
-                                    size: 12
-                                }
-                            },
-                            border: {
                                 display: false
                             }
                         },
-                        x: {
-                            grid: {
-                                display: false,
-                                drawBorder: false
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Revenue (₹)'
                             },
                             ticks: {
-                                color: '#ffffff',
-                                font: {
-                                    family: "'Nunito', sans-serif",
-                                    size: 12
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString();
                                 }
-                            },
-                            border: {
-                                display: false
                             }
-                        }
-                    },
-                    layout: {
-                        padding: {
-                            top: 20,
-                            right: 20,
-                            bottom: 20,
-                            left: 20
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Number of Orders'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                stepSize: 1
+                            }
                         }
                     }
                 }
-            };
-
-            currentChart = new Chart(
-                document.getElementById('visitChart'),
-                config
-            );
+            });
         }
 
-        // Initialize with daily data
-        document.addEventListener('DOMContentLoaded', () => {
-            updateChart('daily');
+        function updateChart() {
+            if (!salesChart) {
+                console.error('Chart not initialized');
+                return;
+            }
+
+            const data = graphData[currentTimeFrame];
+            if (!data || !data.labels || !data.revenue || !data.orders) {
+                console.error('Invalid data format for timeframe:', currentTimeFrame);
+                return;
+            }
+
+            console.log('Updating chart with data:', data);
+
+            salesChart.data.labels = data.labels;
+            salesChart.data.datasets[0].data = data.revenue;
+            salesChart.data.datasets[1].data = data.orders;
+            salesChart.update();
+        }
+
+        function changeTimeFrame(timeFrame) {
+            console.log('Changing timeframe to:', timeFrame);
+            currentTimeFrame = timeFrame;
+            document.querySelectorAll('.chart-type-buttons .btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(timeFrame)) {
+                    btn.classList.add('active');
+                }
+            });
+            updateChart();
+        }
+
+        function toggleChartType(type) {
+            currentChartType = type;
+            salesChart.destroy();
+            initializeChart();
+        }
+
+        function applyDateFilter() {
+            const startDate = document.getElementById('startDateFilter').value;
+            const endDate = document.getElementById('endDateFilter').value;
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('Start date cannot be after end date');
+                return;
+            }
+
+            window.location.href = `${window.location.pathname}?startDate=${startDate}&endDate=${endDate}`;
+        }
+
+        function clearDateFilter() {
+            document.getElementById('startDateFilter').value = '';
+            document.getElementById('endDateFilter').value = '';
+            window.location.href = window.location.pathname;
+        }
+
+        // Initialize the chart when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Available data:', graphData);
+            initializeChart();
         });
     </script>
 </body>
