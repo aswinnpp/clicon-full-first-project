@@ -1015,7 +1015,7 @@ function filterProductsByPrice() {
     let visibleCount = 0;
 
     productCards.forEach(card => {
-        const price = extractPrice(card.querySelector('.product-price')); // Use the extractPrice function
+        const price = extractPrice(card.querySelector('.product-price'));
         if (price >= minPrice && price <= maxPrice) {
             card.style.display = "block";
             visibleCount++;
@@ -1432,6 +1432,108 @@ document.querySelectorAll('.category-filter').forEach(checkbox => {
 
 // Initialize filtering on page load
 document.addEventListener('DOMContentLoaded', filterProducts);
+
+// Function to check if a product matches all current filters
+function doesProductMatchFilters(card) {
+    const searchTerm = document.getElementById("q").value.trim().toLowerCase();
+    const productName = card.dataset.name.trim().toLowerCase();
+    const category = card.dataset.category.trim().toLowerCase();
+    const price = extractPrice(card.querySelector('.product-price'));
+    
+    // Get selected categories
+    const selectedCategories = Array.from(document.querySelectorAll(".category-filter:checked"))
+        .map(checkbox => checkbox.value.trim().toLowerCase());
+    
+    // Get price range
+    const minPrice = parseFloat(document.getElementById('min-price').value) || 0;
+    const maxPrice = parseFloat(document.getElementById('max-price').value) || Infinity;
+    
+    // Check if matches all conditions
+    const matchesSearch = searchTerm === '' || productName.includes(searchTerm);
+    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(category);
+    const matchesPrice = price >= minPrice && price <= maxPrice;
+    
+    return matchesSearch && matchesCategory && matchesPrice;
+}
+
+// Function to update product visibility and count
+function updateProductVisibility() {
+    const productCards = document.querySelectorAll(".product-card");
+    const productList = document.getElementById("product-list");
+    let visibleCount = 0;
+    let visibleProducts = [];
+
+    productCards.forEach(card => {
+        if (doesProductMatchFilters(card)) {
+            card.style.display = "block";
+            visibleProducts.push(card);
+            visibleCount++;
+        } else {
+            card.style.display = "none";
+        }
+    });
+
+    // Update product count
+    document.getElementById("product-count").textContent = `${visibleCount} of ${productCards.length} Products`;
+
+    // Sort visible products if needed
+    const sortOrder = document.getElementById("sortby").value;
+    visibleProducts.sort((a, b) => {
+        switch(sortOrder) {
+            case "price-low":
+                return extractPrice(a.querySelector('.product-price')) - extractPrice(b.querySelector('.product-price'));
+            case "price-high":
+                return extractPrice(b.querySelector('.product-price')) - extractPrice(a.querySelector('.product-price'));
+            case "az":
+                return a.dataset.name.toLowerCase().localeCompare(b.dataset.name.toLowerCase());
+            case "za":
+                return b.dataset.name.toLowerCase().localeCompare(a.dataset.name.toLowerCase());
+            default:
+                return 0;
+        }
+    });
+
+    // Clear and re-append sorted visible products
+    productList.innerHTML = "";
+    visibleProducts.forEach(card => productList.appendChild(card));
+}
+
+// Update event listeners
+document.addEventListener("DOMContentLoaded", function() {
+    // Search input listener
+    const searchInput = document.getElementById("q");
+    searchInput.addEventListener("input", updateProductVisibility);
+
+    // Category filter listeners
+    document.querySelectorAll(".category-filter").forEach(checkbox => {
+        checkbox.addEventListener("change", updateProductVisibility);
+    });
+
+    // Price input listeners
+    document.getElementById('min-price').addEventListener('change', updateProductVisibility);
+    document.getElementById('max-price').addEventListener('change', updateProductVisibility);
+
+    // Sort select listener
+    document.getElementById('sortby').addEventListener('change', updateProductVisibility);
+
+    // Apply price button listener
+    document.getElementById('apply-price').addEventListener('click', updateProductVisibility);
+
+    // Clear filters listener
+    document.getElementById("clear-filters").addEventListener("click", function(e) {
+        e.preventDefault();
+        // Reset all filters
+        document.querySelectorAll(".category-filter").forEach(checkbox => checkbox.checked = false);
+        document.getElementById('min-price').value = '';
+        document.getElementById('max-price').value = '';
+        document.getElementById("q").value = '';
+        document.getElementById("sortby").value = 'az';
+        updateProductVisibility();
+    });
+
+    // Initial update
+    updateProductVisibility();
+});
 </script>
 
 </body>
