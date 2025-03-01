@@ -20,7 +20,7 @@ const loadWallet = async (req, res) => {
         const transactions = await payments.find({ userId: user._id })
             .sort({ createdAt: -1 }) 
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
 
         const totalTransactions = await payments.countDocuments({ userId: user._id });
         const totalPages = Math.ceil(totalTransactions / limit);
@@ -28,14 +28,14 @@ const loadWallet = async (req, res) => {
     
         const wallet = await Wallet.findOne({ userId: user._id });
 
-        // Check if it's an AJAX request
+        
         if (req.xhr) {
             return res.render("user/wallet", { 
                 transactions, 
                 wallet, 
                 page, 
                 totalPages,
-                layout: false // Don't use the layout for AJAX requests
+                layout: false 
             });
         }
 

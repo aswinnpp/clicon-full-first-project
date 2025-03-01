@@ -49,11 +49,29 @@ const addAddress = async (req, res) => {
       userId: id,
     });
 
-    address.save();
+    await address.save();
 
-    res.redirect(`/profile/${id}`);
+    // If it's an AJAX request, send JSON response
+    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+      const savedAddress = await address.populate('userId');
+      res.json({ 
+        success: true, 
+        address: savedAddress,
+        message: 'Address added successfully' 
+      });
+    } else {
+      res.redirect(`/profile/${id}`);
+    }
   } catch (error) {
     console.log(error);
+    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to add address' 
+      });
+    } else {
+      res.redirect(`/profile/${id}`);
+    }
   }
 };
 
@@ -61,10 +79,27 @@ const addAddress = async (req, res) => {
 const removeAdrress = async (req, res) => {
   try {
     await Address.findByIdAndDelete(req.query.address);
-    res.redirect(`/profile/${req.params.id}`);
+    
+    // If it's an AJAX request, send JSON response
+    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+      res.json({ 
+        success: true, 
+        addressId: req.query.address,
+        message: 'Address deleted successfully' 
+      });
+    } else {
+      res.redirect(`/profile/${req.params.id}`);
+    }
   } catch (error) {
     console.error("Remove address error:", error);
-    res.status(500).send("Server Error");
+    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to delete address' 
+      });
+    } else {
+      res.status(500).send("Server Error");
+    }
   }
 };
 
@@ -108,19 +143,43 @@ const editProfile = async (req, res) => {
 };
 
 const editAddress = async (req, res) => {
-  const { adressaId, street, city, state, Country, postalCode, phone, userId } =
-    req.body;
+  try {
+    const { adressaId, street, city, state, Country, postalCode, phone, userId } = req.body;
 
-       const updatedAddress = await Address.findByIdAndUpdate(adressaId, {
-            street,
-            city,
-            state,
-            Country,
-            postalCode,
-            phone,
-          });
+    const updatedAddress = await Address.findByIdAndUpdate(
+      adressaId, 
+      {
+        street,
+        city,
+        state,
+        Country,
+        postalCode,
+        phone,
+      },
+      { new: true }
+    );
 
-  res.redirect(`/profile/${userId}`);
+    // If it's an AJAX request, send JSON response
+    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+      res.json({ 
+        success: true, 
+        address: updatedAddress,
+        message: 'Address updated successfully' 
+      });
+    } else {
+      res.redirect(`/profile/${userId}`);
+    }
+  } catch (error) {
+    console.log(error);
+    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to update address' 
+      });
+    } else {
+      res.redirect(`/profile/${userId}`);
+    }
+  }
 };
 
 module.exports = {

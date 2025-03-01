@@ -523,14 +523,9 @@ body {
                                                                           data-bs-target="#editAddressModal">
                                                                       <i class="fas fa-edit"></i>
                                                                   </button>
-                                                                  <form action="/remove-address/<%= user?._id %>?address=<%= address?.id %>" 
-                                                                        method="post" 
-                                                                        style="display: inline;" 
-                                                                        onsubmit="return confirmDeletion(event, this)">
-                                                                      <button type="submit" class="btn-icon btn-icon-delete">
-                                                                          <i class="fas fa-trash"></i>
-                                                                      </button>
-                                                                  </form>
+                                                                  <button class="btn-icon btn-icon-delete" onclick="deleteAddress('<%= address?.id %>', '<%= user?._id %>')">
+                                                                      <i class="fas fa-trash"></i>
+                                                                  </button>
                                                               </div>
                                                           </div>
                                                       </div>
@@ -540,13 +535,7 @@ body {
                                       <% }) %>
                                   </div>
 
-                                  <% if (address.length === 0) { %>
-                                      <div class="text-center py-5">
-                                          <i class="fas fa-map-marker-alt fa-3x text-muted mb-3"></i>
-                                          <h5 class="text-muted">No addresses found</h5>
-                                          <p class="text-muted">Add a new address to get started</p>
-                                      </div>
-                                  <% } %>
+                                  
                               </div>
                           </div>
                       </div>
@@ -1122,6 +1111,42 @@ body {
 
 <script>
 
+    
+async function loadWalletPage(pageNumber) {
+        try {
+            const walletSection = document.getElementById('wallet-section');
+            
+            walletSection.style.opacity = '0.6';
+            
+            const response = await fetch(`/wallet?page=${pageNumber}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const html = await response.text();
+            
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newContent = doc.querySelector('.container-fluid').innerHTML;
+            
+            walletSection.innerHTML = newContent;
+            
+            
+            walletSection.style.opacity = '1';
+
+        } catch (error) {
+            console.error('Error loading wallet page:', error);
+            alert('Error loading transactions. Please try again.');
+        }
+    }
+
+
+
 document.addEventListener("DOMContentLoaded", function() {
   // ================== Profile Image Preview ==================
   document.getElementById('profileImage')?.addEventListener('change', function(event) {
@@ -1200,7 +1225,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Validation for Add Address Form
-    document.getElementById("addAddressModal")?.querySelector("form")?.addEventListener("submit", (event) => {
+    document.getElementById("addAddressModal")?.querySelector("form")?.addEventListener("submit", async (event) => {
         event.preventDefault();
         const errorMsg = document.getElementById("errorp");
         errorMsg.innerHTML = "";
@@ -1219,11 +1244,74 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!country) return (errorMsg.innerHTML = "Country is required.");
         if (!isValidPostalCode(postalCode)) return (errorMsg.innerHTML = "Invalid postal code.");
 
-        event.target.submit();
+        try {
+            const formData = new FormData(event.target);
+            const formDataObj = {};
+            formData.forEach((value, key) => {
+                formDataObj[key] = value;
+            });
+
+            const response = await fetch('/address', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formDataObj)
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                // Get the specific address container inside the address section
+                const addressesContainer = document.querySelector('#address-section .card .card-body .row');
+                
+                // Remove the "No addresses found" message if it exists
+                const noAddressesMsg = addressesContainer.querySelector('.text-center.py-5');
+                if (noAddressesMsg) {
+                    noAddressesMsg.remove();
+                }
+
+                // Create and add the new address card
+                const newAddressCard = createAddressCard({
+                    _id: result.address._id,
+                    userId: result.address.userId,
+                    street: street,
+                    city: city,
+                    state: state,
+                    country: country,
+                    postalCode: postalCode,
+                    phone: phone
+                });
+                
+                // Add the new card to the beginning of the addresses container
+                addressesContainer.insertAdjacentHTML('afterbegin', newAddressCard);
+                
+                // Reset the form
+                event.target.reset();
+                
+                // Close modal using jQuery
+                $('#addAddressModal').modal('hide');
+                
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: result.message,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else {
+                throw new Error(result.message || 'Failed to add address');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            errorMsg.innerHTML = error.message || "Failed to add address. Please try again.";
+        }
     });
 
     // Validation for Edit Address Form
-    document.getElementById("edit-address")?.addEventListener("submit", (event) => {
+    document.getElementById("edit-address")?.addEventListener("submit", async (event) => {
         event.preventDefault();
         const errorMsg = document.getElementById("error-message");
         errorMsg.innerHTML = "";
@@ -1234,6 +1322,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const state = document.getElementById("editState").value.trim();
         const country = document.getElementById("editCountry").value.trim();
         const postalCode = document.getElementById("editPostalCode").value.trim();
+        const addressId = document.getElementById("editId").value;
 
         if (!isValidStreet(street)) return (errorMsg.innerHTML = "Invalid street address.");
         if (!city) return (errorMsg.innerHTML = "City is required.");
@@ -1242,7 +1331,102 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!country) return (errorMsg.innerHTML = "Country is required.");
         if (!isValidPostalCode(postalCode)) return (errorMsg.innerHTML = "Invalid postal code.");
 
-        event.target.submit();
+        try {
+            const formData = new FormData(event.target);
+            const formDataObj = {};
+            formData.forEach((value, key) => {
+                formDataObj[key] = value;
+            });
+
+            const response = await fetch('/edit-address', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formDataObj)
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                // Find the existing address card
+                const addressCard = document.querySelector(`div[data-address-id="${addressId}"]`);
+                if (addressCard) {
+                    // Create the updated address card HTML
+                    const updatedCard = createAddressCard({
+                        _id: addressId,
+                        userId: formDataObj.userId,
+                        street: street,
+                        city: city,
+                        state: state,
+                        country: country,
+                        postalCode: postalCode,
+                        phone: phone
+                    });
+                    
+                    // Add fade-out effect
+                    addressCard.style.transition = 'opacity 0.3s ease';
+                    addressCard.style.opacity = '0';
+                    
+                    // After fade-out, update the card content and fade it back in
+                    setTimeout(() => {
+                        addressCard.outerHTML = updatedCard;
+                        const newCard = document.querySelector(`div[data-address-id="${addressId}"]`);
+                        if (newCard) {
+                            newCard.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                            newCard.style.opacity = '0';
+                            newCard.style.transform = 'translateY(-10px)';
+                            
+                            requestAnimationFrame(() => {
+                                newCard.style.opacity = '1';
+                                newCard.style.transform = 'translateY(0)';
+                            });
+                        }
+                    }, 300);
+                    
+                    // Reset form and close modal using jQuery
+                    event.target.reset();
+                    $('#editAddressModal').modal('hide');
+                    
+                    // Show success message with SweetAlert2
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Address Updated!',
+                        text: 'Your address has been successfully updated.',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        position: 'top-end',
+                        toast: true
+                    });
+
+                    // Update address numbering
+                    const addressContainer = document.querySelector('#address-section .card .card-body .row');
+                    const allAddressCards = addressContainer.querySelectorAll('.address-card');
+                    allAddressCards.forEach((card, index) => {
+                        const addressTitle = card.querySelector('.fw-bold');
+                        if (addressTitle) {
+                            addressTitle.textContent = `Address ${index + 1}`;
+                        }
+                    });
+                }
+            } else {
+                throw new Error(result.message || 'Failed to update address');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            // Show error message with SweetAlert2
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: error.message || 'Failed to update address. Please try again.',
+                timer: 3000,
+                showConfirmButton: false,
+                position: 'top-end',
+                toast: true
+            });
+            errorMsg.innerHTML = error.message || "Failed to update address. Please try again.";
+        }
     });
 
   // ================== Referral Code Share ==================
@@ -1332,13 +1516,153 @@ function editAddress(id, street, city, state, country, postalCode, phone) {
     document.getElementById('editPostalCode').value = postalCode;
     document.getElementById('editPhone').value = phone;
     document.getElementById('editId').value = id;
-    document.getElementById('edit-address').action = `/edit-address`;
 }
 
 function togglePasswordFields() {
     const passwordFields = document.getElementById('passwordFields');
     const checkbox = document.getElementById('changePassword');
     passwordFields.style.display = checkbox.checked ? 'block' : 'none';
+}
+
+// Helper function to create address card HTML
+function createAddressCard(address) {
+    return `
+        <div class="col-12 mb-3" data-address-id="${address._id}">
+            <div class="address-card rounded-3 p-3">
+                <div class="row g-2">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center mb-2">
+                            <h6 class="fw-bold mb-0 me-2">Address</h6>
+                        </div>
+                        <div class="address-details">
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <p class="mb-1">
+                                        <i class="fas fa-map-marker-alt me-1 text-primary"></i>
+                                        ${address.street}
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="fas fa-city me-1 text-primary"></i>
+                                        ${address.city}, ${address.state}
+                                    </p>
+                                </div>
+                                <div class="col-6">
+                                    <p class="mb-1">
+                                        <i class="fas fa-globe me-1 text-primary"></i>
+                                        ${address.country}, ${address.postalCode}
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="fas fa-phone me-1 text-primary"></i>
+                                        ${address.phone}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex justify-content-end">
+                            <div class="address-actions">
+                                <button class="btn-icon btn-icon-edit" 
+                                        onclick="editAddress('${address._id}', '${address.street}', '${address.city}', '${address.state}', '${address.country}', '${address.postalCode}', '${address.phone}')" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editAddressModal">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-icon btn-icon-delete" onclick="deleteAddress('${address._id}', '${address.userId}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Function to handle address deletion
+async function deleteAddress(addressId, userId) {
+    try {
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "This action cannot be undone!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel"
+        });
+
+        if (result.isConfirmed) {
+            const response = await fetch(`/remove-address/${userId}?address=${addressId}`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Find the address card and its parent container
+                const addressCard = document.querySelector(`div[data-address-id="${addressId}"]`);
+                const addressContainer = document.querySelector('#address-section .card .card-body .row');
+                
+                if (addressCard && addressContainer) {
+                    // Add fade out animation
+                    addressCard.style.transition = 'opacity 0.3s ease';
+                    addressCard.style.opacity = '0';
+                    
+                    // Wait for animation to complete before removing
+                    setTimeout(() => {
+                        // Remove the address card
+                        addressCard.remove();
+                        
+                        // Check remaining addresses
+                        const remainingCards = addressContainer.querySelectorAll('.address-card');
+                        
+                        if (remainingCards.length === 0) {
+                            // If no addresses left, show empty state
+                            addressContainer.innerHTML = `
+                                <div class="text-center py-5">
+                                    <i class="fas fa-map-marker-alt fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No addresses found</h5>
+                                    <p class="text-muted">Add a new address to get started</p>
+                                </div>
+                            `;
+                        } else {
+                            // Update the numbering of remaining addresses
+                            remainingCards.forEach((card, index) => {
+                                const addressTitle = card.querySelector('.fw-bold');
+                                if (addressTitle) {
+                                    addressTitle.textContent = `Address ${index + 1}`;
+                                }
+                            });
+                        }
+                        
+                        // Show success message
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: data.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    },1000);
+                }
+            } else {
+                throw new Error(data.message || 'Failed to delete address');
+            }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: error.message || 'Failed to delete address. Please try again.',
+        });
+    }
 }
 
 </script>
