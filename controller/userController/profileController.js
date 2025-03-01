@@ -32,8 +32,6 @@ const loadProfile = async (req, res) => {
   }
 };
 
-
-
 const addAddress = async (req, res) => {
   try {
     console.log(req.body);
@@ -74,7 +72,6 @@ const addAddress = async (req, res) => {
     }
   }
 };
-
 
 const removeAdrress = async (req, res) => {
   try {

@@ -13,8 +13,33 @@
     <link rel="stylesheet" href="/assets/css/plugins/owl-carousel/owl.carousel.css">
     <link rel="stylesheet" href="/assets/css/plugins/magnific-popup/magnific-popup.css">
     <link rel="stylesheet" href="/assets/css/plugins/nouislider/nouislider.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
+
+
+    .invoice-section {
+        width: 100%;
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        background-color: #fff;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 8px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+    th {
+        background-color: #f8f9fa;
+        text-align: center;
+    }
+
+
         :root {
             --primary-color: #8187a8;
             --success-color: #0abf53;
@@ -147,6 +172,47 @@
 
         .btn-return:disabled {
             background-color: #ccc;
+        }
+
+        .invoice-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .invoice-section h4 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .invoice-details {
+            margin-bottom: 15px;
+        }
+
+        .invoice-details p {
+            margin: 5px 0;
+        }
+
+        .download-invoice-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .download-invoice-btn:hover {
+            background-color: #218838;
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -414,8 +480,10 @@
     </div>
 
     <!-- Add this right below the Shipping Details div inside the col-lg-4 column -->
-<div class="order-summary-card mb-2 ">
-    <h5 class="mb-3">Order Summary</h5>
+<div class="order-summary-card mb-2">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Order Summary</h5>
+    </div>
     <div class="row mb-2">
         <div class="col-6">Quantity:</div>
         <div class="col-6 text-end"><%= item.quantity %></div>
@@ -429,30 +497,51 @@
         <div class="col-6 text-end">₹<%= (item.quantity * originalPrice).toFixed(2) %></div>
     </div>
    
-        <div class="row mb-2">
-            <div class="col-6"> Unit Price After    Discount:</div>
-            <div class="col-6 text-end">₹<%= Math.floor(discountedPrice)  %></div>
-        </div>
+    <div class="row mb-2">
+        <div class="col-6"> Unit Price After Discount:</div>
+        <div class="col-6 text-end">₹<%= Math.floor(discountedPrice)  %></div>
+    </div>
 
-        <div class="row mb-2">
-            <div class="col-6">Coupon Applied:</div>
-            <div class="col-6 text-end">-₹<%= item.coupons ||0 %></div>
+    <div class="row mb-2">
+        <div class="col-6">Coupon Applied:</div>
+        <div class="col-6 text-end">-₹<%= item.coupons ||0 %></div>
+    </div>
+
+    <div class="row pt-3 border-top">
+        <div class="col-6 fw-bold">Total:</div>
+        <div class="col-6 text-end fw-bold">
+            <% if (order.paymentMethod && (order.paymentMethod === "razorpay" || order.paymentMethod === "Wallet")) { %>
+                <div style="color: rgb(113, 113, 34);">Paid </div> ₹ <%= Math.floor(total)  %>
+            <% } else { %>
+                ₹ <%= Math.floor(total)  %>
+            <% } %>
         </div>
-  
-        <div class="row pt-3 border-top">
-            <div class="col-6 fw-bold">Total:</div>
-            <div class="col-6 text-end fw-bold">
-                <% if (order.paymentMethod && (order.paymentMethod === "razorpay" || order.paymentMethod === "Wallet")) { %>
-                    <div style="color: rgb(113, 113, 34);">Paid </div> ₹ <%= Math.floor(total)  %>
-                <% } else { %>
-                    ₹ <%= Math.floor(total)  %>
-                <% } %>
-            </div>
-        </div>
-        
-        
+    </div>
 </div>
 
+<!-- Download Invoice Button -->
+<div class="order-summary-card mb-4 text-end">
+    <button onclick="downloadInvoice(this)" 
+            class="download-invoice-btn"
+            data-order='<%- JSON.stringify({
+                orderId: order?._id,
+                customOrderId: order?.customOrderId,
+                orderDate: order?.orderDate,
+                billingAddress: order?.billingAddress,
+                totalAmount: order?.totalAmount,
+                paymentMethod: order?.paymentMethod,
+                items: order?.items?.map(item => ({
+                    productName: item?.productId?.productname,
+                    quantity: item?.quantity,
+                    price: item?.price,
+                    offer: item?.offer,
+                    discountedPrice: item?.price - (item?.price * (parseInt(item?.offer) || 0) / 100),
+                    total: (item?.price - (item?.price * (parseInt(item?.offer) || 0) / 100)) * item?.quantity
+                }))
+            }) %>'>
+        <i class="fas fa-download"></i> Download Invoice
+    </button>
+</div>
 
 <div class="modal fade" id="returnModal-<%= item?.productId._id %>" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg"> <!-- Added modal-lg for larger modal -->
@@ -530,8 +619,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-    function confirmCancel(orderId, productId ,quantity) {
+    const { jsPDF } = window.jspdf;
+</script>
+
+<script>
+   
+   function confirmCancel(orderId, productId ,quantity) {
     
         Swal.fire({
     title: "Are you sure?",
@@ -567,6 +662,148 @@
     }
 });
     }
+    
+    
+    
+    
+    function downloadInvoice(button) {
+    const orderData = JSON.parse(button.dataset.order);
+    const doc = new jsPDF();
+
+    // Set document properties¹
+    doc.setProperties({
+        title: `Invoice-${orderData.customOrderId}`,
+        subject: 'Clicon Store Invoice',
+        author: 'Clicon Store',
+        keywords: 'invoice, order, purchase'
+    });
+
+    // Simple white background²
+    doc.setFillColor(255, 255, 255);
+    doc.rect(0, 0, 210, 297, 'F');
+    
+    // Simple header³
+    doc.setFillColor(41, 128, 185);
+    doc.rect(0, 0, 210, 20, 'F');
+    
+    // Title⁴
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(24);
+    doc.setTextColor(255, 255, 255);
+    doc.text("INVOICE", 105, 14, { align: "center" });
+    
+    // Reset text color⁵
+    doc.setTextColor(0, 0, 0);
+
+    // Company info⁶
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Clicon Store", 15, 30);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text("Main Street, Kerala, India", 15, 36);
+    
+    // Invoice info⁷
+    doc.setFont("helvetica", "bold");
+    doc.text("Invoice Number:", 140, 30);
+    doc.setFont("helvetica", "normal");
+    doc.text(`INV-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`, 180, 30);
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("Date:", 140, 36);
+    doc.setFont("helvetica", "normal");
+    doc.text(new Date(orderData.orderDate).toLocaleDateString(), 180, 36);
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("Payment Method:", 140, 42);
+    doc.setFont("helvetica", "normal");
+    doc.text(orderData.paymentMethod, 180, 42);
+
+    // Separator line⁸
+    doc.setDrawColor(200, 200, 200);
+    doc.line(15, 48, 195, 48);
+
+    // Customer info⁹
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("Bill To:", 15, 58);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${orderData.billingAddress?.name || ''}`, 15, 65);
+    doc.text(`${orderData.billingAddress?.street || ''}`, 15, 71);
+    doc.text(`${orderData.billingAddress?.city || ''}, ${orderData.billingAddress?.state || ''}`, 15, 77);
+    doc.text(`${orderData.billingAddress?.postcode || ''}`, 15, 83);
+    doc.text(`${orderData.billingAddress?.country || 'India'}`, 15, 89);
+    doc.text(`Phone: ${orderData.billingAddress?.phone || ''}`, 15, 95);
+    doc.text(`Email: ${orderData.billingAddress?.email || ''}`, 15, 101);
+
+    // Separator line¹⁰
+    doc.line(15, 108, 195, 108);
+
+    // Table Headers¹¹
+    let startY = 118;
+    doc.setFillColor(240, 240, 240);
+    doc.rect(15, startY - 6, 180, 10, 'F');
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+
+    doc.text("Product", 20, startY);
+    doc.text("Qty", 100, startY);
+    doc.text("Price", 120, startY);
+    doc.text("Discount", 145, startY);
+    doc.text("Total", 175, startY);
+    
+    // Table content¹²
+    doc.setFont("helvetica", "normal");
+    let y = startY + 10;
+    let subtotal = 0;
+
+    orderData.items.forEach((item) => {
+        const unitPrice = Math.floor(parseFloat(item.price)) || 0;
+        const discount = item.offer ? parseFloat(item.offer) : 0;
+        const discountAmount = Math.floor((unitPrice * discount) / 100);
+        const netPrice = Math.floor(unitPrice - discountAmount);
+        const total = Math.floor(netPrice * parseInt(item.quantity));
+        subtotal += total;
+
+        // Table Data¹³
+        doc.text(item.productName || '', 20, y, { maxWidth: 75 });
+        doc.text(item.quantity.toString(), 100, y);
+        doc.text("₹" + unitPrice.toString(), 120, y);
+        doc.text(Math.floor(discount).toString() + "%", 145, y);
+        doc.text("₹" + total.toString(), 175, y);
+
+        y += 10;
+        
+        // Add line between items¹⁴
+        doc.setDrawColor(230, 230, 230);
+        doc.line(15, y - 5, 195, y - 5);
+    });
+
+    // Total Section¹⁵
+    y += 10;
+    doc.setFont("helvetica", "bold");
+    doc.text("Total Amount:", 140, y);
+    doc.text("₹" + Math.floor(subtotal).toString(), 175, y);
+
+    // Footer¹⁶
+    doc.setDrawColor(41, 128, 185);
+    doc.setLineWidth(0.5);
+    doc.line(15, y + 15, 195, y + 15);
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text("This is a computer-generated invoice. No signature required.", 105, y + 25, { align: "center" });
+    
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(10);
+    doc.setTextColor(41, 128, 185);
+    doc.text("Thank you for shopping with Clicon Store!", 105, y + 35, { align: "center" });
+
+    // Save PDF¹⁷
+    doc.save(`invoice-${orderData.customOrderId}.pdf`);
+}
+
 </script>
 </body>
 </html>

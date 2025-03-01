@@ -421,18 +421,19 @@ border-color: #ced4da;
                         <div class="pagination-container">
                             <div class="pagination">
                                 <% if (currentPage > 1) { %>
-                                    <a href="?page=<%= currentPage - 1 %>&q=<%= searchQuery %>&category=<%= selectedCategories %>&minPrice=<%= minPrice %>&maxPrice=<%= maxPrice %>&sort=<%= sortOrder %>" class="prev">Previous</a>
+                                    <a href="#" class="prev" data-page="<%= currentPage - 1 %>">Previous</a>
                                 <% } %>
                                 
                                 <% for (let i = 1; i <= totalPages; i++) { %>
-                                    <a href="?page=<%= i %>&q=<%= searchQuery %>&category=<%= selectedCategories %>&minPrice=<%= minPrice %>&maxPrice=<%= maxPrice %>&sort=<%= sortOrder %>"
-                                       class="<%= i === currentPage ? 'active' : '' %>">
+                                    <a href="#" 
+                                       class="<%= i === currentPage ? 'active' : '' %>"
+                                       data-page="<%= i %>">
                                         <%= i %>
                                     </a>
                                 <% } %>
                                     
                                 <% if (currentPage < totalPages) { %>
-                                    <a href="?page=<%= currentPage + 1 %>&q=<%= searchQuery %>&category=<%= selectedCategories %>&minPrice=<%= minPrice %>&maxPrice=<%= maxPrice %>&sort=<%= sortOrder %>" class="next">Next</a>
+                                    <a href="#" class="next" data-page="<%= currentPage + 1 %>">Next</a>
                                 <% } %>
                             </div>
                         </div>
@@ -1485,9 +1486,9 @@ function updateProductVisibility() {
             case "price-high":
                 return extractPrice(b.querySelector('.product-price')) - extractPrice(a.querySelector('.product-price'));
             case "az":
-                return a.dataset.name.toLowerCase().localeCompare(b.dataset.name.toLowerCase());
+                return a.dataset.name.localeCompare(b.dataset.name);
             case "za":
-                return b.dataset.name.toLowerCase().localeCompare(a.dataset.name.toLowerCase());
+                return b.dataset.name.localeCompare(a.dataset.name);
             default:
                 return 0;
         }
@@ -1534,6 +1535,138 @@ document.addEventListener("DOMContentLoaded", function() {
     // Initial update
     updateProductVisibility();
 });
+
+// Function to handle all product filtering and sorting
+function updateProductDisplay() {
+    const productCards = document.querySelectorAll(".product-card");
+    const productList = document.getElementById("product-list");
+    let visibleProducts = [];
+
+    // Get all filter values
+    const searchTerm = document.getElementById("q").value.trim().toLowerCase();
+    const selectedCategories = Array.from(document.querySelectorAll(".category-filter:checked"))
+        .map(checkbox => checkbox.value.trim().toLowerCase());
+    const minPrice = parseFloat(document.getElementById('min-price').value) || 0;
+    const maxPrice = parseFloat(document.getElementById('max-price').value) || Infinity;
+    const sortOrder = document.getElementById("sortby").value;
+
+    // Filter products
+    productCards.forEach(card => {
+        const productName = card.dataset.name.toLowerCase();
+        const category = card.dataset.category.toLowerCase();
+        const price = extractPrice(card.querySelector('.product-price'));
+
+        // Check all conditions
+        const matchesSearch = !searchTerm || productName.includes(searchTerm);
+        const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(category);
+        const matchesPrice = price >= minPrice && price <= maxPrice;
+
+        // Show/hide based on all conditions
+        if (matchesSearch && matchesCategory && matchesPrice) {
+            visibleProducts.push(card);
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+
+    // Sort visible products
+    visibleProducts.sort((a, b) => {
+        switch(sortOrder) {
+            case "price-low":
+                return extractPrice(a.querySelector('.product-price')) - 
+                       extractPrice(b.querySelector('.product-price'));
+            case "price-high":
+                return extractPrice(b.querySelector('.product-price')) - 
+                       extractPrice(a.querySelector('.product-price'));
+            case "az":
+                return a.dataset.name.localeCompare(b.dataset.name);
+            case "za":
+                return b.dataset.name.localeCompare(a.dataset.name);
+            default:
+                return 0;
+        }
+    });
+
+    // Update display
+    productList.innerHTML = "";
+    visibleProducts.forEach(card => productList.appendChild(card));
+    
+    // Update product count
+    document.getElementById("product-count").textContent = 
+        `${visibleProducts.length} of ${productCards.length} Products`;
+}
+
+// Event Listeners
+document.addEventListener("DOMContentLoaded", function() {
+    // Category filter changes
+    document.querySelectorAll(".category-filter").forEach(checkbox => {
+        checkbox.addEventListener("change", updateProductDisplay);
+    });
+
+    // Search input
+    const searchInput = document.getElementById("q");
+    searchInput.addEventListener("input", updateProductDisplay);
+
+    // Price filter changes
+    document.getElementById('min-price').addEventListener('change', updateProductDisplay);
+    document.getElementById('max-price').addEventListener('change', updateProductDisplay);
+    document.getElementById('apply-price').addEventListener('click', updateProductDisplay);
+
+    // Sort changes
+    document.getElementById('sortby').addEventListener('change', updateProductDisplay);
+
+    // Clear all filters
+    document.getElementById("clear-filters").addEventListener("click", function(e) {
+        e.preventDefault();
+        // Reset all filters
+        document.querySelectorAll(".category-filter").forEach(checkbox => checkbox.checked = false);
+        document.getElementById('min-price').value = '';
+        document.getElementById('max-price').value = '';
+        document.getElementById("q").value = '';
+        document.getElementById("sortby").value = 'az';
+        updateProductDisplay();
+    });
+
+    // Initial display
+    updateProductDisplay();
+});
+
+// Update the pagination event handlers
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click handlers for pagination links
+    document.querySelectorAll('.pagination a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = this.getAttribute('data-page');
+            if (!page) return;
+
+            // Get current filter values
+            const minPrice = document.getElementById('min-price')?.value || '';
+            const maxPrice = document.getElementById('max-price')?.value || '';
+            const searchQuery = document.getElementById('q')?.value || '';
+            const sortOrder = document.getElementById('sortby')?.value || 'az';
+            
+            // Get selected categories
+            const categoryCheckboxes = document.querySelectorAll('.category-filter:checked');
+            const categories = Array.from(categoryCheckboxes)
+                .map(cb => cb.value)
+                .join(',');
+
+            // Build the URL with current filters and new page
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', page);
+            if (minPrice) url.searchParams.set('minPrice', minPrice);
+            if (maxPrice) url.searchParams.set('maxPrice', maxPrice);
+            if (searchQuery) url.searchParams.set('q', searchQuery);
+            if (sortOrder) url.searchParams.set('sort', sortOrder);
+            if (categories) url.searchParams.set('category', categories);
+
+            // Navigate to new URL
+            window.location.href = url.toString();
+        });
+    });
+});
 </script>
 
 </body>
@@ -1541,4 +1674,5 @@ document.addEventListener("DOMContentLoaded", function() {
 
 <!-- molla/category-4cols.html  22 Nov 2019 10:02:55 GMT -->
 </html>
+
 
