@@ -83,54 +83,9 @@ router.get("/wallet",userauth.checkSession, userauth.isBan, WalletController.loa
 router.post ("/returns",orderController.productReturns )
 
 router.get("/banpage", homeController.banPage);
-// In your Express route file
-router.get('/getCartSummary', async (req, res) => {
-    try {
-        // Get user's cart items and calculate totals
 
-        const user = await userSchema.findOne({email:req.session.details.email})
-        const items = await Cart.find({ userId:user._id })
-            .populate('items.productId');
 
-        let originalTotal = 0;
-        let totalDiscount = 0;
-        let finalTotal = 0;
-        let totalItems = 0;
-        items.forEach(cart => {
-            cart.items.forEach(item => {
-                if (item.productId && item.productId.price) {
-                    const originalPrice = parseFloat(item.productId.price.replace(/,/g, '')) || 0;
-                    const discountMatch = item.productId.offer ? item.productId.offer.match(/\d+/) : null;
-                    const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
-
-                    // Calculate per item
-                    const singleItemDiscountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
-                    const singleItemOriginalTotal = originalPrice;
-                    const singleItemDiscountAmount = originalPrice - singleItemDiscountedPrice;
-
-                    // Multiply by quantity for total
-                    const itemTotalOriginal = singleItemOriginalTotal * item.quantity;
-                    const itemTotalDiscounted = singleItemDiscountedPrice * item.quantity;
-                    const discountAmount = singleItemDiscountAmount * item.quantity;
-                }
-
-                originalTotal += itemTotalOriginal;
-                totalDiscount += discountAmount;
-                finalTotal += itemTotalDiscounted;
-                totalItems += item.quantity;
-            });
-        });
-
-        console.log(originalTotal,totalDiscount,finalTotal,totalItems)
-
-        res.json({
-            originalTotal,
-        });
-    } catch (error) {
-        console.error('Error calculating cart summary:', error);
-        res.status(500).json({ error: 'Error calculating cart summary' });
-    }
-}); 
+router.get('/getCartSummary', cartController.getSummery); 
 
 router.get("*", (req, res) => res.status(404).render("user/404"));
 router.post("/updatecart",cartController.updateCart)

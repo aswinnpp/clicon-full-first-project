@@ -632,9 +632,23 @@ body {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="profile-edit-form" action="/update-profile" method="POST" enctype="multipart/form-data">
+
+
+        <form id="profile-edit-form"  enctype="multipart/form-data">
           <div class="mb-3">
-            <input type="hidden" name="userId" value="<%=user._id %>">
+            <input type="hidden" name="userId" value="<%= user._id %>">
+
+            <div class="mb-3 text-center">
+                <label for="profileImage" class="position-relative d-inline-block">
+                    <input type="file" class="d-none" id="profileImage" name="image" accept="image/*">
+                    <img id="profileImagePreview" 
+                         src="<%= user.image || '/default-avatar.jpg' %>" 
+                         alt="Profile Preview" 
+                         class="rounded-circle border border-2" 
+                         style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;">
+                </label>
+            </div>
+            
             <label for="profile-name" class="form-label">Name</label>
             <input type="text" class="form-control" id="profile-name" name="name" value="<%= user?.name %>">
           </div>
@@ -642,35 +656,48 @@ body {
             <label for="phone" class="form-label">Phone</label>
             <input type="text" class="form-control" id="phone" name="phone" value="<%= user?.phone %>">
           </div>
+          
+
+ <div class="mb-3 form-check">
+  <input type="checkbox" class="form-check-input" id="changePassword" onchange="toggleForms()">
+  <label class="form-check-label" for="changePassword">Change Password</label>
+</div>
+
+
+
+  <% if (user.password && user.password !== "") { %>
+    <div  id="passwordForm" style="display: none;">
+
+        <div class="mb-3">
+            <label for="current-password" class="form-label">Current Password</label>
+            <input type="password" class="form-control" id="current-password"  >
+          </div>
           <div class="mb-3">
-            <label for="profileImage" class="form-label">Profile Image</label>
-            <input type="file" class="form-control" id="profileImage" name="image">
+            <label for="profile-password" class="form-label">New Password</label>
+            <input type="password" class="form-control" id="profile-password" >
+            <input type="hidden" name="userId" value="<%= user._id %>" id="userId">
           </div>
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="changePassword" onchange="togglePasswordFields()">
-            <label class="form-check-label" for="changePassword">Change Password</label>
-          </div>
-
-
-          <div id="passwordFields" style="display: none;">
-            <div class="mb-3">
-                <label for="current-password" class="form-label">Current Password</label>
-                <input type="password" class="form-control" id="current-password" name="currentPassword">
-              </div>
-            <div class="mb-3">
-              <label for="profile-password" class="form-label">New Password</label>
-              <input type="password" class="form-control" id="profile-password" name="password">
-            </div>
-            <div class="mb-3">
-              <label for="profile-confirmpassword" class="form-label">Confirm Password</label>
-              <input type="password" class="form-control" id="profile-confirmpassword" name="confirmPassword">
-            </div>
+          <div class="mb-3">
+            <label for="profile-confirmpassword" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="profile-confirmpassword" name="confirmPassword">
           </div>
 
+    </div>
+  <% } %>
+  <% if (!user.password || user.password === "") { %>
+    <div class="mb-3" id="emailForm" style="display: none;">
+      <label for="email-verification" class="form-label">Verify Email</label>
+      <input type="email" class="form-control" id="email-verification" name="emailVerification" placeholder="Enter your email">
+      <input type="hidden" name="userId" value="<%= user._id %>">
+    </div>
+   
+    
+  <% } %>
+  <div id="errorpp" class="text-danger"></div>
+    <button type="submit" class="btn btn-primary">Save Password</button>
+        </form> 
 
-          <div id="errorpp" class="text-danger"></div>
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-        </form>
+
       </div>
     </div>
   </div>
@@ -1151,6 +1178,8 @@ document.addEventListener("DOMContentLoaded", function() {
   // ================== Profile Image Preview ==================
   document.getElementById('profileImage')?.addEventListener('change', function(event) {
       const file = event.target.files[0];
+      console.log("file",file);
+      
       if (file) {
           const reader = new FileReader();
           reader.onload = function(e) {
@@ -1160,31 +1189,93 @@ document.addEventListener("DOMContentLoaded", function() {
       }
   });
 
-  // ================== Profile Edit Form Validation ==================
-  const profileEditForm = document.getElementById("profile-edit-form");
-  const changePasswordCheckbox = document.getElementById("changePassword");
+ // ================== Profile Edit Form Validation ==================
+ const profileEditForm = document.getElementById("profile-edit-form");
+const changePasswordCheckbox = document.getElementById("changePassword");
+const errorMsg = document.getElementById("errorpp");
+
+// Fetch user's original email from the server
+const userHasPassword = <%= user.password ? true : false %>;  // Checking if the user has a password
+const userOriginalEmail = "<%= user.email %>";  // Get user's original email
+
+document.getElementById("profile-edit-form")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const errorMsg = document.getElementById("errorpp");
+    errorMsg.innerHTML = "";
+
+    const name = document.getElementById("profile-name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const emailVerification = document.getElementById("email-verification")?.value.trim();
+    const password = document.getElementById("profile-password")?.value.trim();
+    const confirmPassword = document.getElementById("profile-confirmpassword")?.value.trim();
+    const currentPassword = document.getElementById("current-password")?.value.trim();
+    const userId = document.getElementById("userId")?.value.trim();
+    const fileInput = document.getElementById("profileImage");
+    const changePasswordCheckbox = document.getElementById("changePassword");
+
+    if (!name) return (errorMsg.innerHTML = "Name is required.");
+
+    if (!/^\d{10,15}$/.test(phone) || /^(\d)\1+$/.test(phone)) {
+        return (errorMsg.innerHTML = "Invalid phone number.");
+    }
+
   
-  profileEditForm?.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const errorMsg = document.getElementById("errorpp");
-      errorMsg.innerHTML = "";
+    if (!userHasPassword && changePasswordCheckbox?.checked) {
+        if (!emailVerification || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVerification)) {
+            return (errorMsg.innerHTML = "A valid email is required for verification.");
+        }
+        if (emailVerification !== userOriginalEmail) {
+            return (errorMsg.innerHTML = "Email does not match our records.");
+        }
+    }
 
-      const name = document.getElementById("profile-name").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const password = document.getElementById("profile-password").value.trim();
-      const confirmPassword = document.getElementById("profile-confirmpassword").value.trim();
+   
+    if (userHasPassword && changePasswordCheckbox?.checked) {
+        if (!currentPassword) {
+            return (errorMsg.innerHTML = "Current password is required.");
+        }
+        if (!password || password.length < 6 || !/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+            return (errorMsg.innerHTML = "Password must be at least 6 characters, with uppercase, lowercase, number, and special character.");
+        }
+        if (password !== confirmPassword) {
+            return (errorMsg.innerHTML = "Passwords do not match.");
+        }
+    }
 
-      if (!name) return (errorMsg.innerHTML = "Name is required.");
-      if (!/^\d{10,15}$/.test(phone) || /^(\d)\1+$/.test(phone)) return (errorMsg.innerHTML = "Invalid phone number.");
+    // Prepare FormData for submission
+    const formData = new FormData();
+    formData.append("userId", userId);
+    formData.append("name", name);
+    formData.append("phone", phone);
 
-      if (changePasswordCheckbox?.checked) {
-          if (!password || password.length < 6 || !/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-              return (errorMsg.innerHTML = "Password must be at least 6 characters, with uppercase, lowercase, number, and special character.");
-          }
-          if (password !== confirmPassword) return (errorMsg.innerHTML = "Passwords do not match.");
-      }
-      profileEditForm.submit();
-  });
+    if (fileInput.files.length > 0) {
+        formData.append("image", fileInput.files[0]);
+    }
+
+    if (changePasswordCheckbox?.checked) {
+        formData.append("currentPassword", currentPassword);
+        formData.append("password", password);
+        formData.append("confirmPassword", confirmPassword);
+    }
+
+    try {
+        const response = await fetch("/update-profile", {
+            method: "POST",
+            body: formData, 
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return (errorMsg.innerHTML = data.error || "Something went wrong.");
+        }
+
+        alert(data.message || "Profile updated successfully!");
+        window.location.href = data.redirectUrl;
+    } catch (error) {
+        errorMsg.innerHTML = "Error updating profile. Try again.";
+    }
+});
 
   // ================== Address Edit & Add Validation ==================
   function isValidPhone(phone) {
@@ -1199,30 +1290,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Function to validate street
     function isValidStreet(street) {
         return street.length >= 3 && street.length <= 100;
-    }
-
-    // Validation for Edit Profile Form
-    document.getElementById("profile-edit-form")?.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const errorMsg = document.getElementById("errorpp");
-        errorMsg.innerHTML = "";
-
-        const name = document.getElementById("profile-name").value.trim();
-        const phone = document.getElementById("phone").value.trim();
-        const changePassword = document.getElementById("changePassword").checked;
-        const password = document.getElementById("profile-password")?.value.trim();
-        const confirmPassword = document.getElementById("profile-confirmpassword")?.value.trim();
-
-        if (!name) return (errorMsg.innerHTML = "Name is required.");
-        if (!isValidPhone(phone)) return (errorMsg.innerHTML = "Invalid phone number.");
-
-        if (changePassword) {
-            if (!password ) return (errorMsg.innerHTML = " Enter New Password ");
-            if (password !== confirmPassword) return (errorMsg.innerHTML = "Passwords do not match.");
-        }
-
-        event.target.submit();
-    });
+    }   
 
     // Validation for Add Address Form
     document.getElementById("addAddressModal")?.querySelector("form")?.addEventListener("submit", async (event) => {
@@ -1350,10 +1418,10 @@ document.addEventListener("DOMContentLoaded", function() {
             const result = await response.json();
             
             if (result.success) {
-                // Find the existing address card
+              
                 const addressCard = document.querySelector(`div[data-address-id="${addressId}"]`);
                 if (addressCard) {
-                    // Create the updated address card HTML
+                    
                     const updatedCard = createAddressCard({
                         _id: addressId,
                         userId: formDataObj.userId,
@@ -1365,11 +1433,11 @@ document.addEventListener("DOMContentLoaded", function() {
                         phone: phone
                     });
                     
-                    // Add fade-out effect
+               
                     addressCard.style.transition = 'opacity 0.3s ease';
                     addressCard.style.opacity = '0';
                     
-                    // After fade-out, update the card content and fade it back in
+                    
                     setTimeout(() => {
                         addressCard.outerHTML = updatedCard;
                         const newCard = document.querySelector(`div[data-address-id="${addressId}"]`);
@@ -1385,11 +1453,11 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                     }, 300);
                     
-                    // Reset form and close modal using jQuery
+                    
                     event.target.reset();
                     $('#editAddressModal').modal('hide');
                     
-                    // Show success message with SweetAlert2
+                    
                     Swal.fire({
                         icon: 'success',
                         title: 'Address Updated!',
@@ -1400,7 +1468,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         toast: true
                     });
 
-                    // Update address numbering
+                   
                     const addressContainer = document.querySelector('#address-section .card .card-body .row');
                     const allAddressCards = addressContainer.querySelectorAll('.address-card');
                     allAddressCards.forEach((card, index) => {
@@ -1415,7 +1483,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         } catch (error) {
             console.error('Error:', error);
-            // Show error message with SweetAlert2
+           
             Swal.fire({
                 icon: 'error',
                 title: 'Error!',
@@ -1444,9 +1512,9 @@ document.addEventListener("DOMContentLoaded", function() {
   };
 
   // ================== Pagination for Tables ==================
-    // Initialize pagination
+  
     const ordersTable = document.querySelector('.recent-orders table tbody');
-    const rowsPerPage = 4; // Adjust this number as needed
+    const rowsPerPage = 4; 
     
     function showOrdersPage(page) {
         const rows = ordersTable.querySelectorAll('tr');
@@ -1457,7 +1525,6 @@ document.addEventListener("DOMContentLoaded", function() {
             row.style.display = (index >= start && index < end) ? '' : 'none';
         });
         
-        // Update page number display
         document.getElementById('pageno').textContent = page;
         
         // Update button states
@@ -1508,6 +1575,8 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
+
+
 function editAddress(id, street, city, state, country, postalCode, phone) {
     document.getElementById('editStreet').value = street;
     document.getElementById('editCity').value = city;
@@ -1518,14 +1587,24 @@ function editAddress(id, street, city, state, country, postalCode, phone) {
     document.getElementById('editId').value = id;
 }
 
-function togglePasswordFields() {
-    const passwordFields = document.getElementById('passwordFields');
-    const checkbox = document.getElementById('changePassword');
-    passwordFields.style.display = checkbox.checked ? 'block' : 'none';
-}
 
-// Helper function to create address card HTML
-function createAddressCard(address) {
+function toggleForms() {
+      const passwordForm = document.getElementById('passwordForm');
+      const emailForm = document.getElementById('emailForm');
+      const checkbox = document.getElementById('changePassword');
+
+      if (checkbox.checked) {
+          if (passwordForm) passwordForm.style.display = 'block';
+          if (emailForm) emailForm.style.display = 'block';
+      } else {
+          if (passwordForm) passwordForm.style.display = 'none';
+          if (emailForm) emailForm.style.display = 'none';
+      }
+  }
+
+
+
+  function createAddressCard(address) {
     return `
         <div class="col-12 mb-3" data-address-id="${address._id}">
             <div class="address-card rounded-3 p-3">
@@ -1580,7 +1659,6 @@ function createAddressCard(address) {
     `;
 }
 
-// Function to handle address deletion
 async function deleteAddress(addressId, userId) {
     try {
         const result = await Swal.fire({
@@ -1671,5 +1749,4 @@ async function deleteAddress(addressId, userId) {
 </body>
 
 
-<!-- molla/product.html  22 Nov 2019 09:55:05 GMT -->
 </html>

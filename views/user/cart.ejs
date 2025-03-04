@@ -329,61 +329,66 @@
         </div>
       </div>
 
-      <!-- Right Section: Summary -->
-      <aside class="col-lg-3">
-        <div class="summary summary-cart p-3 border rounded " i>
-          <h3 class="summary-title mb-3">Cart Total</h3>
-          <table class="table table-summary">
-            <tbody class="summary-cart tbody">
-              <% 
-                let originalTotal = 0;
-                let totalDiscount = 0;  
-                let finalTotal = 0;
-                let colors=[]     
-                items.forEach(item => {
-                  const originalPrice = parseFloat(item.productId?.price.replace(/,/g, '')) || 0;
-                  const discountMatch = item.productId?.offer ? item.productId.offer.match(/\d+/) : null;
-                  const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
-      
-                  const discountedPrice = Math.floor(originalPrice - (originalPrice * discountPercentage / 100));
-                  const itemTotalOriginal = originalPrice * item.quantity; 
-                  const itemTotalDiscounted = discountedPrice * item.quantity; 
-                  const discountAmount = itemTotalOriginal - itemTotalDiscounted;
-      
-                  originalTotal += itemTotalOriginal;
-                  totalDiscount += discountAmount;
-                  finalTotal += itemTotalDiscounted;
-                  colors.push(item.color)
-                });
-              %>
-              
-              <tr>
-                <td><label>Total Amount (Before Discount)</label></td>
-                <td>₹<%= Math.floor(originalTotal) %></td>
-              </tr>
-              <tr>
-                <td><label>Total Discount</label></td>
-                <td>- ₹<%= Math.floor(totalDiscount)  %></td>
-              </tr>
-              <tr class="summary-total font-weight-bold">
-                <td>Total: (<%= totalItems %> items)</td>
-                <td>₹<%= Math.floor(finalTotal) %></td>
-              </tr>
-            </tbody>
-          </table>
-       
+        <!-- Right Section: Summary -->
+        <aside class="col-lg-3">
+            <div class="summary summary-cart p-3 border rounded " i>
+            <h3 class="summary-title mb-3">Cart Total</h3>
+            <table class="table table-summary">
+                <tbody class="summary-cart tbody">
+                <% 
+                    let originalTotal = 0;
+                    let totalDiscount = 0;  
+                    let finalTotal = 0;
+                    let colors=[]     
+                    items.forEach(item => {
+                    const originalPrice = parseFloat(item.productId?.price.replace(/,/g, '')) || 0;
+                    const discountMatch = item.productId?.offer ? item.productId.offer.match(/\d+/) : null;
+                    const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
         
-          <a href="/checkout?color=<%=colors%>" 
-            class="btn btn-outline-primary-2 btn-block mt-3"
-            style="<%= totalItems === 0 ? 'display: none;' : '' %>">
-            PROCEED TO CHECKOUT
-          </a>
-      
-          <a href="/productlist" class="btn btn-outline-dark-2 btn-block mt-2">
-            CONTINUE SHOPPING
-          </a>
-        </div>
-      </aside>
+                    const discountedPrice = Math.floor(originalPrice - (originalPrice * discountPercentage / 100));
+                    const itemTotalOriginal = originalPrice * item.quantity; 
+                    const itemTotalDiscounted = discountedPrice * item.quantity; 
+                    const discountAmount = itemTotalOriginal - itemTotalDiscounted;
+                    
+                    originalTotal += itemTotalOriginal;
+                    totalDiscount += discountAmount;
+                    finalTotal += itemTotalDiscounted;
+                    colors.push(item.color)
+
+                    productId = item.productId._id 
+                    });
+                %>
+                
+                <tr>
+                    <td><label>Total Amount (Before Discount)</label></td>
+                    <td>₹<%= Math.floor(originalTotal) %></td>
+                </tr>
+                <tr>
+                    <td><label>Total Discount</label></td>
+                    <td>- ₹<%= Math.floor(totalDiscount)  %></td>
+                </tr>
+                <tr class="summary-total font-weight-bold">
+                    <td>Total: (<%= totalItems %> items)</td>
+                    <td>₹<%= Math.floor(finalTotal) %></td>
+                </tr>
+                </tbody>
+            </table>
+        
+
+            <p style="color:red;" id="stockLimitErr"></p>
+            
+            <a href="/checkout?color=<%= colors.join(',') %>" onclick="validate(event)"
+                class="btn btn-outline-primary-2 btn-block mt-3"
+                style="<%= totalItems === 0 ? 'display: none;' : '' %>">
+                PROCEED TO CHECKOUT
+             </a>
+             
+        
+            <a href="/productlist" class="btn btn-outline-dark-2 btn-block mt-2">
+                CONTINUE SHOPPING
+            </a>
+            </div>
+        </aside>
       
     </div>
   </div>
@@ -786,15 +791,17 @@
       cancelButtonText: 'Cancel',
       reverseButtons: true
     }).then((result) => {
-      // If the user confirms, redirect to the delete URL
       if (result.isConfirmed) {
         window.location.href = `/cartdelete?userid=${userid}&productid=${productid}`;
       }
     });
   }
-    
-    
-    
+  
+ 
+  
+  
+ 
+
   document.addEventListener("DOMContentLoaded", function () {
     const qtyInputs = document.querySelectorAll(".qty-input");
     
@@ -830,7 +837,6 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Update the row total
                         const row = qtyInput.closest('tr');
                         const priceCell = row.querySelector('.price-col');
                         const totalCell = row.querySelector('.total-col');
@@ -838,7 +844,6 @@
                         const newTotal = price * currentQty;
                         totalCell.textContent = `₹${Math.floor(newTotal)}`;
 
-                        // Update summary section
                         updateCartSummary();
                     } else {
                         showCustomAlert(data.message || 'Error updating cart');
@@ -894,21 +899,16 @@ function updateCartSummary() {
         totalItems += quantity;
     });
 
-    // Update summary table values
     const summaryTable = document.querySelector('.table-summary tbody');
     const rows = summaryTable.querySelectorAll('tr');
     
-    // Update Original Total
     rows[0].querySelector('td:last-child').textContent = `₹${Math.floor(originalTotal)}`;
     
-    // Update Total Discount
     rows[1].querySelector('td:last-child').textContent = `- ₹${Math.floor(totalDiscount)}`;
     
-    // Update Final Total and Items Count
     rows[2].querySelector('td:first-child').textContent = `Total: (${totalItems} items)`;
     rows[2].querySelector('td:last-child').textContent = `₹${Math.floor(finalTotal)}`;
 
-    // Update checkout button visibility
     const checkoutButton = document.querySelector('a[href^="/checkout"]');
     if (checkoutButton) {
         checkoutButton.style.display = totalItems === 0 ? 'none' : '';

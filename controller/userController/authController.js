@@ -155,7 +155,7 @@ const verifyOTP = async (req, res) => {
 
     req.flash("success", "User registered successfully.");
     res.redirect("/signin");
-  } else if (req.session.type === "forgot") {
+  } else if (req.session.type === "forgot" || req.session.type === "change" ) {
     res.render("user/resetpassword");
   }
 };

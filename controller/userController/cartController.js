@@ -211,6 +211,54 @@ const updateCart = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+const getSummery = async (req, res) => {
+  try {
+      
+
+      const user = await userSchema.findOne({email:req.session.details.email})
+      const items = await Cart.find({ userId:user._id })
+          .populate('items.productId');
+
+      let originalTotal = 0;
+      let totalDiscount = 0;
+      let finalTotal = 0;
+      let totalItems = 0;
+      items.forEach(cart => {
+          cart.items.forEach(item => {
+              if (item.productId && item.productId.price) {
+                  const originalPrice = parseFloat(item.productId.price.replace(/,/g, '')) || 0;
+                  const discountMatch = item.productId.offer ? item.productId.offer.match(/\d+/) : null;
+                  const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
+
+                
+                  const singleItemDiscountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
+                  const singleItemOriginalTotal = originalPrice;
+                  const singleItemDiscountAmount = originalPrice - singleItemDiscountedPrice;
+
+                
+                  const itemTotalOriginal = singleItemOriginalTotal * item.quantity;
+                  const itemTotalDiscounted = singleItemDiscountedPrice * item.quantity;
+                  const discountAmount = singleItemDiscountAmount * item.quantity;
+              }
+
+              originalTotal += itemTotalOriginal;
+              totalDiscount += discountAmount;
+              finalTotal += itemTotalDiscounted;
+              totalItems += item.quantity;
+          });
+      });
+
+      console.log(originalTotal,totalDiscount,finalTotal,totalItems)
+
+      res.json({
+          originalTotal,
+      });
+  } catch (error) {
+      console.error('Error calculating cart summary:', error);
+      res.status(500).json({ error: 'Error calculating cart summary' });
+  }
+}
     
 
 
@@ -222,4 +270,6 @@ module.exports = {
   loadCart,
   Carts,
   cartDelete,
+  getSummery 
+
 };

@@ -206,18 +206,11 @@
                        
                         <div style="margin-left: 30px; height: 50px; width: 50px;" class="profile-container">
                             <a href="<%= userr?._id ? `/profile/${userr._id}` : '/signin' %>" id="userProfileLink">
-                              <% if (userr && userr.image) { %>
-                                <img 
-                                  style="border-radius: 50%; width: 50px; height: 50px; object-fit: cover;" 
-                                  src="<%= userr.image?.startsWith('http') ? userr.image : userr.image %>" 
-                                  alt="Profile Image" 
-                                  onerror="this.onerror=null; this.src='/images/profile.avif';">
-                              <% } else { %>
-                                <img 
-                                  style="border-radius: 50%; width: 50px; height: 50px; object-fit: cover;" 
-                                  src="/images/profile.avif" 
-                                  alt="Default Profile Image">
-                              <% } %>
+                                <% if (user && user.image) { %>
+                                    <img style="height: 100px; width: 100px; border-radius: 50%;" src="<%=user.image %>" alt="Profile Image">
+                                <% } else { %>
+                                    <img style="height: 100px; width: 100px; border-radius: 50%;" src="/images/profile.avif" alt="Default Profile Image">
+                                <% } %>
                             </a>
                           </div>
                           

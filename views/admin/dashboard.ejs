@@ -670,6 +670,8 @@
   const dailySalesData = <%- JSON.stringify(dailySales || []) %>;
   console.log('Daily Sales Data:', dailySalesData);
   let selectedReportType = "daily";
+
+
   function showReport(type) {
     selectedReportType = type;
 
@@ -792,6 +794,10 @@
 
     html2pdf().set(opt).from(wrapper).save();
   }
+
+
+
+
 
   function exportToExcel() {
     const currentReport = document.getElementById(`${selectedReportType}-report`);
@@ -936,6 +942,9 @@
       changePage(type, page);
     });
   });
+
+
+
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>

@@ -871,18 +871,14 @@ function handleCouponSelection(radio, discountValue) {
     if (radio.getAttribute('data-checked') === 'true') {
         radio.checked = false;
         radio.setAttribute('data-checked', 'false');
-        // Reset the discount calculation
         kkk({ target: radio }, 0);
     } else {
-        // Uncheck all other radios and reset their data-checked attribute
         document.querySelectorAll('input[name="selectedCoupon"]').forEach(r => {
             r.checked = false;
             r.setAttribute('data-checked', 'false');
         });
-        // Check the clicked radio
         radio.checked = true;
         radio.setAttribute('data-checked', 'true');
-        // Apply the discount
         kkk({ target: radio }, discountValue);
     }
 }
@@ -891,7 +887,6 @@ function kkk(e, dis) {
     let a = discount;
     let b = total;
     
-    // Reset to original values if discount is 0 (unchecking case)
     if (dis === 0) {
         discount = <%= Math.floor(totalDiscount) %>;
         total = <%= Math.floor(totalValue) %>;
