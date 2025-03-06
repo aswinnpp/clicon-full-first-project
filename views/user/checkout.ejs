@@ -412,9 +412,10 @@
 
 										     <div class="card-header">
                                                 <h2 class="card-title">
-                                                    <input type="radio" name="paymentMethod" required value="Cash on Delivery"> Cash on delivery
+                                                    <input type="radio" onclick="cashOnValidate(<%= totalValue %>,event)" name="paymentMethod" required value="Cash on Delivery"> Cash on delivery
                                                 </h2>
                                             </div>
+                                            <P style="color: red;" id="cashOn"></P>
                                         </div>
 
                                        <div class="accordion-summary"> 
@@ -912,9 +913,20 @@ function validate(wallet , total ,event){
 
         event.preventDefault()
 
- document.getElementById("wallet").innerHTML="insufficient balance "
+ document.getElementById("wallet").innerHTML="Insufficient Balance "
     }
+
+}
+
+function cashOnValidate(total,event){
     
+    if(  total>1000){
+
+
+        event.preventDefault()
+
+ document.getElementById("cashOn").innerHTML="Cash On Delivery Not Available "
+    }  
     
     
 }
@@ -925,10 +937,10 @@ function he() {
     const form = document.getElementById("checkForm");
     let isValid = true;
     
-    // Clear previous error messages
+
     clearErrors();
 
-    // Get form field values
+ 
     const name = document.getElementById("name").value.trim();
     const country = document.getElementById("country").value.trim();
     const street = document.getElementById("street").value.trim();
@@ -937,7 +949,7 @@ function he() {
     const postcode = document.getElementById("postcode").value.trim();
     const phone = document.getElementById("phone").value.trim();
 
-    // Validate each field
+   
     if (name === "") {
         document.getElementById("nameError").innerHTML = "Name is required.";
         document.getElementById("nameError").style.color = "red";
@@ -1056,7 +1068,7 @@ function he() {
 
 }
 
-// Function to clear all error messages
+
 function clearErrors() {
     const errorElements = [
         "nameError",

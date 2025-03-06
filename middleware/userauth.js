@@ -31,7 +31,7 @@ const checkSession = (req, res, next) => {
         const user = await User.findOne({ email })
         if(user?.isBan===true){
           req.session.destroy()
-          next()
+          res.redirect("/")
         }else{
           next()
         }

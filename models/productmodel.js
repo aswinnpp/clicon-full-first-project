@@ -24,20 +24,9 @@ const productSchema = new mongoose.Schema({
     ref:'Category',
     
   },
-
-  // variants: [
-  //   {
-      
-  //     stock: {
-  //       type: Number,
-      
-  //     color: {
-  //       type: [String],
-  //       trim: true,
-  //     },
-  //   }
-  // ],
-  
+   brand:{
+    type: String,
+  },
   price: {
     type: String,
     min: [0, 'Price cannot be negative'], 

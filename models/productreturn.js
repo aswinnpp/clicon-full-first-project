@@ -13,7 +13,8 @@ const returnRequestSchema = new mongoose.Schema({
     }, 
     rejectionReason: { type: String, default: null }, 
     requestedAt: { type: Date, default: Date.now }, 
-    reviewedAt: { type: Date } 
+    reviewedAt: { type: Date }
+     
 });
 
 module.exports = mongoose.model('ReturnRequest', returnRequestSchema);

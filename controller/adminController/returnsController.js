@@ -140,8 +140,22 @@ const productRejected = async (req,res)=>{
 }
 
 
+const notification = async (req, res) => {
+    try {
+    
+  
+      const newReturns = await Returns.find({status:'Pending'}).sort({ createdAt: -1 });
+  
+      res.json(newReturns);
+    } catch (err) {
+      console.error("Error fetching new returns:", err);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+
 module.exports ={
  loadReturns,
  productApprove,
- productRejected
+ productRejected,
+ notification
 }

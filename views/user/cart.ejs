@@ -344,6 +344,8 @@
                     const originalPrice = parseFloat(item.productId?.price.replace(/,/g, '')) || 0;
                     const discountMatch = item.productId?.offer ? item.productId.offer.match(/\d+/) : null;
                     const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
+
+               
         
                     const discountedPrice = Math.floor(originalPrice - (originalPrice * discountPercentage / 100));
                     const itemTotalOriginal = originalPrice * item.quantity; 
@@ -377,7 +379,7 @@
 
             <p style="color:red;" id="stockLimitErr"></p>
             
-            <a href="/checkout?color=<%= colors.join(',') %>" onclick="validate(event)"
+            <a  id="procced" href="/checkout?color=<%= colors.join(',') %>" onclick="checkStock(event)"
                 class="btn btn-outline-primary-2 btn-block mt-3"
                 style="<%= totalItems === 0 ? 'display: none;' : '' %>">
                 PROCEED TO CHECKOUT
@@ -780,6 +782,7 @@
     <script src="assets/js/main.js"></script>
 
     <script>
+
         function confirmDelete(userid, productid) {
     // Show the SweetAlert2 confirmation dialog
     Swal.fire({
@@ -797,7 +800,27 @@
     });
   }
   
+  function checkStock(event) {
+
  
+    
+    const qtyInputs = document.querySelectorAll(".qty-input");
+    let outOfStock = false;
+
+    qtyInputs.forEach(qtyInput => {
+        const stockInput = qtyInput.closest('.quantity-col').querySelector('.stock-value');
+        const stock = parseInt(stockInput.value, 10);
+
+        if (stock === 0) {
+            outOfStock = true;
+        }
+    });
+
+    if (outOfStock) {
+        showCustomAlert("Some items are out of stock and cannot be ordered.");
+        event.preventDefault(); 
+    }
+}
   
   
  
@@ -812,6 +835,12 @@
         function checkMaxLimit() {
             const maxQty = 5;
             const currentQty = parseInt(qtyInput.value, 10);
+
+            if(stock === 0){
+             
+                showCustomAlert(`Stock limit exceeded. Only ${stock} available`);
+                event.preventDefault()
+            }
             
             if (currentQty > stock) {
                 qtyInput.value = stock;
@@ -872,7 +901,7 @@ function showCustomAlert(message) {
     setTimeout(() => {
         notification.classList.remove("active");
     }, 5000);
-      // Hide after 3 seconds
+     
 }
    
 
@@ -918,5 +947,4 @@ function updateCartSummary() {
 </body>
 
 
-<!-- molla/cart.html  22 Nov 2019 09:55:06 GMT -->
 </html>

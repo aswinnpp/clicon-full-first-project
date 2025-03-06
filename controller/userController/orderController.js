@@ -341,7 +341,7 @@ const wallet = await Wallet.findOne({userId:customerId.trim()})
     for (const item of items) {
       const product = await Product.findById(item.productId);
       if (product) {
-        if (item.quantity <= product.stock) {
+        if (item.quantity <= product.stock  && product.stock !==0 ) {
           product.stock -= item.quantity;
           await product.save();
         } else {

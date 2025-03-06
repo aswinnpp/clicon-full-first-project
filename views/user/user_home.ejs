@@ -195,7 +195,7 @@
                         </div><!-- End .compare-dropdown -->
         
                         <div class="cart-dropdown">
-                            <a href="/cart" class="dropdown-toggle" role="button" data-display="static">
+                            <a href="/cart" class="dropdown-toggle" value="1" role="button" data-display="static">
                                 <div class="icon">
                                     <i class="icon-shopping-cart"></i>
                                 </div>
@@ -203,17 +203,15 @@
                             </a>
                         </div><!-- End .cart-dropdown -->
                         
-                       
-                        <div style="margin-left: 30px; height: 50px; width: 50px;" class="profile-container">
-                            <a href="<%= userr?._id ? `/profile/${userr._id}` : '/signin' %>" id="userProfileLink">
-                                <% if (user && user.image) { %>
-                                    <img style="height: 100px; width: 100px; border-radius: 50%;" src="<%=user.image %>" alt="Profile Image">
-                                <% } else { %>
-                                    <img style="height: 100px; width: 100px; border-radius: 50%;" src="/images/profile.avif" alt="Default Profile Image">
-                                <% } %>
-                            </a>
-                          </div>
-                          
+                        <a href="<%= userr?._id ? `/profile/${userr._id}` : '/signin' %>" id="userProfileLink">
+                        <div class="d-flex align-items-center justify-content-center" style="margin-left:30px;">
+                            <% if (userr && userr.image) { %>
+                                <img style="height: 50px; width: 50px; border-radius: 50%;" src="<%=userr.image %>" alt="Profile Image">
+                            <% } else { %>
+                                <img style="height: 50px; width: 50px; border-radius: 50%;" src="/images/profile.avif" alt="Default Profile Image">
+                            <% } %>
+                        </div>
+                    </a>
                         
         
                          

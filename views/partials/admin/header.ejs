@@ -14,7 +14,46 @@
     />
     <link rel="stylesheet" href="/css/styles/admin-dashboard.css" />
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
     <style>
+
+      /* Style for the notification modal */
+#notificationModal .modal-content {
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Header styling */
+#notificationModal .modal-header {
+    background-color: #007bff;
+    color: white;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+/* Body styling */
+#notificationModal .modal-body {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+/* List group item styles */
+#notificationList .list-group-item {
+    border-left: 5px solid #007bff;
+    transition: background 0.3s ease;
+}
+
+#notificationList .list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Footer button */
+#notificationModal .modal-footer .btn-secondary {
+    background-color: #6c757d;
+    border-radius: 8px;
+}
+
      
       #sidebar {
         position: fixed;
@@ -67,7 +106,11 @@
           style="z-index: 3;"
         >
           <div class="position-sticky pt-3">
+
+            
             <div class="text-center">
+
+            
               <img
                 src="/images/Culture_GeeksGuide_Bezos.jpeg"
                 alt="Profile Image"
@@ -75,19 +118,39 @@
                 height="60"
                 style="border-radius: 50%"
               />
+
+             
               <h5 class="text-white mb-0">Jeff Bezos</h5>
               <p class="text-muted">PRODUCT MANAGER</p>
+               
             </div>
+
+
+
             <ul class="nav flex-column">
+
               <li class="nav-item">
                 <a
                   class="nav-link text-white"
                   onclick="navigateTo('/admin/dashboard')"
                 >
-                  <i class="bi bi-speedometer2 me-2"></i>
+                
+                <i class="bi bi-speedometer2 me-2"></i>
+                  Sales Report
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a
+                  class="nav-link text-white"
+                  onclick="navigateTo('/admin/dashboard-graph')"
+                >
+                  
+                  <i class="bi bi-bar-chart-line me-2"></i>
                   Dashboard
                 </a>
               </li>
+             
               <li class="nav-item">
                 <a
                   class="nav-link text-white active"
@@ -138,8 +201,9 @@
                 <a class="nav-link text-white"onclick="navigateTo('/admin/returns')">
                   <i class="bi bi-arrow-return-left"></i>
 
-                  Product Returns
+                  Product Returns  <span id="notificationCount" class="badge bg-danger" style="display: none;">0</span>
                 </a>
+               
               </li>
             </ul>
             <hr class="text-white-50" />
@@ -163,6 +227,32 @@
       </div>
     </div>
 
+
+
+
+<!-- Notification Modal -->
+<div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="notificationModalLabel">Notifications</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul id="notificationList" class="list-group">
+          <li class="list-group-item text-muted">No new notifications</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
@@ -171,5 +261,33 @@
       function toggleSidebar() {
         sidebar.classList.toggle("show");
       }
+
+
+      let lastCheckedTimestamp = Date.now()
+      async function Notifican() {
+        fetch(`/admin/api/new-returns`)
+        .then(response => response.json())
+        .then(data => {
+      
+          
+            const notificationCount = document.getElementById("notificationCount");
+
+            if (data.length > 0) {
+                notificationCount.textContent = data.length;
+                notificationCount.style.display = "inline-block";
+
+              
+            }
+        })
+        .catch(error => console.error("Error fetching new returns:", error));
+}
+
+// Check for new returns every 5 seconds
+setInterval(Notifican, 1000);
+
+
+Notifican();
+
+
     </script>
 

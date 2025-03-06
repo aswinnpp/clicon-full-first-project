@@ -52,10 +52,10 @@
       </div>
 
        
-    <!-- <div class="mb-3">
+    <div class="mb-3">
       <label for="brand" class="form-label">Brand</label>     
       <input type="text" class="form-control" id="brand" name="brand" value="" required>
-    </div> -->
+    </div>
 
     <div class="mb-3">
       <label for="brand" class="form-label">Offer</label>     
@@ -158,6 +158,10 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> 
 <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+
 
 <style>
   
@@ -299,11 +303,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
       return; 
     }
 
-    // const brand = document.getElementById('brand').value;
-    // if (brand === '') {
-    //   errorMsg.innerHTML = "brand  is required";
-    //   return; 
-    // }
+    const brand = document.getElementById('brand').value;
+    if (brand === '') {
+      errorMsg.innerHTML = "brand  is required";
+      return; 
+    }
 
     const offer = document.getElementById('offer').value;
     if (offer === '') {
@@ -403,12 +407,12 @@ function handleImageUpload(event, imagePreviewId) {
       cropper.destroy();
     }
     cropper = new Cropper(imageElement, {
-      aspectRatio: NaN, // Free cropping
+      aspectRatio: NaN,
       viewMode: 1,
       autoCropArea: 1,
     });
   };
-
+  console.log(cropper);
   reader.readAsDataURL(file);
 }
 
@@ -450,6 +454,9 @@ function closeModal() {
     cropper = null;
   }
 }
+
+
+
 
 function submitForm(event) {
   event.preventDefault();
@@ -500,5 +507,7 @@ function submitForm(event) {
 
   
   </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
  <%- include('../partials/admin/footer') %>

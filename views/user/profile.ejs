@@ -478,64 +478,69 @@ body {
 
                                   <!-- List of Addresses -->
                                   <div class="row">
-                                      <% address.forEach((address, index) => { %>
-                                          <div class="col-12 mb-3">
-                                              <div class="address-card rounded-3 p-3">
-                                                  <div class="row g-2">
-                                                      <div class="col-md-8">
-                                                          <div class="d-flex align-items-center mb-2">
-                                                              <h6 class="fw-bold mb-0 me-2">Address <%= index + 1 %></h6>
-                                                            
-                                                          </div>
-                                                          
-                                                          <div class="address-details">
-                                                              <div class="row g-2">
-                                                                  <div class="col-6">
-                                                                      <p class="mb-1">
-                                                                          <i class="fas fa-map-marker-alt me-1 text-primary"></i>
-                                                                          <%= address?.street %>
-                                                                      </p>
-                                                                      <p class="mb-1">
-                                                                          <i class="fas fa-city me-1 text-primary"></i>
-                                                                          <%= address?.city %>, <%= address?.state %>
-                                                                      </p>
-                                                                  </div>
-                                                                  <div class="col-6">
-                                                                      <p class="mb-1">
-                                                                          <i class="fas fa-globe me-1 text-primary"></i>
-                                                                          <%= address?.country %>, <%= address?.postalCode %>
-                                                                      </p>
-                                                                      <p class="mb-1">
-                                                                          <i class="fas fa-phone me-1 text-primary"></i>
-                                                                          <%= address?.phone %>
-                                                                      </p>
-                                                                  </div>
-                                                              </div>
-                                                          </div>
-                                                      </div>
-                                                      
-                                                      <div class="col-md-4">
-                                                          <div class="d-flex justify-content-end">
-                                                              <div class="address-actions">
-                                                                  <button class="btn-icon btn-icon-edit" 
-                                                                          onclick="editAddress('<%= address?.id %>', '<%= address?.street %>', '<%= address?.city %>', '<%= address?.state %>', '<%= address?.country %>', '<%= address?.postalCode %>', '<%= address?.phone %>')" 
-                                                                          data-bs-toggle="modal" 
-                                                                          data-bs-target="#editAddressModal">
-                                                                      <i class="fas fa-edit"></i>
-                                                                  </button>
-                                                                  <button class="btn-icon btn-icon-delete" onclick="deleteAddress('<%= address?.id %>', '<%= user?._id %>')">
-                                                                      <i class="fas fa-trash"></i>
-                                                                  </button>
-                                                              </div>
-                                                          </div>
-                                                      </div>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                      <% }) %>
-                                  </div>
+                                    <% if (address.length > 0) { %>
+                                        <% address.forEach((address, index) => { %>
+                                            <div class="col-12 mb-3" data-address-id="<%= address.id %>">
+                                                <div class="address-card rounded-3 p-3">
+                                                    <div class="row g-2">
+                                                        <div class="col-md-8">
+                                                            <div class="d-flex align-items-center mb-2">
+                                                                <h6 class="fw-bold mb-0 me-2">Address <%= index + 1 %></h6>
+                                                            </div>
+                                                            <div class="address-details">
+                                                                <div class="row g-2">
+                                                                    <div class="col-6">
+                                                                        <p class="mb-1">
+                                                                            <i class="fas fa-map-marker-alt me-1 text-primary"></i>
+                                                                            <%= address.street %>
+                                                                        </p>
+                                                                        <p class="mb-1">
+                                                                            <i class="fas fa-city me-1 text-primary"></i>
+                                                                            <%= address.city %>, <%= address.state %>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="col-6">
+                                                                        <p class="mb-1">
+                                                                            <i class="fas fa-globe me-1 text-primary"></i>
+                                                                            <%= address.country %>, <%= address.postalCode %>
+                                                                        </p>
+                                                                        <p class="mb-1">
+                                                                            <i class="fas fa-phone me-1 text-primary"></i>
+                                                                            <%= address.phone %>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="d-flex justify-content-end">
+                                                                <div class="address-actions">
+                                                                    <button class="btn-icon btn-icon-edit" 
+                                                                        onclick="editAddress('<%= address.id %>', '<%= address.street %>', '<%= address.city %>', '<%= address.state %>', '<%= address.country %>', '<%= address.postalCode %>', '<%= address.phone %>')" 
+                                                                        data-bs-toggle="modal" 
+                                                                        data-bs-target="#editAddressModal">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                    <button class="btn-icon btn-icon-delete" onclick="deleteAddress('<%= address.id %>', '<%= user?._id %>')">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-map-marker-alt fa-3x text-muted mb-3"></i>
+                                            <h5 class="text-muted">No addresses found</h5>
+                                            <p class="text-muted">Add a new address to get started</p>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                
 
-                                  
                               </div>
                           </div>
                       </div>
@@ -635,8 +640,9 @@ body {
 
 
         <form id="profile-edit-form"  enctype="multipart/form-data">
+            <input type="hidden" id="userId" name="userId" value="<%=user._id %>">
           <div class="mb-3">
-            <input type="hidden" name="userId" value="<%= user._id %>">
+          
 
             <div class="mb-3 text-center">
                 <label for="profileImage" class="position-relative d-inline-block">
@@ -712,7 +718,7 @@ body {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form action="/address" method="POST">
+        <form >
           <input type="hidden" name="id" value="<%= user._id %>">
           
           <div class="mb-3">
@@ -790,7 +796,7 @@ body {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="edit-address" action="/edit-address" method="POST">
+        <form id="edit-address" >
             <input type="hidden" name="adressaId" id="editId">
             <input type="hidden" name="userId" value="<%= user?._id %>">
           <div class="mb-3">
@@ -1209,10 +1215,12 @@ document.getElementById("profile-edit-form")?.addEventListener("submit", async (
     const password = document.getElementById("profile-password")?.value.trim();
     const confirmPassword = document.getElementById("profile-confirmpassword")?.value.trim();
     const currentPassword = document.getElementById("current-password")?.value.trim();
-    const userId = document.getElementById("userId")?.value.trim();
+    const userId = document.getElementById("userId").value
     const fileInput = document.getElementById("profileImage");
     const changePasswordCheckbox = document.getElementById("changePassword");
 
+ console.log(userId);
+ 
     if (!name) return (errorMsg.innerHTML = "Name is required.");
 
     if (!/^\d{10,15}$/.test(phone) || /^(\d)\1+$/.test(phone)) {
@@ -1266,7 +1274,9 @@ document.getElementById("profile-edit-form")?.addEventListener("submit", async (
 
         const data = await response.json();
 
+
         if (!response.ok) {
+            alert("response ok")
             return (errorMsg.innerHTML = data.error || "Something went wrong.");
         }
 
@@ -1331,7 +1341,7 @@ document.getElementById("profile-edit-form")?.addEventListener("submit", async (
             const result = await response.json();
             
             if (result.success) {
-                // Get the specific address container inside the address section
+                
                 const addressesContainer = document.querySelector('#address-section .card .card-body .row');
                 
                 // Remove the "No addresses found" message if it exists
@@ -1352,10 +1362,9 @@ document.getElementById("profile-edit-form")?.addEventListener("submit", async (
                     phone: phone
                 });
                 
-                // Add the new card to the beginning of the addresses container
+               
                 addressesContainer.insertAdjacentHTML('afterbegin', newAddressCard);
-                
-                // Reset the form
+               
                 event.target.reset();
                 
                 // Close modal using jQuery
@@ -1366,7 +1375,7 @@ document.getElementById("profile-edit-form")?.addEventListener("submit", async (
                     icon: 'success',
                     title: 'Success!',
                     text: result.message,
-                    timer: 2000,
+                    timer: 1000,
                     showConfirmButton: false
                 });
             } else {
@@ -1550,7 +1559,6 @@ document.getElementById("profile-edit-form")?.addEventListener("submit", async (
         }
     });
     
-    // Initialize first page
     showOrdersPage(1);
 
   // ================== Wallet Section Handling ==================
@@ -1605,6 +1613,7 @@ function toggleForms() {
 
 
   function createAddressCard(address) {
+   
     return `
         <div class="col-12 mb-3" data-address-id="${address._id}">
             <div class="address-card rounded-3 p-3">
@@ -1659,7 +1668,9 @@ function toggleForms() {
     `;
 }
 
+
 async function deleteAddress(addressId, userId) {
+   
     try {
         const result = await Swal.fire({
             title: "Are you sure?",
@@ -1674,34 +1685,28 @@ async function deleteAddress(addressId, userId) {
 
         if (result.isConfirmed) {
             const response = await fetch(`/remove-address/${userId}?address=${addressId}`, {
-                method: 'POST',
+                method: 'DELETE',
                 headers: {
-                    'Accept': 'application/json'
+                    'Content-Type': 'application/json'
                 }
             });
 
             const data = await response.json();
 
             if (data.success) {
-                // Find the address card and its parent container
                 const addressCard = document.querySelector(`div[data-address-id="${addressId}"]`);
                 const addressContainer = document.querySelector('#address-section .card .card-body .row');
-                
+
                 if (addressCard && addressContainer) {
-                    // Add fade out animation
                     addressCard.style.transition = 'opacity 0.3s ease';
                     addressCard.style.opacity = '0';
-                    
-                    // Wait for animation to complete before removing
+
                     setTimeout(() => {
-                        // Remove the address card
                         addressCard.remove();
-                        
-                        // Check remaining addresses
+
                         const remainingCards = addressContainer.querySelectorAll('.address-card');
                         
                         if (remainingCards.length === 0) {
-                            // If no addresses left, show empty state
                             addressContainer.innerHTML = `
                                 <div class="text-center py-5">
                                     <i class="fas fa-map-marker-alt fa-3x text-muted mb-3"></i>
@@ -1710,7 +1715,6 @@ async function deleteAddress(addressId, userId) {
                                 </div>
                             `;
                         } else {
-                            // Update the numbering of remaining addresses
                             remainingCards.forEach((card, index) => {
                                 const addressTitle = card.querySelector('.fw-bold');
                                 if (addressTitle) {
@@ -1718,16 +1722,16 @@ async function deleteAddress(addressId, userId) {
                                 }
                             });
                         }
-                        
+
                         // Show success message
                         Swal.fire({
                             icon: 'success',
                             title: 'Success!',
                             text: data.message,
-                            timer: 2000,
+                            timer: 1000,
                             showConfirmButton: false
                         });
-                    },1000);
+                    }, 1000);
                 }
             } else {
                 throw new Error(data.message || 'Failed to delete address');

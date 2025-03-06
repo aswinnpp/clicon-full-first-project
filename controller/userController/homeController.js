@@ -10,7 +10,12 @@ const loadHome = async (req, res) => {
     const products = await Product.find({ isDeleted: false }).sort({ createdAt: -1 });
 
     const categories = await Category.find({ isDeleted: false });
-    const message = req.flash("cart")
+
+
+
+      const message = req.flash("cart")
+    
+    
 
       const email = req.session?.details?.email
           console.log(email);
@@ -65,10 +70,10 @@ const loadHome = async (req, res) => {
     try {
         const message = req.flash("count");
         const page = parseInt(req.query.page) || 1;
-        const limit = 4; 
+        const limit = 2; 
         const searchQuery = req.query.q || "";
         const selectedCategories = req.query.category ? req.query.category.split(",") : [];
-        const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 0;
+        const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 1;
         const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : 1000000;
         const sortOrder = req.query.sort || 'az';
 

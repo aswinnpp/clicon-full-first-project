@@ -76,38 +76,42 @@ const addAddress = async (req, res) => {
 
 const removeAdrress = async (req, res) => {
   try {
-    await Address.findByIdAndDelete(req.query.address);
-    
-    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-      res.json({ 
-        success: true, 
-        addressId: req.query.address,
-        message: 'Address deleted successfully' 
+    const { address } = req.query; 
+
+    console.log("ssssssssss",req.query)
+
+    const deletedAddress = await Address.findByIdAndDelete(address);
+
+    if (!deletedAddress) {
+      return res.status(404).json({
+        success: false,
+        message: "Address not found",
       });
-    } else {
-      res.redirect(`/profile/${req.params.id}`);
     }
+
+    return res.status(200).json({
+      success: true,
+      address,
+      message: "Address deleted successfully",
+    });
+
   } catch (error) {
     console.error("Remove address error:", error);
-    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-      res.status(500).json({ 
-        success: false, 
-        message: 'Failed to delete address' 
-      });
-    } else {
-      res.status(500).send("Server Error");
-    }
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete address. Please try again.",
+    });
   }
 };
-
 
 const editProfile = async (req, res) => {
   try {
     const { userId, name, email, password, phone, currentPassword, emailVerification } = req.body;
 
     console.log("Request Body:", req.body);
-
-    const user = await userSchema.findById(userId);
+ console.log("userId",userId)
+    const user = await userSchema.findOne({_id:userId});
+    console.log("user")
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }

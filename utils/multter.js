@@ -18,15 +18,14 @@ const { v4: uuidv4 } = require('uuid');
 
 const storage = multer.memoryStorage();
 
-
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-  if (allowedTypes.includes(file.mimetype)) {
+  if (file.mimetype.startsWith('image/')) {
     cb(null, true);
   } else {
-    cb(new Error('Please upload only JPG, JPEG, or PNG files.'), false);
+    cb(new Error('Please upload only image files.'), false);
   }
 };
+
 
 const upload = multer({
   storage,

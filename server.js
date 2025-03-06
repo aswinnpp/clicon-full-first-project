@@ -4,6 +4,7 @@ const app = express();
 const adminRoute = require("./routes/admin");
 const userRoute = require("./routes/user");
 const path = require("path");
+const Returns = require("./models/productreturn")
 
 const connectDB = require("./database/connectDB");
 const session = require("express-session");
@@ -21,14 +22,17 @@ const Coupon = require("./models/couponmodel");
 const { strict } = require("assert");
 // const morgan = require('morgan')
 
-cron.schedule("*/10 * * * * *", async () => { 
+
+
+
   // console.log("Checking for expired coupons...");
+
+cron.schedule("*/10 * * * * *", async () => { 
   try {
     const result = await Coupon.updateMany(
       { expiryDate: { $lt: new Date() }, isActive: true },
       { $set: { isActive: false } }
     );
-    // console.log(`Expired coupons updated: ${result.modifiedCount}`);
   } catch (error) {
     console.error("Error updating expired coupons:", error);
   }
@@ -36,6 +40,7 @@ cron.schedule("*/10 * * * * *", async () => {
 
 app.use(nocache());
 app.use(nocache());
+
 
 
 app.use(nocache());

@@ -7,6 +7,108 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+
+
+
+
+
+
+h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-size: 32px;
+}
+
+/* Button styles */
+#buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #2980b9;
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+/* Table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  display: none; /* Hide tables by default */
+  background-color: white;
+}
+
+/* Show the active table */
+table.active {
+  display: table;
+}
+
+table th {
+  background-color: #2c3e50;
+  color: white;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: bold;
+  border: 1px solid #ddd;
+}
+
+table td {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+}
+
+/* Zebra striping for rows */
+table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+table tr:hover {
+  background-color: #e6f7ff;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  #buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  table th, table td {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 24px;
+  }
+}
+.active-btn {
+  background-color: #1c638d;
+}
+
+td:nth-child(5) {
+  text-align: right;
+}
+
         body {
             font-family: 'Nunito', sans-serif;
             background-color: #1e1e2d;
@@ -129,7 +231,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="card-title mb-0">Total Revenue</h6>
-                                        <h3 class="mt-2 mb-0">₹<%= totals.revenue.toFixed(2) %></h3>
+                                        <h3 class="mt-2 mb-0">₹<%= Math.floor(totals.revenue)  %></h3>
                                     </div>
                                     <i class="bi bi-currency-rupee summary-icon"></i>
                                 </div>
@@ -142,7 +244,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="card-title mb-0">Total Orders</h6>
-                                        <h3 class="mt-2 mb-0"><%= totals.orders %></h3>
+                                        <h3 class="mt-2 mb-0"><%= totals.totalOrders %></h3>
                                     </div>
                                     <i class="bi bi-cart-check summary-icon"></i>
                                 </div>
@@ -168,7 +270,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="card-title mb-0">Coupon Discounts</h6>
-                                        <h3 class="mt-2 mb-0">₹<%= totals.couponDiscount.toFixed(2) %></h3>
+                                        <h3 class="mt-2 mb-0">₹<%= Math.floor(totals.couponDiscount )%></h3>
                                     </div>
                                     <i class="bi bi-ticket-perforated summary-icon"></i>
                                 </div>
@@ -181,7 +283,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="card-title mb-0">Product Discounts</h6>
-                                        <h3 class="mt-2 mb-0">₹<%= totals.productDiscount.toFixed(2) %></h3>
+                                        <h3 class="mt-2 mb-0">₹<%= Math.floor(totals.productDiscount)  %></h3>
                                     </div>
                                     <i class="bi bi-percent summary-icon"></i>
                                 </div>
@@ -191,22 +293,9 @@
                 </div>
 
                 <!-- Filter Section -->
-                <div class="filter-section">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-text">Date Range</span>
-                                <input type="date" class="form-control" id="startDateFilter" value="<%= selectedDates.startDate %>">
-                                <span class="input-group-text">to</span>
-                                <input type="date" class="form-control" id="endDateFilter" value="<%= selectedDates.endDate %>">
-                                <button class="btn btn-primary" onclick="applyDateFilter()">
-                                    <i class="bi bi-funnel"></i> Filter
-                                </button>
-                                <button class="btn btn-secondary" onclick="clearDateFilter()">
-                                    <i class="bi bi-x-circle"></i> Clear
-                                </button>
-                            </div>
-                        </div>
+                <div class="filter-section" style="display: flex; justify-content: center;">
+                    <div class="row g-3"  >
+                        
                         <div class="col-md-6">
                             <div class="btn-group chart-type-buttons" role="group">
                                 <button type="button" class="btn btn-outline-primary active" onclick="changeTimeFrame('daily')">Daily</button>
@@ -241,16 +330,142 @@
                         </div>
                     </div>
                 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <h1>Interactive Sales Data</h1>
+                <div id="buttons">
+                    <button class="button" onclick="showTable('products')">Best-Selling Products (Top 10)</button>
+                    <button class="button" onclick="showTable('categories')">Best-Selling Categories (Top 10)</button>
+                    <button class="button" onclick="showTable('brands')">Best-Selling Brands (Top 10)</button>
+                </div>
+            
+                <table id="products-table">
+                   
+                        <tr>
+                            <th>Rank</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                          
+                            <th>Total Sold</th>
+                        </tr>
+                        <% if (sortedProducts.length > 0) { %>
+                            <% sortedProducts.forEach((product, index) => { %>
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td><%= product.productname %></td>
+                                    <td><%= product.category %></td>
+                                    
+                                    <td><%= product.totalSold %></td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="6">No top-selling products found.</td>
+                            </tr>
+                        <% } %>
+                    </table>
+                    
+                
+            
+                <!-- Categories Table -->
+                <table id="categories-table">
+                    <tr>
+                        <th>Rank</th>
+                        <th>Category Name</th>
+                        <th>Total Sold</th>
+                    </tr>
+                    <% if (sortedCategories.length > 0) { %>
+                        <% sortedCategories.forEach((category, index) => { %>
+                            <tr>
+                                <td><%= index + 1 %></td>
+                                <td><%= category.category %></td>
+                                <td><%= category.totalSold %></td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="3">No top-selling categories found.</td>
+                        </tr>
+                    <% } %>
+                </table>
+            
+                <!-- Brands Table -->
+                <table id="brands-table">
+                    <tr>
+                        <th>Rank</th>
+                        <th>Brand Name</th>
+                        <th>Total Sold</th>
+                    </tr>
+                    <% if (sortedBrands.length > 0) { %>
+                        <% sortedBrands.forEach((brand, index) => { %>
+                            <tr>
+                                <td><%= index + 1 %></td>
+                                <td><%= brand.brand %></td>
+                                <td><%= brand.totalSold %></td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="3">No top-selling brands found.</td>
+                        </tr>
+                    <% } %>
+                </table>
             </main>
         </div>
     </div>
 
+
+
+    
     <%- include('../partials/admin/footer') %>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
+
+
+
+
+document.getElementById('products-table').classList.add('active');
+function showTable(section) {
+            
+            document.getElementById('products-table').classList.remove('active');
+            document.getElementById('categories-table').classList.remove('active');
+            document.getElementById('brands-table').classList.remove('active');
+
+            
+            if (section === 'products' ) {
+                document.getElementById('products-table').classList.add('active');
+            } else if (section === 'categories') {
+                document.getElementById('categories-table').classList.add('active');
+            } else if (section === 'brands') {
+                document.getElementById('brands-table').classList.add('active');
+            }
+        }
+
+      
+
+
+
+
+
+
         const graphData = JSON.parse('<%- JSON.stringify(graphData) %>');
+
+        console.log("d,ls,",graphData);
+        
         let currentTimeFrame = 'daily';
         let currentChartType = 'line';
         let salesChart;
@@ -259,12 +474,15 @@
             const ctx = document.getElementById('salesChart').getContext('2d');
             const data = graphData[currentTimeFrame];
 
+            console.log("data",data);
+            
+
             if (!data || !data.labels || !data.revenue || !data.orders) {
                 console.error('Invalid data format:', data);
                 return;
             }
-
-            console.log('Initializing chart with data:', data);
+            data.labels.sort((a, b) => new Date(a) - new Date(b))
+            console.log('Initializing chart with data:',  data.labels);
 
             salesChart = new Chart(ctx, {
                 type: currentChartType,
@@ -280,7 +498,7 @@
                             tension: 0.4
                         },
                         {
-                            label: 'Orders',
+                            label: 'Delivered Orders',
                             data: data.orders,
                             borderColor: 'rgb(255, 99, 132)',
                             backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -359,25 +577,51 @@
             });
         }
 
+
         function updateChart() {
-            if (!salesChart) {
-                console.error('Chart not initialized');
-                return;
-            }
+    if (!salesChart) {
+        console.error('Chart not initialized');
+        return;
+    }
 
-            const data = graphData[currentTimeFrame];
-            if (!data || !data.labels || !data.revenue || !data.orders) {
-                console.error('Invalid data format for timeframe:', currentTimeFrame);
-                return;
-            }
+    let data = graphData[currentTimeFrame];
+    if (!data || !data.labels || !data.revenue || !data.orders) {
+        console.error('Invalid data format for timeframe:', currentTimeFrame);
+        return;
+    }
+    data.labels.sort((a, b) => new Date(a) - new Date(b));
 
-            console.log('Updating chart with data:', data);
+console.log("jkljj",data.labels);
+   
+    let combinedData = data.labels.map((label, index) => {
+        let dateParts = label.split('-'); // Assuming format: YYYY-MM-DD or YYYY-MM
+        let year = parseInt(dateParts[0]);
+        let month = dateParts[1] ? parseInt(dateParts[1]) - 1 : 0; // Adjust for JS months (0-based)
+        let day = dateParts[2] ? parseInt(dateParts[2]) : 1; // Default to 1 if not available
 
-            salesChart.data.labels = data.labels;
-            salesChart.data.datasets[0].data = data.revenue;
-            salesChart.data.datasets[1].data = data.orders;
-            salesChart.update();
-        }
+        return {
+            label,
+            date: new Date(year, month, day), // Create Date object
+            revenue: data.revenue[index],
+            orders: data.orders[index]
+        };
+    });
+
+    console.log("combinedData",combinedData);
+    
+ 
+    // Extract sorted values
+    const sortedLabels = combinedData.map(item => item.label);
+    const sortedRevenue = combinedData.map(item => item.revenue);
+    const sortedOrders = combinedData.map(item => item.orders);
+
+    console.log('Sorted data (by Year first):', sortedLabels);
+
+    salesChart.data.labels = sortedLabels;
+    salesChart.data.datasets[0].data = sortedRevenue;
+    salesChart.data.datasets[1].data = sortedOrders;
+    salesChart.update();
+}
 
         function changeTimeFrame(timeFrame) {
             console.log('Changing timeframe to:', timeFrame);
@@ -399,25 +643,32 @@
 
         function applyDateFilter() {
             const startDate = document.getElementById('startDateFilter').value;
-            const endDate = document.getElementById('endDateFilter').value;
-            
-            if (!startDate || !endDate) {
-                alert('Please select both start and end dates');
-                return;
-            }
+    const endDate = document.getElementById('endDateFilter').value;
+    
+    if (!startDate || !endDate) {
+      alert('Please select both start and end dates');
+      return;
+    }
 
-            if (new Date(startDate) > new Date(endDate)) {
-                alert('Start date cannot be after end date');
-                return;
-            }
-
-            window.location.href = `${window.location.pathname}?startDate=${startDate}&endDate=${endDate}`;
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('startDate', startDate);
+    urlParams.set('endDate', endDate);
+    urlParams.set('type', selectedReportType); 
+    
+    window.location.href = `${window.location.pathname}?${urlParams.toString()}`;
         }
 
         function clearDateFilter() {
             document.getElementById('startDateFilter').value = '';
-            document.getElementById('endDateFilter').value = '';
-            window.location.href = window.location.pathname;
+           document.getElementById('endDateFilter').value = '';
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.delete('startDate');
+    urlParams.delete('endDate');
+    urlParams.set('type', selectedReportType); 
+    urlParams.set('page', '1'); 
+    
+    window.location.href = `${window.location.pathname}?${urlParams.toString()}`;
         }
 
         // Initialize the chart when the page loads

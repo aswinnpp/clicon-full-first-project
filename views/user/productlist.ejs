@@ -491,10 +491,10 @@ border-color: #ced4da;
                                                         <input type="number" 
                                                                id="min-price" 
                                                                class="form-control" 
-                                                               value="<%= minPrice || 0 %>"
-                                                               min="0"
+                                                               value="<%=minPrice || 1000 %>"
+                                                               min="1"
                                                                max="1000000"
-                                                               step="100">
+                                                               step="1000">
                                                     </div>
                                                 </div>
                                                 <div class="price-input">
@@ -505,9 +505,9 @@ border-color: #ced4da;
                                                                id="max-price" 
                                                                class="form-control" 
                                                                value="<%= maxPrice || 1000000 %>"
-                                                               min="0"
+                                                               min="1"
                                                                max="1000000"
-                                                               step="100">
+                                                               step="1000">
                                                     </div>
                                                 </div>
                                             </div>
@@ -938,7 +938,7 @@ function updateURLAndReload(params) {
 function navigateWithFilters(page) {
   if (!page || page < 1) return;
   
-  // Get current filter values
+
   const minPrice = document.getElementById('min-price')?.value || '';
   const maxPrice = document.getElementById('max-price')?.value || '';
   const searchQuery = document.getElementById('q')?.value || '';
@@ -1009,8 +1009,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Filter products based on price range
 function filterProductsByPrice() {
-    const minPrice = parseFloat(document.getElementById('min-price').value) || 0;
-    const maxPrice = parseFloat(document.getElementById('max-price').value) || Infinity;
+    const minPrice = parseFloat(document.getElementById('min-price').value) 
+    const maxPrice = parseFloat(document.getElementById('max-price').value) 
 
     const productCards = document.querySelectorAll(".product-card");
     let visibleCount = 0;
@@ -1217,43 +1217,38 @@ if (message) {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-const minPriceInput = document.getElementById('min-price');
-const maxPriceInput = document.getElementById('max-price');
+    const minPriceInput = document.getElementById('min-price');
+    const maxPriceInput = document.getElementById('max-price');
 
-// Input validation and synchronization
-function validatePriceInputs() {
-    let minValue = Number(minPriceInput.value);
-    let maxValue = Number(maxPriceInput.value);
+    // Input validation and synchronization
+    function validatePriceInputs(event) {
+        let minValue = Number(minPriceInput.value);
+        let maxValue = Number(maxPriceInput.value);
 
-    // Ensure values are within bounds
-    minValue = Math.max(0, Math.min(minValue, 0));
-    maxValue = Math.max(0, Math.min(maxValue, 1000000));
+        // Ensure values are within bounds (fixing Math.min issue)
+        minValue = Math.max(0, minValue);
+        maxValue = Math.max(0, Math.min(maxValue, 1000000));
 
-    // Ensure min doesn't exceed max
-    if (minValue > maxValue) {
-        if (this === minPriceInput) {
-            minValue = maxValue;
-        } else {
-            maxValue = minValue;
+        // Ensure minPrice doesn't exceed maxPrice
+        if (minValue > maxValue) {
+            if (event.target === minPriceInput) {
+                minValue = maxValue;
+            } else {
+                maxValue = minValue;
+            }
         }
+
+        minPriceInput.value = minValue;
+        maxPriceInput.value = maxValue;
     }
 
-    minPriceInput.value = minValue;
-    maxPriceInput.value = maxValue;
-}
-
-// Add input validation
-[minPriceInput, maxPriceInput].forEach(input => {
-    input.addEventListener('change', validatePriceInputs);
-    input.addEventListener('input', function() {
-        let value = Number(this.value);
-        if (value < 0) this.value = 0;
-        if (value > 1000000) this.value = 1000000;
+    // Add event listeners for validation
+    [minPriceInput, maxPriceInput].forEach(input => {
+        input.addEventListener('input', validatePriceInputs);
+        input.addEventListener('change', validatePriceInputs);
     });
 });
 
-
-});
 
 document.addEventListener("DOMContentLoaded", function () {
     const categoryFilters = document.querySelectorAll(".category-filter");

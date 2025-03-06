@@ -33,12 +33,16 @@
 
    
     
-    
+        
+    <div class="mb-3">
+      <label for="brand" class="form-label">Brand</label>     
+      <input type="text" class="form-control" id="brand" value="<%=products?.brand%>" name="brand" value="" required>
+    </div>
    
    
     <div class="mb-3">
       <label for="offer" class="form-label">Offer</label>     
-      <input type="text" class="form-control" id="brand" name="offer" value="<%=products?.offer%>"  required>
+      <input type="text" class="form-control" id="Offer" name="offer" value="<%=products?.offer%>"  required>
     </div>
    
     <div class="mb-3">
@@ -146,6 +150,9 @@
 <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
 <link rel="stylesheet" href="path-to-cropper.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
 
 <style>
   
@@ -274,13 +281,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
 
-        const offer = document.getElementById('brand').value.trim();
+        const offer = document.getElementById('Offer').value.trim();
         if (offer === "") {
             isValid = false;
             displayError("Offer is required.");
         }
 
-
+        const brand = document.getElementById('brand').value.trim();
+        if (brand === "") {
+            isValid = false;
+            displayError("brand is required.");
+        }
         const stock = document.getElementById('stock').value.trim();
         if (stock === "" || isNaN(stock) || stock < 0) {
             isValid = false;
@@ -380,7 +391,7 @@ function handleImageUpload(event, imagePreviewId) {
       autoCropArea: 1,
     });
   };
-
+  console.log(cropper);
   reader.readAsDataURL(file);
 }
 
