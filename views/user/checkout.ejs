@@ -1024,45 +1024,129 @@ function he() {
     })
     .then(response => response.json())
     .then(orderData => {
-        console.log("Received Order Data:", orderData); 
+        console.log("Received Order Data:", orderData);
 
         const options = {
-            key: orderData.key, 
-            name: "Your Store",
+            key: orderData.key,
+            name: "Clicon",
             description: "Purchase of Electronics",
-            order_id: orderData.order.id, 
+            order_id: orderData.order.id,
             handler: function (response) {
-             
-                Swal.fire({
-                    title: "Payment Successful!",
-                    text: "Your order has been placed successfully.",
-                    icon: "success",
-                    confirmButtonText: "OK"
-                }).then(() => {
-                    form.submit();
+                fetch("/verify-payment", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        orderId: orderData.order.id,
+                        paymentId: response.razorpay_payment_id
+                    }),
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: "Payment Successful!",
+                            text: "Your order has been placed successfully.",
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then(() => {
+
+
+                            let orderIdInput = document.createElement("input");
+                                orderIdInput.type = "hidden";
+                                orderIdInput.name = "orderId";
+                                orderIdInput.value = orderData.order.id
+                                form.appendChild(orderIdInput);
+
+                            
+                                let paymentStatusInput = document.createElement("input");
+                                paymentStatusInput.type = "hidden";
+                                paymentStatusInput.name = "paymentStatus";
+                                paymentStatusInput.value = "Paid";
+                                form.appendChild(paymentStatusInput);
+
+
+                           form.submit(); 
+                        });
+                    } else {
+                        handlePaymentFailure(orderData.order.id ,rzp);
+                    }
                 });
             },
-            modal:{
-                escape:false,
-                closed:function(){
-                    alert('hyrgvfcd')
+            modal: {
+                escape: false,
+                closed: function () {
+                    
+                    handlePaymentFailure(orderData.order.id,rzp);
                 }
-
-            } ,
-            theme: { color: "#3399cc" } 
+            },
+            theme: { color: "#3399cc" }
         };
 
-        console.log("Razorpay Options:", options); 
         const rzp = new Razorpay(options);
         rzp.open();
+
+        rzp.on('payment.failed', function (response) {  
+            handlePaymentFailure(orderData.order.id,rzp);
+        });
+
     })
-   . catch(error => {
+    .catch(error => {
         console.error("Error creating Razorpay order:", error);
         document.getElementById("errorMsg").innerHTML = "Payment failed. Please try again.";
         document.getElementById("errorMsg").style.color = "red";
     });
 } else {
     form.submit();
+}
+
+
+function handlePaymentFailure(orderId, rzp) {
+    fetch("/place-order", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            orderId: orderId,
+            paymentStatus: "Pending"
+        }),
+    })
+    .then(res => res.json())
+    .then(() => {
+        return Swal.fire({
+            title: "Payment Not Completed",
+            text: "Your order is placed but payment is pending.",
+            icon: "info",
+            showCancelButton: true, 
+            confirmButtonText: "OK",
+            cancelButtonText: "Cancel" 
+        });
+    })
+    .then((result) => { 
+        if (result.isConfirmed) {  
+
+            let orderIdInput = document.createElement("input");
+            orderIdInput.type = "hidden";
+            orderIdInput.name = "orderId";
+            orderIdInput.value = orderId;
+            form.appendChild(orderIdInput);
+
+          
+            let paymentStatusInput = document.createElement("input");
+            paymentStatusInput.type = "hidden";
+            paymentStatusInput.name = "paymentStatus";
+            paymentStatusInput.value = "Pending";
+            form.appendChild(paymentStatusInput);
+
+
+            document.getElementById("checkForm").submit(); 
+        }
+    })
+    .catch(error => {
+        console.error("Error placing order with pending status:", error);
+    });
 }
 
 

@@ -350,9 +350,8 @@ td:nth-child(5) {
                     <button class="button" onclick="showTable('categories')">Best-Selling Categories (Top 10)</button>
                     <button class="button" onclick="showTable('brands')">Best-Selling Brands (Top 10)</button>
                 </div>
-            
                 <table id="products-table">
-                   
+                  
                         <tr>
                             <th>Rank</th>
                             <th>Product Name</th>
@@ -360,8 +359,8 @@ td:nth-child(5) {
                           
                             <th>Total Sold</th>
                         </tr>
-                        <% if (sortedProducts.length > 0) { %>
-                            <% sortedProducts.forEach((product, index) => { %>
+                        <% if (sortedProducts?.length > 0) { %>
+                            <% sortedProducts?.forEach((product, index) => { %>
                                 <tr>
                                     <td><%= index + 1 %></td>
                                     <td><%= product.productname %></td>

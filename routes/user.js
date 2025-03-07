@@ -5,6 +5,7 @@ const multer = require("../utils/multter");
 const Cart = require("../models/cartpagemodel");
 const userSchema = require("../models/usermodel");
 const Product = require("../models/productmodel");
+const Order = require("../models/orderdetails");
 require("dotenv").config();
 
 const authController = require("../controller/userController/authController");
@@ -17,11 +18,13 @@ const wishlistController = require("../controller/userController/wishlistControl
 const WalletController = require("../controller/userController/walletController");
 
 router.get("/", userauth.isBan, homeController.loadHome);
+
 router.get(
   "/productview/:product_id",
   userauth.isBan,
   homeController.productView
 );
+
 router.get("/productlist", userauth.isBan, homeController.productList);
 
 router.get("/search-products", homeController.searchProducts);
@@ -54,6 +57,7 @@ router.post("/cart", userauth.checkSession, cartController.Carts);
 router.get("/cartdelete", cartController.cartDelete);
 
 router.get("/buynow/:id", orderController.buyNow);
+
 router.get(
   "/checkout",
   userauth.checkSession,
@@ -111,6 +115,12 @@ router.get(
   userauth.isBan,
   WalletController.loadWallet
 );
+
+router.post("/verify-payment", orderController.verifyPayment);
+
+router.post("/place-order", orderController.orderPlaced);
+
+router.post("/get-order-details", orderController.getOrderDetails);
 
 router.post("/returns", orderController.productReturns);
 

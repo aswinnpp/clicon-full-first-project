@@ -53,7 +53,7 @@
             <tr>
               <td><%= order.customerId?.email %></td>
               <td><%= item.productId?.productname %></td>
-              <td><%= new Date(order?.orderDate).toLocaleDateString() %></td>
+              <td><%= new Date(order?.orderDate).toLocaleDateString("en-CA") %></td>
               <!-- <td><%= item?.quantity %></td>
               <td><%= item.productId?.price %></td> -->
               <td><%= Math.floor(total)  %></td>
@@ -98,8 +98,10 @@
                         status = 'Completed';
                       } else if (item?.shippingDetails?.status === 'Cancelled') {
                         status = 'Failed';
-                      } else if (order?.paymentMethod === 'razorpay' || order?.paymentMethod === 'wallet') {
+                      } else if (order?.paymentMethod === 'razorpay'&& order?.paymentStatus === 'Paid'){
                         status = 'Completed';
+                      }else if  (order?.paymentMethod === 'wallet') {
+                        status = 'Completed';                                  
                       }
                   
                       // Print final status

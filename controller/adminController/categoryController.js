@@ -42,7 +42,7 @@ const loadCategoryCreate = async (req, res) => {
 const categoryCreate = async (req, res) => {
   try {
     const { name, status, offer } = req.body;
-    
+
     const offerValue = parseInt(offer) || 0;
     if (offerValue < 0 || offerValue > 100) {
       req.flash("error", "Offer percentage must be between 0 and 100");
@@ -61,7 +61,7 @@ const categoryCreate = async (req, res) => {
     const newCategory = new Category({
       name,
       status,
-      offer: offerValue
+      offer: offerValue,
     });
 
     await newCategory.save();
@@ -74,13 +74,14 @@ const categoryCreate = async (req, res) => {
   }
 };
 
-
 const loadCategoryUpdate = async (req, res) => {
   try {
     const id = req.params.id;
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).render("admin/404");
     }
+
     const category = await Category.find({ _id: id, isDeleted: false });
     res.render("admin/categoryupdate", { category });
   } catch (error) {
@@ -105,7 +106,7 @@ const CategoryUpdate = async (req, res) => {
 
     const exists = await Category.findOne({
       name: { $regex: new RegExp("^" + name + "$", "i") },
-      _id: { $ne: id }
+      _id: { $ne: id },
     });
 
     if (exists) {
@@ -115,10 +116,10 @@ const CategoryUpdate = async (req, res) => {
 
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
-      { 
-        name, 
-        status, 
-        offer: offerValue 
+      {
+        name,
+        status,
+        offer: offerValue,
       },
       { new: true }
     );
@@ -133,21 +134,22 @@ const CategoryUpdate = async (req, res) => {
 
     for (const product of products) {
       // Get the original product offer from the database
-      const originalProductOffer = parseFloat(product.originalOffer) || parseFloat(product.offer) || 0;
-      
+      const originalProductOffer =
+        parseFloat(product.originalOffer) || parseFloat(product.offer) || 0;
+
       // If category offer is greater than product's original offer
       if (offerValue > originalProductOffer) {
-        await Product.findByIdAndUpdate(product._id, { 
+        await Product.findByIdAndUpdate(product._id, {
           offer: `${offerValue}%`,
           originalOffer: originalProductOffer, // Store the original offer
-          maxOfferApplied: offerValue
+          maxOfferApplied: offerValue,
         });
       } else {
         // If product's original offer is higher or equal, revert to original offer
-        await Product.findByIdAndUpdate(product._id, { 
+        await Product.findByIdAndUpdate(product._id, {
           offer: `${originalProductOffer}%`,
           originalOffer: originalProductOffer, // Store the original offer
-          maxOfferApplied: originalProductOffer
+          maxOfferApplied: originalProductOffer,
         });
       }
     }
@@ -160,7 +162,6 @@ const CategoryUpdate = async (req, res) => {
     res.redirect("/admin/categorymanage");
   }
 };
-
 
 const categoryDelete = async (req, res) => {
   try {

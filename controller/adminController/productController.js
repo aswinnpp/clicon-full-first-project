@@ -1,8 +1,8 @@
 const Product = require("../../models/productmodel");
 const Category = require("../../models/categorymodel");
-const path = require('path');
-const fs = require('fs');
-const { v4: uuidv4 } = require('uuid');
+const path = require("path");
+const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
 const mongoose = require("mongoose");
 
 const loadProductManage = async (req, res) => {
@@ -11,14 +11,13 @@ const loadProductManage = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 4;
     const skip = (page - 1) * limit;
-    const searchQuery = req.query.search || '';
-    const category = req.query.category || '';
+    const searchQuery = req.query.search || "";
+    const category = req.query.category || "";
 
-    
     let query = {};
-    
+
     if (searchQuery) {
-      query.productname = { $regex: new RegExp(searchQuery, 'i') };
+      query.productname = { $regex: new RegExp(searchQuery, "i") };
     }
 
     if (category) {
@@ -39,7 +38,7 @@ const loadProductManage = async (req, res) => {
       message,
       limit,
       searchQuery,
-      category 
+      category,
     });
   } catch (error) {
     console.log("Product management page not found", error);
@@ -47,12 +46,11 @@ const loadProductManage = async (req, res) => {
   }
 };
 
-
 const loadProductUpdate = async (req, res) => {
   try {
     const id = req.params.id;
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).render('admin/404');
+      return res.status(404).render("admin/404");
     }
     const categories = await Category.find({ isDeleted: false });
     const products = await Product.findOne({ _id: id, isDeleted: false });
@@ -65,26 +63,42 @@ const loadProductUpdate = async (req, res) => {
 
 const ProductUpdate = async (req, res) => {
   try {
-    const croppedImages = Object.keys(req.body).filter(key => key.includes('_cropped'));
+    const croppedImages = Object.keys(req.body).filter((key) =>
+      key.includes("_cropped")
+    );
     const croppedImageFilenames = {};
 
-    croppedImages.forEach(imageKey => {
+    croppedImages.forEach((imageKey) => {
       const base64Data = req.body[imageKey];
       const matches = base64Data.match(/^data:image\/(\w+);base64,(.+)$/);
       if (matches) {
         const extension = matches[1];
         const base64String = matches[2];
         const filename = `${imageKey}-${Date.now()}.${extension}`;
-        const filepath = path.join(__dirname, '../../uploads', filename);
-        fs.writeFileSync(filepath, Buffer.from(base64String, 'base64'));
+        const filepath = path.join(__dirname, "../../uploads", filename);
+        fs.writeFileSync(filepath, Buffer.from(base64String, "base64"));
         croppedImageFilenames[imageKey] = filename;
       }
     });
 
-    const { id, productname, category, brand, offer, price, stock, warranty, color, description, rating, ram, storage } = req.body;
-    
+    const {
+      id,
+      productname,
+      category,
+      brand,
+      offer,
+      price,
+      stock,
+      warranty,
+      color,
+      description,
+      rating,
+      ram,
+      storage,
+    } = req.body;
+
     const categoryId = await Category.findOne({
-      name: { $regex: new RegExp(`^${category}$`, 'i') },
+      name: { $regex: new RegExp(`^${category}$`, "i") },
       isDeleted: false,
     });
 
@@ -107,15 +121,18 @@ const ProductUpdate = async (req, res) => {
         category: categoryId.name,
         brand,
         offer,
-        maxOfferApplied: Math.max(parseFloat(currentProduct.maxOfferApplied) || 0, parseFloat(offer) || 0),
+        maxOfferApplied: Math.max(
+          parseFloat(currentProduct.maxOfferApplied) || 0,
+          parseFloat(offer) || 0
+        ),
         price,
         stock,
         warranty,
-        color: color.split(',').map(c => c.trim()),
+        color: color.split(",").map((c) => c.trim()),
         description,
         rating,
-        ram: ram.split(',').map(c => c.trim()),
-        storage: storage.split(',').map(c => c.trim()),
+        ram: ram.split(",").map((c) => c.trim()),
+        storage: storage.split(",").map((c) => c.trim()),
         image: images,
       },
       { new: true }
@@ -124,15 +141,13 @@ const ProductUpdate = async (req, res) => {
     if (!updatedProduct) {
       return res.status(404).json({ error: "Failed to update product." });
     }
-    
-    res.redirect('/admin/productmanage');
+
+    res.redirect("/admin/productmanage");
   } catch (err) {
     console.error("Error:", err);
-    res.status(500).json({ message: 'Server Error', error: err.message });
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 };
-
-
 
 const loadProductcreate = async (req, res) => {
   try {
@@ -146,22 +161,38 @@ const loadProductcreate = async (req, res) => {
 
 const ProductCreate = async (req, res) => {
   try {
-    const { productname, category, brand, offer, price, stock, warranty, color, description, rating, ram, storage } = req.body;
-    
+    const {
+      productname,
+      category,
+      brand,
+      offer,
+      price,
+      stock,
+      warranty,
+      color,
+      description,
+      rating,
+      ram,
+      storage,
+    } = req.body;
+
     const categoryId = await Category.findOne({
-      name: { $regex: new RegExp(`^${category}$`, 'i') },
+      name: { $regex: new RegExp(`^${category}$`, "i") },
       isDeleted: false,
     });
 
     let images = [];
-    Object.keys(req.body).forEach(key => {
-      if (key.includes('_cropped')) {
+    Object.keys(req.body).forEach((key) => {
+      if (key.includes("_cropped")) {
         const base64Image = req.body[key];
-        if (base64Image.startsWith('data:image/')) {
-          const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, '');
-          const buffer = Buffer.from(base64Data, 'base64');
+        if (base64Image.startsWith("data:image/")) {
+          const base64Data = base64Image.replace(
+            /^data:image\/\w+;base64,/,
+            ""
+          );
+          const buffer = Buffer.from(base64Data, "base64");
           const filename = `image_${uuidv4()}.png`;
-          const filepath = path.join(__dirname, '../../uploads/', filename);
+          const filepath = path.join(__dirname, "../../uploads/", filename);
           fs.writeFileSync(filepath, buffer);
           images.push(filename);
         }
@@ -178,7 +209,7 @@ const ProductCreate = async (req, res) => {
       price,
       stock,
       warranty,
-      color: color.split(',').map(c => c.trim()),
+      color: color.split(",").map((c) => c.trim()),
       description,
       rating,
       ram,
@@ -187,21 +218,26 @@ const ProductCreate = async (req, res) => {
     });
 
     await newProduct.save();
-    res.redirect('/admin/productmanage');
+    res.redirect("/admin/productmanage");
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error while creating the product');
+    res.status(500).send("Error while creating the product");
   }
 };
 
 const loadProductview = async (req, res) => {
   try {
     const id = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).render("admin/404");
+    }
+
     const product = await Product.find({ _id: id, isDeleted: false });
     res.render("admin/productview", { product });
   } catch (error) {
     console.log("productview page not found");
-    res.status(404).render('admin/404');
+    res.status(404).render("admin/404");
   }
 };
 
@@ -209,20 +245,22 @@ const productDelete = async (req, res) => {
   try {
     const productId = req.params.id;
     const product = await Product.findById(productId);
-    await Product.findByIdAndUpdate(productId, { isDeleted: !product.isDeleted });
+    await Product.findByIdAndUpdate(productId, {
+      isDeleted: !product.isDeleted,
+    });
     res.json({ success: true });
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: 'Failed to update product status.' });
+    res.json({ success: false, message: "Failed to update product status." });
   }
 };
 
 module.exports = {
-  loadProductManage,  
+  loadProductManage,
   loadProductUpdate,
   ProductUpdate,
   loadProductcreate,
   ProductCreate,
   loadProductview,
-  productDelete
+  productDelete,
 };

@@ -31,6 +31,11 @@ const loadUserManage = async (req, res) => {
 const loadUserUpdate = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).render("admin/404");
+    }
+
     const user = await User.findById(id);
     if (!user) return res.status(404).send("User not found");
     res.render("admin/userupdate", { user });

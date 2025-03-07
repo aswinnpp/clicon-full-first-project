@@ -1,15 +1,12 @@
 const Cart = require("../../models/cartpagemodel");
 const Product = require("../../models/productmodel");
-const wishlist = require("../../models/whishlist")
+const wishlist = require("../../models/whishlist");
 const userSchema = require("../../models/usermodel");
-
 
 const loadCart = async (req, res) => {
   try {
     const email = req.session?.details?.email;
     if (!email) return res.redirect("/login");
-
- 
 
     const user = await userSchema.findOne({ email });
     if (!user) return res.redirect("/login");
@@ -19,7 +16,7 @@ const loadCart = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const cart = await Cart.findOne({ userId: user._id }).populate({
-      path: "items.productId", 
+      path: "items.productId",
       model: "Product",
     });
 
@@ -53,7 +50,7 @@ const loadCart = async (req, res) => {
         : 0;
 
       const discountedPrice = Math.floor(
-        originalPrice - originalPrice * discountPercentage / 100
+        originalPrice - (originalPrice * discountPercentage) / 100
       );
 
       return sum + discountedPrice * (item.quantity || 1);
@@ -91,11 +88,9 @@ const Carts = async (req, res) => {
 
     let cart = await Cart.findOne({ userId }).populate("items.productId");
 
-
     await wishlist.findOneAndUpdate(
       { userId },
-      { $pull: { items: { productId } } },
-    
+      { $pull: { items: { productId } } }
     );
 
     if (!cart) {
@@ -175,37 +170,52 @@ const cartDelete = async (req, res) => {
 
 const updateCart = async (req, res) => {
   try {
-    const { productId, quantity } = req.body; 
+    const { productId, quantity } = req.body;
 
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
-    } 
-    const user= await userSchema.findOne({email:req.session.details.email})
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+    const user = await userSchema.findOne({ email: req.session.details.email });
     const cart = await Cart.findOne({ userId: user._id });
     if (!cart) {
-      return res.status(404).json({ success: false, message: "Cart not found" });
-    } 
+      return res
+        .status(404)
+        .json({ success: false, message: "Cart not found" });
+    }
 
-    const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
+    const itemIndex = cart.items.findIndex(
+      (item) => item.productId.toString() === productId
+    );
     if (itemIndex === -1) {
-      return res.status(404).json({ success: false, message: "Item not found in cart" });
-    } 
+      return res
+        .status(404)
+        .json({ success: false, message: "Item not found in cart" });
+    }
 
     const newQuantity = Number(quantity);
 
     if (newQuantity > 5) {
-      return res.status(400).json({ success: false, message: "Quantity cannot exceed 5" });
-    }  
+      return res
+        .status(400)
+        .json({ success: false, message: "Quantity cannot exceed 5" });
+    }
 
     if (newQuantity > product.stock) {
-      return res.status(400).json({ success: false, message: `Stock limit exceeded. Only ${product.stock} items available` });
-    } 
+      return res.status(400).json({
+        success: false,
+        message: `Stock limit exceeded. Only ${product.stock} items available`,
+      });
+    }
 
     cart.items[itemIndex].quantity = newQuantity;
-    await cart.save();    
+    await cart.save();
 
-    return res.status(200).json({ success: true, message: "Cart updated successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Cart updated successfully" });
   } catch (error) {
     console.error("Update cart error:", error);
     return res.status(500).json({ success: false, message: "Server error" });
@@ -214,62 +224,60 @@ const updateCart = async (req, res) => {
 
 const getSummery = async (req, res) => {
   try {
-      
+    const user = await userSchema.findOne({ email: req.session.details.email });
+    const items = await Cart.find({ userId: user._id }).populate(
+      "items.productId"
+    );
 
-      const user = await userSchema.findOne({email:req.session.details.email})
-      const items = await Cart.find({ userId:user._id })
-          .populate('items.productId');
+    let originalTotal = 0;
+    let totalDiscount = 0;
+    let finalTotal = 0;
+    let totalItems = 0;
+    items.forEach((cart) => {
+      cart.items.forEach((item) => {
+        if (item.productId && item.productId.price) {
+          const originalPrice =
+            parseFloat(item.productId.price.replace(/,/g, "")) || 0;
+          const discountMatch = item.productId.offer
+            ? item.productId.offer.match(/\d+/)
+            : null;
+          const discountPercentage = discountMatch
+            ? parseFloat(discountMatch[0])
+            : 0;
 
-      let originalTotal = 0;
-      let totalDiscount = 0;
-      let finalTotal = 0;
-      let totalItems = 0;
-      items.forEach(cart => {
-          cart.items.forEach(item => {
-              if (item.productId && item.productId.price) {
-                  const originalPrice = parseFloat(item.productId.price.replace(/,/g, '')) || 0;
-                  const discountMatch = item.productId.offer ? item.productId.offer.match(/\d+/) : null;
-                  const discountPercentage = discountMatch ? parseFloat(discountMatch[0]) : 0;
+          const singleItemDiscountedPrice =
+            originalPrice - (originalPrice * discountPercentage) / 100;
+          const singleItemOriginalTotal = originalPrice;
+          const singleItemDiscountAmount =
+            originalPrice - singleItemDiscountedPrice;
 
-                
-                  const singleItemDiscountedPrice = originalPrice - (originalPrice * discountPercentage / 100);
-                  const singleItemOriginalTotal = originalPrice;
-                  const singleItemDiscountAmount = originalPrice - singleItemDiscountedPrice;
+          const itemTotalOriginal = singleItemOriginalTotal * item.quantity;
+          const itemTotalDiscounted = singleItemDiscountedPrice * item.quantity;
+          const discountAmount = singleItemDiscountAmount * item.quantity;
+        }
 
-                
-                  const itemTotalOriginal = singleItemOriginalTotal * item.quantity;
-                  const itemTotalDiscounted = singleItemDiscountedPrice * item.quantity;
-                  const discountAmount = singleItemDiscountAmount * item.quantity;
-              }
-
-              originalTotal += itemTotalOriginal;
-              totalDiscount += discountAmount;
-              finalTotal += itemTotalDiscounted;
-              totalItems += item.quantity;
-          });
+        originalTotal += itemTotalOriginal;
+        totalDiscount += discountAmount;
+        finalTotal += itemTotalDiscounted;
+        totalItems += item.quantity;
       });
+    });
 
-      console.log(originalTotal,totalDiscount,finalTotal,totalItems)
+    console.log(originalTotal, totalDiscount, finalTotal, totalItems);
 
-      res.json({
-          originalTotal,
-      });
+    res.json({
+      originalTotal,
+    });
   } catch (error) {
-      console.error('Error calculating cart summary:', error);
-      res.status(500).json({ error: 'Error calculating cart summary' });
+    console.error("Error calculating cart summary:", error);
+    res.status(500).json({ error: "Error calculating cart summary" });
   }
-}
-    
-
-
-
-
+};
 
 module.exports = {
   updateCart,
   loadCart,
   Carts,
   cartDelete,
-  getSummery 
-
+  getSummery,
 };

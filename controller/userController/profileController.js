@@ -1,33 +1,35 @@
 const userSchema = require("../../models/usermodel");
 const Address = require("../../models/addressmodel");
 const Order = require("../../models/orderdetails");
-const Returns = require("../../models/productreturn")
+const Returns = require("../../models/productreturn");
+const mongoose = require("mongoose");
 const { generateOTP, sendOtpEmail } = require("./helpers");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const fs = require("fs");
 
-
 const loadProfile = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(req.session);
-    const orders = await Order.find({ customerId: id })
-      .populate({
-        path: "items.productId",
-        select: "productname price offer",
-      })
-      
 
-      const returns = await Returns.find({ userId: id })
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).render("user/404");
+    }
+
+    console.log(req.session);
+    const orders = await Order.find({ customerId: id }).populate({
+      path: "items.productId",
+      select: "productname price offer",
+    });
+
+    const returns = await Returns.find({ userId: id })
       .populate("productId", "productname price images")
       .populate("orderId");
-     
 
     const user = await userSchema.findOne({ _id: id });
     const address = await Address.find({ userId: id });
 
-    res.render("user/profile", { user, id, address, orders,returns });
+    res.render("user/profile", { user, id, address, orders, returns });
   } catch (error) {
     console.log(error);
   }
@@ -51,22 +53,22 @@ const addAddress = async (req, res) => {
     await address.save();
 
     // If it's an AJAX request, send JSON response
-    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-      const savedAddress = await address.populate('userId');
-      res.json({ 
-        success: true, 
+    if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+      const savedAddress = await address.populate("userId");
+      res.json({
+        success: true,
         address: savedAddress,
-        message: 'Address added successfully' 
+        message: "Address added successfully",
       });
     } else {
       res.redirect(`/profile/${id}`);
     }
   } catch (error) {
     console.log(error);
-    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-      res.status(500).json({ 
-        success: false, 
-        message: 'Failed to add address' 
+    if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+      res.status(500).json({
+        success: false,
+        message: "Failed to add address",
       });
     } else {
       res.redirect(`/profile/${id}`);
@@ -76,9 +78,9 @@ const addAddress = async (req, res) => {
 
 const removeAdrress = async (req, res) => {
   try {
-    const { address } = req.query; 
+    const { address } = req.query;
 
-    console.log("ssssssssss",req.query)
+    console.log("ssssssssss", req.query);
 
     const deletedAddress = await Address.findByIdAndDelete(address);
 
@@ -94,7 +96,6 @@ const removeAdrress = async (req, res) => {
       address,
       message: "Address deleted successfully",
     });
-
   } catch (error) {
     console.error("Remove address error:", error);
     return res.status(500).json({
@@ -106,18 +107,28 @@ const removeAdrress = async (req, res) => {
 
 const editProfile = async (req, res) => {
   try {
-    const { userId, name, email, password, phone, currentPassword, emailVerification } = req.body;
+    const {
+      userId,
+      name,
+      email,
+      password,
+      phone,
+      currentPassword,
+      emailVerification,
+    } = req.body;
 
     console.log("Request Body:", req.body);
- console.log("userId",userId)
-    const user = await userSchema.findOne({_id:userId});
-    console.log("user")
+    console.log("userId", userId);
+    const user = await userSchema.findOne({ _id: userId });
+    console.log("user");
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }
 
     if (emailVerification) {
-      const verifiedUser = await userSchema.findOne({ email: emailVerification });
+      const verifiedUser = await userSchema.findOne({
+        email: emailVerification,
+      });
 
       if (!verifiedUser) {
         return res.status(400).json({ error: "Email not found in records." });
@@ -167,25 +178,32 @@ const editProfile = async (req, res) => {
 
     await user.save();
 
-    res.json({ 
-      success: true, 
-      message: "Profile updated successfully.", 
-      redirectUrl: `/profile/${userId}` 
+    res.json({
+      success: true,
+      message: "Profile updated successfully.",
+      redirectUrl: `/profile/${userId}`,
     });
-
   } catch (error) {
     console.error("Error updating profile:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-
 const editAddress = async (req, res) => {
   try {
-    const { adressaId, street, city, state, Country, postalCode, phone, userId } = req.body;
+    const {
+      adressaId,
+      street,
+      city,
+      state,
+      Country,
+      postalCode,
+      phone,
+      userId,
+    } = req.body;
 
     const updatedAddress = await Address.findByIdAndUpdate(
-      adressaId, 
+      adressaId,
       {
         street,
         city,
@@ -197,21 +215,21 @@ const editAddress = async (req, res) => {
       { new: true }
     );
 
-    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-      res.json({ 
-        success: true, 
+    if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+      res.json({
+        success: true,
         address: updatedAddress,
-        message: 'Address updated successfully' 
+        message: "Address updated successfully",
       });
     } else {
       res.redirect(`/profile/${userId}`);
     }
   } catch (error) {
     console.log(error);
-    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-      res.status(500).json({ 
-        success: false, 
-        message: 'Failed to update address' 
+    if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+      res.status(500).json({
+        success: false,
+        message: "Failed to update address",
       });
     } else {
       res.redirect(`/profile/${userId}`);

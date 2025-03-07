@@ -19,6 +19,11 @@ const orderDetailsSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  paymentStatus: {
+     type: String,
+      enum: ["Pending", "Paid", "Failed"], 
+      default: "Pending"
+ },
   totalAmount: {
     type: Number,
     required: true,
@@ -88,6 +93,11 @@ const orderDetailsSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  razorId: {
+    type: String,  
+    
+},
+
 }, {
   timestamps: true, 
 });

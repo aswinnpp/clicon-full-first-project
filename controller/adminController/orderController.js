@@ -1,5 +1,5 @@
 const Order = require("../../models/orderdetails");
-const Returns = require("../../models/productreturn")
+const Returns = require("../../models/productreturn");
 const mongoose = require("mongoose");
 const { ObjectId } = require("mongoose").Types;
 
@@ -12,9 +12,8 @@ const loadOrdermanage = async (req, res) => {
     const totalOrders = await Order.countDocuments();
     const totalPages = Math.ceil(totalOrders / limit);
 
-    const returns = await Returns.find()
-     console.log("returns",returns);
-     
+    const returns = await Returns.find();
+    console.log("returns", returns);
 
     const orders = await Order.find()
       .skip(skip)
@@ -52,9 +51,8 @@ const orderView = async (req, res) => {
   try {
     const { orderId, productId } = req.params;
     const order = await Order.findById(orderId)
-    .populate("items.productId") 
-    .populate( "coupon");
-
+      .populate("items.productId")
+      .populate("coupon");
 
     if (!order) return res.status(404).send("Order not found");
 

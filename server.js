@@ -4,16 +4,16 @@ const app = express();
 const adminRoute = require("./routes/admin");
 const userRoute = require("./routes/user");
 const path = require("path");
-const Returns = require("./models/productreturn")
+const Returns = require("./models/productreturn");
 
 const connectDB = require("./database/connectDB");
 const session = require("express-session");
-const nocache = require('nocache');
+const nocache = require("nocache");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 const env = require("dotenv").config();
 const flash = require("connect-flash");
-const bodyParser = require('body-parser')
+const bodyParser = require("body-parser");
 const cors = require("cors");
 app.use(cors({ origin: "*" }));
 
@@ -22,12 +22,7 @@ const Coupon = require("./models/couponmodel");
 const { strict } = require("assert");
 // const morgan = require('morgan')
 
-
-
-
-  // console.log("Checking for expired coupons...");
-
-cron.schedule("*/10 * * * * *", async () => { 
+cron.schedule("*/10 * * * * *", async () => {
   try {
     const result = await Coupon.updateMany(
       { expiryDate: { $lt: new Date() }, isActive: true },
@@ -41,8 +36,6 @@ cron.schedule("*/10 * * * * *", async () => {
 app.use(nocache());
 app.use(nocache());
 
-
-
 app.use(nocache());
 
 // app.use(morgan('dev'))
@@ -52,7 +45,7 @@ app.use(flash());
 connectDB();
 app.use(
   session({
-    secret: "secretKey",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false },
@@ -66,11 +59,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/admin", adminRoute);
 app.use("/", userRoute);
 
-
-
-
 app.listen(process.env.PORT, () => {
   console.log("PORT connected");
 });
-
-

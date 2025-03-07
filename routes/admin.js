@@ -10,16 +10,15 @@ const returnController = require("../controller/adminController/returnsControlle
 const multer = require("../utils/multter");
 const adminauth = require("../middleware/adminauth");
 
-const PDFDocument = require("pdfkit");
-const ExcelJS = require("exceljs");
-const path = require("path");
-const fs = require("fs");
-
 router.get("/login", adminauth.isLogin, authController.loadLogin);
 router.post("/login", authController.login);
 router.get("/adminlogout", authController.adminLogout);
 router.get("/dashboard", adminauth.checkSession, authController.loadSales);
-  router.get("/dashboard-graph", adminauth.checkSession, authController.loadDashboardGraph);
+router.get(
+  "/dashboard-graph",
+  adminauth.checkSession,
+  authController.loadDashboardGraph
+);
 
 router.get(
   "/usermanage",
@@ -100,7 +99,6 @@ router.post(
   "/update-product-status/:orderId/:productId",
   orderController.statusUpdate
 );
-
 router.get(
   "/couponcreate",
   adminauth.checkSession,
@@ -112,7 +110,6 @@ router.get(
   adminauth.checkSession,
   couponController.loadCouponmanage
 );
-
 router.delete("/coupondelete", couponController.deleteCoupon);
 router.post(
   "/couponedit",
@@ -121,16 +118,11 @@ router.post(
 );
 
 router.post("/couponcreate", couponController.couponCreate);
-
 router.get("/returns", adminauth.checkSession, returnController.loadReturns);
-
 router.post("/productApprove", returnController.productApprove);
 router.post("/productRejected", returnController.productRejected);
+router.get("/api/new-returns", returnController.notification);
 
-
-router.get("/api/new-returns", returnController.notification )
-
-// 404 Handler
 router.get("*", (req, res) => {
   res.status(404).render("admin/404");
 });

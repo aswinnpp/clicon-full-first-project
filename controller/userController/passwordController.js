@@ -2,12 +2,12 @@ const userSchema = require("../../models/usermodel");
 const bcrypt = require("bcrypt");
 const { generateOTP, sendOtpEmail } = require("./helpers");
 
-// Load Forgot Password Page
+
 const loadForgot = (req, res) => {
   res.render("user/forgotpassword", { message: req.flash("message") });
 };
 
-// Handle Forgot Password
+
 const forgot = async (req, res) => {
   try {
     const { email } = req.body;
@@ -32,12 +32,11 @@ const forgot = async (req, res) => {
   }
 };
 
-// Load Reset Password Page
+
 const loadReset = (req, res) => {
   res.render("user/resetpassword");
 };
 
-// Handle Reset Password
 const reset = async (req, res) => {
   try {
     const { newpassword, newconfirmpassword } = req.body;
