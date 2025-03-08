@@ -34,31 +34,124 @@ const loadHome = async (req, res) => {
 
 const searchProducts = async (req, res) => {
   try {
-    let a = [];
-    const searchTerm = req.query.q;
-    console.log("Search term received:", searchTerm);
+    const searchTerm = req.query.q || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = 2;
+    const selectedCategories = req.query.category ? req.query.category.split(",") : [];
+    const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 1;
+    const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : 1000000;
+    const sortOrder = req.query.sort || "az";
 
-    const products = await Product.find({
-      productname: { $regex: searchTerm, $options: "i" },
-      isDeleted: false,
-    }).limit(10);
+    // Build the pipeline for aggregation
+    const pipeline = [
+      // Match non-deleted products
+      { $match: { isDeleted: false } },
+      
+      // Add numeric price field
+      {
+        $addFields: {
+          numericPrice: {
+            $convert: {
+              input: { $replaceAll: { input: "$price", find: ",", replacement: "" } },
+              to: "double",
+              onError: 0
+            }
+          }
+        }
+      }
+    ];
 
-    products.forEach((product, ind) => {
-      let offer = Number(product.offer.slice(0, -1));
+    // Add search filter if provided
+    if (searchTerm) {
+      pipeline.push({
+        $match: {
+          productname: { $regex: searchTerm, $options: "i" }
+        }
+      });
+    }
 
-      let price = Number(product.price.replace(/,/g, ""));
+    // Add category filter if provided
+    if (selectedCategories.length > 0) {
+      pipeline.push({
+        $match: {
+          category: { $in: selectedCategories }
+        }
+      });
+    }
 
-      const offerprice = price - price * (offer / 100);
-
-      a.push(offerprice);
+    // Add price filter
+    pipeline.push({
+      $match: {
+        numericPrice: {
+          $gte: minPrice,
+          $lte: maxPrice
+        }
+      }
     });
 
-    console.log(a);
+    // Add sorting
+    let sortStage = {};
+    switch (sortOrder) {
+      case "az":
+        sortStage = { $sort: { productname: 1 } };
+        break;
+      case "za":
+        sortStage = { $sort: { productname: -1 } };
+        break;
+      case "price-low":
+        sortStage = { $sort: { numericPrice: 1 } };
+        break;
+      case "price-high":
+        sortStage = { $sort: { numericPrice: -1 } };
+        break;
+      default:
+        sortStage = { $sort: { _id: -1 } };
+    }
+    pipeline.push(sortStage);
 
-    res.json({ products, offerprice: a });
+    // Get total count
+    const countPipeline = [...pipeline];
+    countPipeline.push({ $count: "total" });
+    const countResult = await Product.aggregate(countPipeline);
+    const totalProducts = countResult[0]?.total || 0;
+
+    // Add pagination
+    pipeline.push(
+      { $skip: (page - 1) * limit },
+      { $limit: limit }
+    );
+
+    // Execute the pipeline
+    const products = await Product.aggregate(pipeline);
+
+    // Calculate offer prices for each product
+    const productsWithOfferPrices = products.map(product => {
+      const offer = Number(product.offer?.slice(0, -1)) || 0;
+      const price = product.numericPrice;
+      const offerprice = price - (price * (offer / 100));
+      return {
+        ...product,
+        offerprice: Math.floor(offerprice)
+      };
+    });
+
+    res.json({
+      products: productsWithOfferPrices,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
+      totalProducts,
+      message: ""
+    });
+
   } catch (error) {
     console.error("Search error:", error);
-    res.status(500).json([]);
+    res.status(500).json({
+      products: [],
+      currentPage: 1,
+      totalPages: 0,
+      totalProducts: 0,
+      message: "Error occurred while searching"
+    });
   }
 };
 
@@ -77,64 +170,98 @@ const productList = async (req, res) => {
       : 1000000;
     const sortOrder = req.query.sort || "az";
 
-    console.log("Received query params:", {
-      page,
-      searchQuery,
-      selectedCategories,
-      minPrice,
-      maxPrice,
-      sortOrder,
+    // Build the initial pipeline stages
+    const pipeline = [
+      // First stage: Match non-deleted products
+      { $match: { isDeleted: false } },
+      
+      // Second stage: Add a numeric price field
+      {
+        $addFields: {
+          numericPrice: {
+            $convert: {
+              input: { $replaceAll: { input: "$price", find: ",", replacement: "" } },
+              to: "double",
+              onError: 0
+            }
+          }
+        }
+      }
+    ];
+
+    // Add search filter if provided
+    if (searchQuery) {
+      pipeline.push({
+        $match: {
+          productname: { $regex: searchQuery, $options: "i" }
+        }
+      });
+    }
+
+    // Add category filter if provided
+    if (selectedCategories.length > 0) {
+      pipeline.push({
+        $match: {
+          category: { $in: selectedCategories }
+        }
+      });
+    }
+
+    // Add price filter
+    pipeline.push({
+      $match: {
+        numericPrice: {
+          $gte: minPrice,
+          $lte: maxPrice
+        }
+      }
     });
 
-    let query = { isDeleted: false };
-
-    if (searchQuery) {
-      query.productname = { $regex: searchQuery, $options: "i" };
-    }
-
-    if (selectedCategories.length > 0) {
-      query.category = { $in: selectedCategories };
-    }
-
-    query.price = { $gte: minPrice, $lte: maxPrice };
-
-    let sortOptions = {};
+    // Add sorting
+    let sortStage = {};
     switch (sortOrder) {
       case "az":
-        sortOptions = { productname: 1 };
+        sortStage = { $sort: { productname: 1 } };
         break;
       case "za":
-        sortOptions = { productname: -1 };
+        sortStage = { $sort: { productname: -1 } };
         break;
       case "price-low":
-        sortOptions = { price: 1 };
+        sortStage = { $sort: { numericPrice: 1 } };
         break;
       case "price-high":
-        sortOptions = { price: -1 };
+        sortStage = { $sort: { numericPrice: -1 } };
         break;
       default:
-        sortOptions = { _id: -1 };
+        sortStage = { $sort: { _id: -1 } };
     }
+    pipeline.push(sortStage);
 
-    const totalProducts = await Product.countDocuments({ isDeleted: false });
-    console.log("totalProducts", totalProducts);
+    // Get total count of filtered products
+    const countPipeline = [...pipeline];
+    countPipeline.push({ $count: "total" });
+    const countResult = await Product.aggregate(countPipeline);
+    const totalProducts = countResult[0]?.total || 0;
 
+    // Add pagination
+    pipeline.push(
+      { $skip: (page - 1) * limit },
+      { $limit: limit }
+    );
+
+    // Execute the pipeline
+    const products = await Product.aggregate(pipeline);
+
+    // Calculate total pages
     const totalPages = Math.ceil(totalProducts / limit);
-
-    const products = await Product.find({ isDeleted: false })
-      .sort(sortOptions)
-      .skip((page - 1) * limit)
-      .limit(limit);
-
-    console.log(",", products.length);
 
     const categories = await Category.find({ isDeleted: false });
 
     console.log("Sending to template:", {
-      productsCount: products.length,
+      productsCount: totalProducts,
       currentPage: page,
       totalPages,
-      totalProducts,
+      productsInPage: products.length
     });
 
     res.render("user/productlist", {

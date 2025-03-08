@@ -1,0 +1,132 @@
+.popup-message {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, bottom 0.5s ease-in-out;
+    z-index: 9999;
+}
+
+.popup-message.show {
+    display: block;
+    opacity: 1;
+    bottom: 30px;
+}
+
+.filter-price {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.price-inputs {
+    gap: 15px;
+}
+
+.price-input {
+    flex: 1;
+}
+
+.price-input label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #666;
+}
+
+.price-input .input-group {
+    width: 100%;
+}
+
+.price-input input {
+    text-align: right;
+    padding-right: 8px;
+}
+
+#apply-price {
+    background-color: #39f;
+    border: none;
+    padding: 5px 15px;
+    transition: all 0.3s ease;
+}
+
+#apply-price:hover {
+    background-color: #007bff;
+    transform: translateY(-1px);
+}
+
+.price-input .input-group-text {
+    background-color: #e9ecef;
+    color: #495057;
+    border-right: none;
+}
+
+.price-input .form-control {
+    border-left: none;
+}
+
+.price-input .form-control:focus {
+    box-shadow: none;
+    border-color: #ced4da;
+}
+
+.pagination-container {
+    text-align: center;
+    margin-top: 20px;
+    position: relative;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 100%;
+}
+
+.pagination {
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.pagination a {
+    padding: 8px 12px;
+    margin: 0 5px;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    color: #333;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination a.active {
+    font-weight: bold;
+    background-color: #39f;
+    color: white;
+    border-color: #39f;
+}
+
+.pagination a.prev,
+.pagination a.next {
+    font-weight: bold;
+}
+
+.product-price .old-price {
+    text-decoration: line-through;
+    color: red;
+    margin-right: 10px;
+}
+
+.product-price .current-price {
+    font-weight: bold;
+} 

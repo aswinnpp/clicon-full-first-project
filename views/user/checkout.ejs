@@ -1044,6 +1044,8 @@ function he() {
                 })
                 .then(res => res.json())
                 .then(data => {
+                    console.log("data",data);
+                    
                     if (data.success) {
                         Swal.fire({
                             title: "Payment Successful!",
@@ -1077,8 +1079,8 @@ function he() {
             modal: {
                 escape: false,
                 closed: function () {
-                    
-                    handlePaymentFailure(orderData.order.id,rzp);
+                    handlePaymentFailure
+                    (orderData.order.id,rzp);
                 }
             },
             theme: { color: "#3399cc" }
@@ -1126,6 +1128,7 @@ function handlePaymentFailure(orderId, rzp) {
     })
     .then((result) => { 
         if (result.isConfirmed) {  
+            
 
             let orderIdInput = document.createElement("input");
             orderIdInput.type = "hidden";
