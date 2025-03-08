@@ -35,8 +35,6 @@ const loadHome = async (req, res) => {
 const searchProducts = async (req, res) => {
   try {
     const searchTerm = req.query.q || "";
-    const page = parseInt(req.query.page) || 1;
-    const limit = 2;
     const selectedCategories = req.query.category ? req.query.category.split(",") : [];
     const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 1;
     const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : 1000000;
@@ -109,18 +107,6 @@ const searchProducts = async (req, res) => {
     }
     pipeline.push(sortStage);
 
-    // Get total count
-    const countPipeline = [...pipeline];
-    countPipeline.push({ $count: "total" });
-    const countResult = await Product.aggregate(countPipeline);
-    const totalProducts = countResult[0]?.total || 0;
-
-    // Add pagination
-    pipeline.push(
-      { $skip: (page - 1) * limit },
-      { $limit: limit }
-    );
-
     // Execute the pipeline
     const products = await Product.aggregate(pipeline);
 
@@ -137,9 +123,7 @@ const searchProducts = async (req, res) => {
 
     res.json({
       products: productsWithOfferPrices,
-      currentPage: page,
-      totalPages: Math.ceil(totalProducts / limit),
-      totalProducts,
+      totalProducts: productsWithOfferPrices.length,
       message: ""
     });
 
@@ -147,8 +131,6 @@ const searchProducts = async (req, res) => {
     console.error("Search error:", error);
     res.status(500).json({
       products: [],
-      currentPage: 1,
-      totalPages: 0,
       totalProducts: 0,
       message: "Error occurred while searching"
     });
