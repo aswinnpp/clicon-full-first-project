@@ -266,3 +266,932 @@
     margin: 0 16px;
   }
 }
+
+
+.profile-container {
+  width: 50px; 
+  height: 50px;
+  border-radius: 50%; 
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0; 
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+}
+
+
+.profile-container img {
+  width: 100%;
+  height: 100%; 
+  object-fit: cover; 
+}
+/* Popup message styling */
+.popup-message {
+    display: none; /* Initially hidden */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f44336; /* Red background */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, bottom 0.5s ease-in-out;
+    z-index: 9999;
+}
+
+/* Show the popup */
+.popup-message.show {
+    display: block;
+    opacity: 1;
+    bottom: 30px; /* Adjust position to appear above the bottom */
+}
+
+/* Mobile Menu Styling Improvements */
+.mobile-menu-toggler {
+    padding: 10px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: none; /* Hidden by default */
+}
+
+.mobile-menu-toggler:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.mobile-menu-toggler .icon-bars {
+    font-size: 24px;
+    color: #333;
+}
+
+/* Responsive Header Adjustments */
+@media (max-width: 991px) {
+    .mobile-menu-toggler {
+        display: block;
+        margin-right: 1rem;
+    }
+
+    .header-middle .container {
+        padding: 1rem;
+    }
+
+    .header-center {
+        display: none;
+    }
+
+    .header-right {
+        margin-left: auto;
+    }
+
+    /* Improve mobile menu items spacing */
+    .mobile-menu > li {
+        padding: 0.8rem 1.5rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .mobile-menu > li > a {
+        font-size: 1.4rem;
+        color: #333;
+        font-weight: 500;
+    }
+
+    /* Adjust header elements for better mobile layout */
+    .header-middle .logo {
+        margin: 0;
+        padding: 0;
+    }
+
+    .header-right > div {
+        margin-left: 1.5rem;
+    }
+
+    /* Improve mobile search styling */
+    .mobile-search {
+        padding: 1rem;
+        background: #f8f8f8;
+        border-radius: 8px;
+        margin: 1rem;
+    }
+
+    .mobile-search .form-control {
+        height: 40px;
+        padding: 0.375rem 1rem;
+        font-size: 1.4rem;
+        border-radius: 20px;
+        border: 1px solid #ddd;
+    }
+
+    /* Enhance mobile menu overlay */
+    .mobile-menu-overlay {
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+    }
+
+    /* Improve mobile menu container */
+    .mobile-menu-container {
+        width: 280px;
+        background: #fff;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Additional mobile-specific improvements */
+@media (max-width: 575px) {
+    .header-right > div {
+        margin-left: 1rem;
+    }
+
+    .header-right .icon {
+        font-size: 2rem;
+    }
+
+    .header-right p {
+        font-size: 1.2rem;
+    }
+
+    .profile-container {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Improve mobile menu animation */
+.mobile-menu-container {
+    transition: transform 0.3s ease-in-out;
+}
+
+.mobile-menu-container.show {
+    transform: translateX(0);
+}
+
+/* Enhanced mobile navigation tabs */
+.nav-pills-mobile {
+    background: #f8f8f8;
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin: 1rem;
+}
+
+.nav-pills-mobile .nav-link {
+    padding: 1rem 1.5rem;
+    font-weight: 500;
+    color: #666;
+    border-radius: 6px;
+}
+
+.nav-pills-mobile .nav-link.active {
+    background: #fff;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Product Card Text Styling */
+.product {
+    margin-bottom: 2rem;
+}
+
+.product-body {
+    padding: 1rem 0.5rem;
+    text-align: left;
+}
+
+.product-cat {
+    font-size: 1.2rem;
+    color: #777;
+    margin-bottom: 0.5rem;
+}
+
+.product-cat a {
+    color: #777;
+    text-decoration: none;
+}
+
+/* Product Title Styling */
+.product-title {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Force single line */
+    min-height: auto; /* Remove min-height */
+    font-size: 1.2rem;
+}
+
+.product-title a {
+    color: #333;
+    text-decoration: none;
+}
+
+.product-price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.product-price span {
+    font-size: 1.4rem;
+}
+
+/* Original price styling */
+.product-price span:first-child {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 1.3rem;
+}
+
+/* Discounted price styling */
+.product-price span:last-child {
+    color: #333;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+/* Offer styling */
+.product-price p {
+    color: #2ecc71;
+    font-weight: 500;
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+/* Ratings container styling */
+.ratings-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 0.5rem;
+}
+
+.ratings {
+    position: relative;
+    height: 15px;
+    width: 80px;
+}
+
+.ratings-val {
+    background-color: #ffd700;
+    height: 100%;
+}
+
+.ratings-text {
+    font-size: 1.2rem;
+    color: #777;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 767px) {
+    .product-body {
+        padding: 0.8rem 0.4rem;
+    }
+
+    .product-cat {
+        font-size: 1rem; /* Smaller font size for mobile */
+    }
+
+    .product-title {
+        font-size: 1rem; /* Smaller font size for mobile */
+        margin-bottom: 0.3rem;
+    }
+
+    .product-price {
+        flex-wrap: wrap;
+    }
+
+    .product-price span:first-child {
+        font-size: 1.2rem;
+    }
+
+    .product-price span:last-child {
+        font-size: 1.3rem;
+    }
+
+    /* Adjust offer text */
+    .product-price p {
+        font-size: 1.1rem;
+    }
+
+    /* Make ratings more compact */
+    .ratings-container {
+        margin-top: 0.3rem;
+    }
+
+    .ratings {
+        width: 70px;
+        height: 12px;
+    }
+
+    .ratings-text {
+        font-size: 1.1rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 375px) {
+    .product-title {
+        font-size: 0.9rem; /* Even smaller for very small devices */
+    }
+
+    .product-price span:first-child {
+        font-size: 1.1rem;
+    }
+
+    .product-price span:last-child {
+        font-size: 1.2rem;
+    }
+
+    .product-price p {
+        font-size: 1rem;
+    }
+}
+
+/* Add button styling */
+.btn-product {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1.3rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 767px) {
+    .btn-product {
+        padding: 0.6rem;
+        font-size: 1.2rem;
+    }
+}
+
+/* Flipkart-style Mobile Product Layout */
+@media (max-width: 767px) {
+    /* Container adjustments */
+    .products .row {
+        margin: 0 -5px;
+    }
+
+    .products .col-6 {
+        padding: 5px;
+    }
+
+    /* Product card styling */
+    .product {
+        margin-bottom: 8px;
+        background: #fff;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .product-media {
+        position: relative;
+        margin-bottom: 0;
+        padding-top: 100%; /* 1:1 Aspect ratio */
+    }
+
+    .product-media img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 8px;
+    }
+
+    /* Product details styling */
+    .product-body {
+        padding: 8px;
+    }
+
+    .product-cat {
+        font-size: 11px;
+        color: #878787;
+        margin-bottom: 4px;
+    }
+
+    .product-title {
+        font-size: 12px;
+        color: #212121;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Price styling */
+    .product-price {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-bottom: 4px;
+    }
+
+    /* Original price */
+    .product-price span:first-child {
+        font-size: 11px;
+        color: #878787;
+        text-decoration: line-through;
+    }
+
+    /* Discounted price */
+    .product-price span:last-child {
+        font-size: 14px;
+        font-weight: 600;
+        color: #212121;
+    }
+
+    /* Offer badge */
+    .product-price p {
+        font-size: 11px;
+        color: #388e3c;
+        margin: 0;
+    }
+
+    /* Ratings */
+    .ratings-container {
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .ratings {
+        width: 60px;
+        height: 10px;
+    }
+
+    .ratings-text {
+        font-size: 11px;
+        color: #878787;
+    }
+
+    /* Add to cart button */
+    .product-action {
+        padding: 0 8px 8px;
+    }
+
+    .btn-product {
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 2px;
+        background: #ff9f00;
+        color: #fff;
+        width: 100%;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    /* Wishlist button */
+    .product-action-vertical {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 2;
+    }
+
+    .btn-product-icon {
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.9);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+}
+
+/* Additional adjustments for very small screens */
+@media (max-width: 320px) {
+    .product-title {
+        font-size: 11px;
+    }
+
+    .product-price span:last-child {
+        font-size: 13px;
+    }
+
+    .btn-product {
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+}
+
+/* Updated Mobile Search Styles */
+.mobile-search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    z-index: 9999; /* Higher z-index to appear above everything */
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-search-overlay.show {
+    display: block;
+    opacity: 1;
+}
+
+.mobile-search-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+}
+
+.mobile-search-header {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    z-index: 1;
+}
+
+.mobile-search-form {
+    display: flex;
+    align-items: center;
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 5px 10px;
+}
+
+.mobile-search-form i {
+    color: #666;
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.mobile-search-form .form-control {
+    border: none;
+    background: transparent;
+    padding: 8px 0;
+    flex: 1;
+    font-size: 16px;
+    outline: none;
+}
+
+.mobile-search-close {
+    border: none;
+    background: transparent;
+    padding: 8px;
+    color: #666;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.mobile-search-content {
+    height: calc(100% - 60px);
+    overflow-y: auto;
+    padding: 15px;
+}
+
+.mobile-search-loader {
+    display: none;
+    justify-content: center;
+    padding: 20px;
+}
+
+.mobile-search-loader.show {
+    display: flex;
+}
+
+/* Search Results Styling */
+.search-product-card {
+    display: flex;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-decoration: none;
+    color: inherit;
+}
+
+.search-product-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 12px;
+}
+
+.search-product-details {
+    flex: 1;
+}
+
+.search-product-name {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.search-product-price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-product-original-price {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 13px;
+}
+
+.search-product-final-price {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.search-product-discount {
+    color: #00a650;
+    font-size: 12px;
+}
+
+/* Mobile Search Trigger Button */
+.mobile-search-trigger {
+    border: none;
+    background: transparent;
+    padding: 8px 12px;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-search-trigger i {
+    font-size: 22px;
+}
+
+@media (min-width: 992px) {
+    .mobile-search-trigger {
+        display: none;
+    }
+}
+
+/* Search Overlay Styles */
+.search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 9999;
+    display: none;
+}
+
+.search-overlay.show {
+    display: block;
+}
+
+.search-header {
+    padding: 12px 16px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+}
+
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.search-input-wrapper i {
+    color: #666;
+    margin-right: 12px;
+    font-size: 18px;
+}
+
+.search-input-wrapper .form-control {
+    border: none;
+    background: transparent;
+    padding: 8px 0;
+    flex: 1;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-close {
+    border: none;
+    background: transparent;
+    padding: 8px;
+    margin-left: 8px;
+    color: #666;
+    cursor: pointer;
+}
+
+.search-content {
+    padding-top: 65px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.search-loader {
+    display: none;
+    justify-content: center;
+    padding: 20px;
+}
+
+.search-loader.show {
+    display: flex;
+}
+
+.search-results {
+    padding: 16px;
+}
+
+/* Product Card Styles */
+.search-product-card {
+    display: flex;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-decoration: none;
+    color: inherit;
+}
+
+.search-product-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 12px;
+}
+
+.search-product-details {
+    flex: 1;
+}
+
+.search-product-name {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.search-product-price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-product-original-price {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 13px;
+}
+
+.search-product-final-price {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.search-product-discount {
+    color: #00a650;
+    font-size: 12px;
+}
+
+/* Hide search on desktop */
+@media (min-width: 992px) {
+    .mobile-search-trigger {
+        display: none;
+    }
+}
+
+/* Mobile Search Modal */
+.mobile-search-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: #fff;
+    z-index: 1050;
+    display: none;
+}
+
+.mobile-search-modal.show {
+    display: block;
+}
+
+.mobile-search-wrapper {
+    padding: 10px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.mobile-search-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.mobile-search-input-wrapper i {
+    color: #666;
+    margin-right: 10px;
+}
+
+.mobile-search-input-wrapper .form-control {
+    border: none;
+    background: transparent;
+    flex: 1;
+    outline: none;
+    font-size: 16px;
+}
+
+.mobile-search-close {
+    border: none;
+    background: transparent;
+    padding: 8px;
+    color: #666;
+    cursor: pointer;
+}
+
+.mobile-search-results {
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    padding: 10px;
+}
+
+/* Product Card in Search Results */
+.search-product-card {
+    display: flex;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    text-decoration: none;
+    color: inherit;
+}
+
+.search-product-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.search-product-details {
+    flex: 1;
+}
+
+.search-product-name {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.search-product-price {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-product-original-price {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.search-product-final-price {
+    font-weight: 600;
+    color: #333;
+}
+
+.search-product-discount {
+    color: #00a650;
+    font-size: 12px;
+}
+
+/* Mobile Search Trigger */
+.mobile-search-trigger {
+    border: none;
+    background: transparent;
+    padding: 8px;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+}
+
+@media (min-width: 992px) {
+    .mobile-search-trigger {
+        display: none;
+    }
+}
+
+

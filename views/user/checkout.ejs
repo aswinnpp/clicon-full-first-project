@@ -28,50 +28,9 @@
     <!-- Main CSS File -->
     <link rel="stylesheet" href="/assets/css/style.css">
 
-    <style>
-/* Main Coupon Section */
-.available-coupons {
-    width: 100%;
-    margin-bottom: 20px;
-}
+   <link rel="stylesheet" href="/css/styles/user/checkOut.css">
 
-/* Coupon List Container */
-.coupon-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    padding: 10px;
-}
-
-/* Individual Coupon Card */
-.coupon-item.card {
-    flex: 0 0 calc(25% - 12px); /* Adjust for gap (4 cards with 3 gaps between) */
-    background: #fff;
-    border: 1px dashed #e0e0e0;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 10px;
-}
-
-.coupon-item.card:hover {
-    border-color: #2874f0;
-    background: #f5f8ff;
-}
-
-/* Responsive adjustments */
-@media (max-width: 992px) {
-    .coupon-item.card {
-        flex: 0 0 calc(50% - 8px); /* 2 cards per row on tablets */
-    }
-}
-
-@media (max-width: 576px) {
-    .coupon-item.card {
-        flex: 0 0 100%; /* 1 card per row on mobile */
-    }
-}
-
-    </style>
+    
 </head>
 
 
@@ -421,7 +380,7 @@
                                        <div class="accordion-summary"> 
                                             <div class="card-header">
                                                 <h2 class="card-title">
-                                                    <input type="radio" name="paymentMethod"  required value="razorpay" required> Razorpay
+                                                    <input type="radio" name="paymentMethod"  required value="razorpay" required> Razorpay/UPI Payment
                                                 </h2>
                                             </div>
                                         </div>

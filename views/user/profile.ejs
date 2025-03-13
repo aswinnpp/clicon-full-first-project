@@ -33,200 +33,12 @@
     <!-- Main CSS File -->
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/plugins/nouislider/nouislider.css">
+    <link rel="stylesheet" href="/css/styles/user/profilePage.css">
 </head>
 
 <body>
 
-<style>
-body {
-    font-family: 'Arial', sans-serif;
-    background: #f8f9fa;
-}
 
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 0 15px;
-}
-
-.profile-section {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-    margin-bottom: 30px;
-}
-
-.profile-image {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    margin: 0 auto 20px;
-    overflow: hidden;
-    border: 3px solid #f8f9fa;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-}
-
-.profile-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.profile-sidebar {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-}
-
-.nav-link {
-    color: #495057;
-    padding: 12px 15px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    margin-bottom: 8px;
-}
-
-.nav-link:hover {
-    background-color: #f8f9fa;
-    color: #007bff;
-}
-
-.nav-link.active {
-    background-color: #007bff;
-    color: #fff !important;
-}
-
-.nav-link i {
-    margin-right: 10px;
-    width: 20px;
-    text-align: center;
-}
-
-.address-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease;
-    position: relative;
-}
-
-
-.address-actions {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    gap: 8px;
-}
-
-.btn-icon {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    border: none;
-    transition: all 0.3s ease;
-}
-
-.btn-icon-edit {
-    background-color: #f8f9fa;
-    color: #007bff;
-}
-
-.btn-icon-edit:hover {
-    background-color: #007bff;
-    color: #fff;
-}
-
-.btn-icon-delete {
-    background-color: #f8f9fa;
-    color: #dc3545;
-}
-
-.btn-icon-delete:hover {
-    background-color: #dc3545;
-    color: #fff;
-}
-
-.custom-btn {
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: none;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    color: #fff;
-}
-
-.btn-success {
-    background-color: #28a745;
-}
-
-.btn-danger {
-    background-color: #dc3545;
-}
-
-.modal-content {
-    border-radius: 12px;
-    border: none;
-}
-
-.modal-header {
-    background-color: #f8f9fa;
-    border-radius: 12px 12px 0 0;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.modal-body {
-    padding: 25px;
-}
-
-.share-btn-wrapper {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 1000;
-}
-
-.share-btn {
-    background-color: #25D366;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 50px;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-    transition: all 0.3s ease;
-}
-
-.share-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-}
-
-@media (max-width: 768px) {
-    .profile-sidebar {
-        margin-bottom: 20px;
-    }
-    
-    .share-btn-wrapper {
-        bottom: 20px;
-        right: 20px;
-    }
-    
-    .address-card {
-        margin-bottom: 15px;
-    }
-}
-</style>
 
 
     <div class="page-wrapper">
@@ -1573,6 +1385,9 @@ document.getElementById("profile-edit-form")?.addEventListener("submit", async (
               try {
                   let response = await fetch('/wallet', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
                   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                  console.log(response);
+                  
                   document.getElementById('wallet-section').innerHTML = await response.text();
               } catch (error) {
                   console.error('Error loading wallet:', error);

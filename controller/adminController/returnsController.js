@@ -85,6 +85,15 @@ const productApprove = async (req, res) => {
         await returnItem.save();
       }
 
+      // Update product stock by adding back the returned quantity
+      if (itemToUpdate.productId) {
+        const returnedQuantity = itemToUpdate.quantity;
+        await itemToUpdate.productId.updateOne({
+          $inc: { stock: returnedQuantity }
+        });
+        console.log(`Updated stock for product ${productId}, added ${returnedQuantity} units back to inventory`);
+      }
+
       const paymentMethod = order.paymentMethod;
 
       const transId = `txn_${Date.now()}_${Math.floor(Math.random() * 10000)}`;

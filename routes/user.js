@@ -111,8 +111,6 @@ router.post("/wishlist/remove", wishlistController.removeProduct);
 router.post("/create-order", orderController.razorpay);
 router.get(
   "/wallet",
-  userauth.checkSession,
-  userauth.isBan,
   WalletController.loadWallet
 );
 

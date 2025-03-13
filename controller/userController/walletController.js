@@ -38,7 +38,6 @@ const loadWallet = async (req, res) => {
       });
     }
 
-    res.render("user/wallet", { transactions, wallet, page, totalPages });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");

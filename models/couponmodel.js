@@ -8,14 +8,9 @@ const couponSchema = new mongoose.Schema({
   usageLimit: { type: Number, default: 1 }, 
   startDate: { type: Date, required: true }, 
   expiryDate: { type: Date, required: true },
-  isActive: { type: Boolean, default: true },
+  isActive: { type: Boolean, default: false },
 });
 
-couponSchema.pre("validate", function (next) {
-  if (this.expiryDate < new Date()) {
-    this.isActive = false;
-  }
-  next();
-});
+
 
 module.exports = mongoose.model("Coupon", couponSchema);

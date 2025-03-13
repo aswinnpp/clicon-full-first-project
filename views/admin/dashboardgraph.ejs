@@ -6,208 +6,8 @@
     <title>Admin Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-
-
-
-
-
-
-h1 {
-  text-align: center;
-  color: #2c3e50;
-  margin-bottom: 30px;
-  font-size: 32px;
-}
-
-/* Button styles */
-#buttons {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 30px;
-}
-
-.button {
-  background-color: #3498db;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
-}
-
-.button:hover {
-  background-color: #2980b9;
-}
-
-.button:active {
-  transform: translateY(1px);
-}
-
-/* Table styles */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
-  display: none; /* Hide tables by default */
-  background-color: white;
-}
-
-/* Show the active table */
-table.active {
-  display: table;
-}
-
-table th {
-  background-color: #2c3e50;
-  color: white;
-  padding: 12px 15px;
-  text-align: left;
-  font-weight: bold;
-  border: 1px solid #ddd;
-}
-
-table td {
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-}
-
-/* Zebra striping for rows */
-table tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-table tr:hover {
-  background-color: #e6f7ff;
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  #buttons {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  table th, table td {
-    padding: 8px 10px;
-    font-size: 14px;
-  }
-  
-  h1 {
-    font-size: 24px;
-  }
-}
-.active-btn {
-  background-color: #1c638d;
-}
-
-td:nth-child(5) {
-  text-align: right;
-}
-
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #1e1e2d;
-            margin: 0;
-            padding: 2rem;
-            color: #ffffff;
-        }
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            background-color: #151521;
-            box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-        }
-        h1 {
-            color: #ffffff;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-        }
-        .chart-container {
-            width: 100%;
-            height: 400px;
-            padding: 1rem;
-            background: #151521;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        .time-period-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: #1a1a27;
-            padding: 10px;
-            border-radius: 8px;
-            justify-content: center;
-        }
-        .time-period-selector button {
-            padding: 8px 16px;
-            background: #2a2a3e;
-            border: none;
-            color: #ffffff;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Nunito', sans-serif;
-        }
-        .time-period-selector button:hover {
-            background: #435ebe;
-        }
-        .time-period-selector button.active {
-            background: #435ebe;
-        }
-        .chart-container {
-            position: relative;
-            margin: auto;
-            height: 400px;
-            width: 100%;
-            margin-bottom: 2rem;
-        }
-        .card {
-            transition: transform 0.2s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .summary-card {
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .summary-icon {
-            font-size: 2rem;
-            opacity: 0.8;
-        }
-        .filter-section {
-            background-color: #f8f9fa;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-        }
-        .chart-type-buttons .btn {
-            margin: 0 0.25rem;
-        }
-        .chart-controls {
-            margin-bottom: 1rem;
-        }
-        @media (max-width: 768px) {
-            .chart-container {
-                height: 300px;
-            }
-            .chart-type-buttons {
-                flex-wrap: wrap;
-            }
-            .chart-type-buttons .btn {
-                margin: 0.25rem;
-            }
-        }
-    </style>
+     <link rel="stylesheet" href="/css/styles/admin/dasboardStyles.css">
+    
 </head>
 <body>
     <%- include('../partials/admin/header') %>
@@ -231,7 +31,7 @@ td:nth-child(5) {
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="card-title mb-0">Total Revenue</h6>
-                                        <h3 class="mt-2 mb-0">₹<%= Math.floor(totals.revenue)  %></h3>
+                                        <h3 class="mt-2 mb-0">₹<%= Math.floor(totals.revenue) || 0 %></h3>
                                     </div>
                                     <i class="bi bi-currency-rupee summary-icon"></i>
                                 </div>
@@ -244,7 +44,7 @@ td:nth-child(5) {
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="card-title mb-0">Total Orders</h6>
-                                        <h3 class="mt-2 mb-0"><%= totals.totalOrders %></h3>
+                                        <h3 class="mt-2 mb-0"><%= totals.totalOrders || 0 %></h3>
                                     </div>
                                     <i class="bi bi-cart-check summary-icon"></i>
                                 </div>
@@ -257,7 +57,7 @@ td:nth-child(5) {
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="card-title mb-0">Total Items</h6>
-                                        <h3 class="mt-2 mb-0"><%= totals.items %></h3>
+                                        <h3 class="mt-2 mb-0"><%= totals.items || 0 %></h3>
                                     </div>
                                     <i class="bi bi-box summary-icon"></i>
                                 </div>
@@ -270,7 +70,7 @@ td:nth-child(5) {
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="card-title mb-0">Coupon Discounts</h6>
-                                        <h3 class="mt-2 mb-0">₹<%= Math.floor(totals.couponDiscount )%></h3>
+                                        <h3 class="mt-2 mb-0">₹<%= Math.floor(totals.couponDiscount) || 0 %></h3>
                                     </div>
                                     <i class="bi bi-ticket-perforated summary-icon"></i>
                                 </div>
@@ -283,7 +83,7 @@ td:nth-child(5) {
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="card-title mb-0">Product Discounts</h6>
-                                        <h3 class="mt-2 mb-0">₹<%= Math.floor(totals.productDiscount)  %></h3>
+                                        <h3 class="mt-2 mb-0">₹<%= Math.floor(totals.productDiscount) || 0 %></h3>
                                     </div>
                                     <i class="bi bi-percent summary-icon"></i>
                                 </div>
@@ -359,24 +159,21 @@ td:nth-child(5) {
                           
                             <th>Total Sold</th>
                         </tr>
-                        <% if (sortedProducts?.length > 0) { %>
-                            <% sortedProducts?.forEach((product, index) => { %>
+                        <% if (typeof sortedProducts !== 'undefined' && sortedProducts && sortedProducts.length > 0) { %>
+                            <% sortedProducts.forEach((product, index) => { %>
                                 <tr>
                                     <td><%= index + 1 %></td>
                                     <td><%= product.productname %></td>
                                     <td><%= product.category %></td>
-                                    
                                     <td><%= product.totalSold %></td>
                                 </tr>
                             <% }); %>
                         <% } else { %>
                             <tr>
-                                <td colspan="6">No top-selling products found.</td>
+                                <td colspan="4">No top-selling products found.</td>
                             </tr>
                         <% } %>
                     </table>
-                    
-                
             
                 <!-- Categories Table -->
                 <table id="categories-table">
@@ -385,7 +182,7 @@ td:nth-child(5) {
                         <th>Category Name</th>
                         <th>Total Sold</th>
                     </tr>
-                    <% if (sortedCategories.length > 0) { %>
+                    <% if (typeof sortedCategories !== 'undefined' && sortedCategories && sortedCategories.length > 0) { %>
                         <% sortedCategories.forEach((category, index) => { %>
                             <tr>
                                 <td><%= index + 1 %></td>
@@ -399,7 +196,6 @@ td:nth-child(5) {
                         </tr>
                     <% } %>
                 </table>
-            
                 <!-- Brands Table -->
                 <table id="brands-table">
                     <tr>
@@ -407,7 +203,7 @@ td:nth-child(5) {
                         <th>Brand Name</th>
                         <th>Total Sold</th>
                     </tr>
-                    <% if (sortedBrands.length > 0) { %>
+                    <% if (typeof sortedBrands !== 'undefined' && sortedBrands && sortedBrands.length > 0) { %>
                         <% sortedBrands.forEach((brand, index) => { %>
                             <tr>
                                 <td><%= index + 1 %></td>

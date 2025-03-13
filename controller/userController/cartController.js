@@ -107,7 +107,8 @@ const Carts = async (req, res) => {
     for (let i = 0; i < cart.items.length; i++) {
       if (cart.items[i].productId.toString() === productId) {
         const newQuantity = cart.items[i].quantity + parsedQuantity;
-
+  console.log("newQuantity",stock);
+  
         if (newQuantity > 5) {
           req.flash("cart", "You cannot add more than 5 items of one product.");
           return res.redirect("/");

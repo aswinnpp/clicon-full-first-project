@@ -5,7 +5,7 @@ const adminRoute = require("./routes/admin");
 const userRoute = require("./routes/user");
 const path = require("path");
 const Returns = require("./models/productreturn");
-
+const helmet = require("helmet")
 const connectDB = require("./database/connectDB");
 const session = require("express-session");
 const nocache = require("nocache");
@@ -22,12 +22,20 @@ const Coupon = require("./models/couponmodel");
 const { strict } = require("assert");
 // const morgan = require('morgan')
 
-cron.schedule("*/10 * * * * *", async () => {
+cron.schedule("* * * * * * *", async () => {
   try {
+
+
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0)
     const result = await Coupon.updateMany(
-      { expiryDate: { $lt: new Date() }, isActive: true },
+      { expiryDate: { $lt:today}, isActive: true },
       { $set: { isActive: false } }
     );
+
+ 
+
   } catch (error) {
     console.error("Error updating expired coupons:", error);
   }
@@ -41,6 +49,10 @@ app.use(nocache());
 // app.use(morgan('dev'))
 app.use(cors());
 app.use(flash());
+
+
+
+
 
 connectDB();
 app.use(
@@ -62,3 +74,4 @@ app.use("/", userRoute);
 app.listen(process.env.PORT, () => {
   console.log("PORT connected");
 });
+

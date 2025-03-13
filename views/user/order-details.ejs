@@ -15,252 +15,9 @@
     <link rel="stylesheet" href="/assets/css/plugins/nouislider/nouislider.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <style>
-        
-.modal-content {
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-}
+    <link rel="stylesheet" href="/css/styles/user/orderDetails.css">
 
-.modal-header {
-    background-color: #007bff;
-    color: white;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-
-.modal-title {
-    font-weight: bold;
-}
-
-.btn-close {
-    color: white;
-}
-
-.modal-body {
-    padding: 20px;
-    background-color: #f8f9fa;
-}
-
-.form-label {
-    font-weight: 600;
-}
-
-.form-select {
-    border-radius: 5px;
-    padding: 10px;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-
-
-    .invoice-section {
-        width: 100%;
-        max-width: 800px;
-        margin: auto;
-        padding: 20px;
-        background-color: #fff;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    th, td {
-        padding: 8px;
-        border: 1px solid #ccc;
-        text-align: left;
-    }
-    th {
-        background-color: #f8f9fa;
-        text-align: center;
-    }
-
-
-        :root {
-            --primary-color: #8187a8;
-            --success-color: #0abf53;
-            --text-color: #1f2937;
-            --border-radius: 12px;
-        }
-        .order-summary-card {
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    background: white;
-    margin-bottom: 1rem;
-}
-
-.order-summary-card .row {
-    margin: 8px 0;
-    align-items: center;
-}
-
-.border-top {
-    border-top: 1px solid #e5e7eb !important;
-}
-
-        body {
-            background-color: #f9fafb;
-            color: var(--text-color);
-        }
-
-        .order-header {
-            background: linear-gradient(135deg, #c6bebe 0%, #edecf0 100%);
-            color: white;
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .product-image {
-            border-radius: var(--border-radius);
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-        }
-
-        .price-tag {
-            background-color: #f3f4f6;
-            padding: 0.5rem 1rem;
-            border-radius: 999px;
-            font-weight: 600;
-        }
-
-        .shipping-card, .product-card {
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-            background: white;
-        }
-
-        .timeline {
-            display: flex;
-            list-style: none;
-            padding-left: 0;
-            margin-top: 20px;
-            position: relative;
-            justify-content: space-between;
-        }
-
-        .timeline-item {
-            position: relative;
-            width: 18%;
-            opacity: 0.6;
-            transition: opacity 0.5s ease;
-            text-align: center;
-        }
-
-        .timeline-item.active {
-            opacity: 1;
-        }
-
-        .timeline-item .timeline-icon {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: -20px;
-            width: 30px;
-            height: 30px;
-            background-color: #ddd;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 30px;
-            color: white;
-        }
-
-        .timeline-item .timeline-content {
-            background: #f9f9f9;
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        .timeline-item .timeline-content p {
-            margin: 0;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .timeline-item .timeline-content strong {
-            font-weight: bold;
-        }
-
-        /* Active step styles */
-        .timeline-item.active .timeline-icon {
-            background-color: #28a745;
-        }
-
-        .timeline-item.active .timeline-content {
-            background-color: #e9f7ef;
-        }
-
-        .timeline-item .timeline-icon.bg-secondary {
-            background-color: #ddd;
-        }
-
-        .button-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .btn-cancel, .btn-return {
-            margin: 5px;
-        }
-
-        .btn-return:disabled {
-            background-color: #ccc;
-        }
-
-        .invoice-section {
-            background: white;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .invoice-section h4 {
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .invoice-details {
-            margin-bottom: 15px;
-        }
-
-        .invoice-details p {
-            margin: 5px 0;
-        }
-
-        .download-invoice-btn {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .download-invoice-btn:hover {
-            background-color: #218838;
-        }
-
-        @media print {
-            .no-print {
-                display: none;
-            }
-        }
-    </style>
+    
 </head>
 <body>
 
@@ -408,10 +165,35 @@
 <div class="container py-5">
     <!-- Order Header -->
     <div class="order-header mb-4">
-        <div class="row align-items-center">
+        <div class="row align-items-center position-relative">
             <div class="col-md-8">
                 <h4 class="mb-2">Order #<%= order?.customOrderId %></h4>
                 <p class="mb-0">Placed on <%= order?.createdAt.toDateString() %></p>
+            </div>
+            <div class="col-md-4 d-flex justify-content-end">
+                <div class="text-end">
+                  
+                    <button id="retryPaymentButton" 
+                        style="
+                            display: none;
+                            background: linear-gradient(135deg, #0056b3 0%, #007bff 100%);
+                            color: white;
+                            font-size: 14px;
+                            padding: 8px 20px;
+                            border: none;
+                            border-radius: 25px;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 2px 10px rgba(0, 123, 255, 0.2);
+                            font-weight: 500;
+                            position: relative;
+                            overflow: hidden;
+                        "
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 15px rgba(0, 123, 255, 0.3)';"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(0, 123, 255, 0.2)';">
+                        <i class="fas fa-sync-alt" style="margin-right: 6px;"></i>Complete Payment
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -480,6 +262,24 @@
         <!-- Product Details -->
         <div class="col-lg-8">
             <div class="product-card mb-4">
+                <% if (order.paymentMethod === "razorpay" && order.paymentStatus === "Pending") { %>
+                    <div style="
+                        background-color: #fff3cd;
+                        color: #856404;
+                        padding: 12px;
+                        border-radius: 8px;
+                        margin-bottom: 15px;
+                        border: 1px solid #ffeeba;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                    ">
+                        <div style="display: flex; align-items: center;">
+                            <i class="fas fa-exclamation-circle" style="margin-right: 10px; font-size: 18px;"></i>
+                            <span style="font-weight: 500;"> Complete the entire order payment to proceed</span>
+                        </div>
+                    </div>
+                <% } %>
                 <h5 class="mb-4">Product Details</h5>
                 <div class="d-flex align-items-center">
                     <img src="/uploads/<%= item?.productId.image[0] %>" class="product-image me-4" alt="Product">
@@ -635,57 +435,73 @@
 
 
     <!-- Buttons -->
-        <div class="button-container">
-            <% if (item.shippingDetails?.status === "Cancelled") { %>
-                <button class="btn btn-secondary btn-cancelled" style="display: none;">Cancelled</button>
-            <% } else if (item?.shippingDetails?.status !== "Delivered") { %>
+    <div class="button-container">
+        <% if (item.shippingDetails?.status === "Cancelled") { %>
+            <button class="btn btn-secondary btn-cancelled" style="display: none;">Cancelled</button>
+        <% } else if (item?.shippingDetails?.status !== "Delivered") { %>
+            <% if (order.paymentMethod === "razorpay" && order.paymentStatus === "Pending") { %>
+                <button class="btn btn-danger btn-cancel" style="display: none;"></button>
+            <% } else { %>
                 <button class="btn btn-danger btn-cancel" onclick="confirmCancel('<%= order?._id %>', '<%= item?.productId._id %>', '<%= item?.quantity %>')">
                     Cancel
                 </button>
-            <% } else if (item?.shippingDetails?.status === "Delivered") { %>
-                <% 
-                    let deliveryDate = new Date(item.shippingDetails.createdAt);
-                    let currentDate = new Date();
-                    let returnDisabled = (currentDate - deliveryDate) > 7 * 24 * 60 * 60 * 1000;
-                %>
-
-
-                
-                <% if (returns.length >0) { %>
-                    <button class="btn btn-success btn-returned">Returned</button> 
-                <% } else { %>
-                    <button class="btn btn-warning btn-return" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#returnModal-<%= item?.productId._id %>"
-                        <% if (returnDisabled) { %> disabled <% } %>
-                    >
-                        Return
-                    </button>
-                <% } %>
             <% } %>
-        </div>
+        <% } else if (item?.shippingDetails?.status === "Delivered") { %>
+            <% 
+                let deliveryDate = new Date(item.shippingDetails.createdAt);
+                let currentDate = new Date();
+                let returnDisabled = (currentDate - deliveryDate) > 7 * 24 * 60 * 60 * 1000;
+            %>
+    
+            <% if (returns.length > 0) { %>
+                <button class="btn btn-success btn-returned">Returned</button> 
+            <% } else { %>
+                <button class="btn btn-warning btn-return" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#returnModal-<%= item?.productId._id %>"
+                    <% if (returnDisabled) { %> disabled <% } %>
+                >
+                    Return
+                </button>
+            <% } %>
+        <% } %>
+    </div>
+    
+        <p id="retryPaymentMessage" style="color: #dc3545; font-weight: bold; margin-bottom: 10px; display: none;">
         
-        <p id="retryPaymentMessage" style="color: red; font-weight: bold; margin-bottom: 10px;  display: none; " >
-            You are paying for the entire order, not just this product.
         </p>
         
         <button id="retryPaymentButton" 
             style="
-                display: none; 
-                background-color: #ff5733; 
-                color: white; 
-                font-size: 14px; 
-                padding: 10px 15px; 
-                border: none; 
-                border-radius: 5px; 
+                display: none;
+                background-color: #007bff;
+                color: white;
+                font-size: 14px;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 5px;
                 cursor: pointer;
-                transition: background-color 0.3s ease;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+                z-index: 1;
             "
-            onmouseover="this.style.backgroundColor='#e04d2a'" 
-            onmouseout="this.style.backgroundColor='#ff5733'">
-            🔄 Retry Payment
+            onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.3)'"
+            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+            <span style="
+                position: relative;
+                z-index: 2;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            ">
+                <span class="rotate-icon" style="
+                    display: inline-block;
+                    transition: transform 0.3s ease;
+                ">🔄</span>
+                Retry Payment
+            </span>
         </button>
-        
     
     <div class="text-center mt-4">
         <a href="/profile/<%= user?._id %>" class="btn btn-secondary">
@@ -703,265 +519,8 @@
     const { jsPDF } = window.jspdf;
 </script>
 
-<script>
-
-document.addEventListener("DOMContentLoaded", function () {
-    const orderId = document.getElementById("razorId").value;
-    const paymentMethod = document.getElementById("paymentMethod").value;
-    const paymentStatus =  document.getElementById("paymentStatus").value;
-
-    if (paymentMethod === "razorpay" && paymentStatus === "Pending") {
-        document.getElementById("retryPaymentButton").style.display = "block";
-        document.getElementById("retryPaymentMessage").style.display = "block";
-    }
-
-    document.getElementById("retryPaymentButton").addEventListener("click", function () {
-        fetch("/get-order-details", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ orderId: orderId })
-        })
-        .then(response => response.json())
-        .then(orderData => {
-
-            console.log("orderData",orderData);
-            
-            const options = {
-                key: orderData.key,
-                amount: orderData.order.amount,
-                currency: "INR",
-                name: "Clicon",
-                description: "Retry Your Payment",
-                order_id: orderId, 
-                handler: function (response) {
-                    fetch("/verify-payment", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            orderId: orderId,
-                            paymentId: response.razorpay_payment_id
-                        }),
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire({
-                                title: "Payment Successful!",
-                                text: "Your order is now paid.",
-                                icon: "success",
-                                confirmButtonText: "OK"
-                            }).then(() => {
-                                location.reload(); 
-                            });
-                        } else {
-                            Swal.fire({
-                                title: "Payment Verification Failed",
-                                text: "Please try again.",
-                                icon: "error",
-                                confirmButtonText: "OK"
-                            });
-                        }
-                    });
-                },
-                modal: {
-                    escape: false,
-                    closed: function () {
-                        Swal.fire({
-                            title: "Payment Not Completed",
-                            text: "You can retry payment anytime.",
-                            icon: "info",
-                            confirmButtonText: "OK"
-                        });
-                    }
-                },
-                theme: { color: "#3399cc" }
-            };
-
-            const rzp = new Razorpay(options);
-            rzp.open();
-        })
-        .catch(error => console.error("Error fetching order details:", error));
-    });
-});
+<script src="/scripts/user/order-details.js"></script>
 
 
-
-   
-   function confirmCancel(orderId, productId ,quantity) {
-    
-        Swal.fire({
-    title: "Are you sure?",
-    html: `
-        <p>You are about to cancel this order.</p>
-        <p>Please select a reason for cancellation:</p>
-        <div style="text-align: left; margin-top:50px;">
-            <input type="radio" name="cancelReason" value="Color Issue" id="colorIssue">
-            <label for="colorIssue">Color Issue</label><br>
-            <input type="radio" name="cancelReason" value="Damage" id="damage">
-            <label for="damage">Damage</label><br>
-            <input type="radio" name="cancelReason" value="Other" id="other">
-            <label for="other">Other</label><br>
-        </div>
-    `,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#d33",
-    cancelButtonColor: "#3085d6",
-    confirmButtonText: "Yes, cancel it!",
-    preConfirm: () => {
-        const selectedReason = document.querySelector('input[name="cancelReason"]:checked');
-        if (!selectedReason) {
-            Swal.showValidationMessage("Please select a cancellation reason");
-            return false;
-        }
-        return selectedReason.value;
-    }
-}).then((result) => {
-    if (result.isConfirmed) {
-        const cancelReason = result.value;
-        window.location.href = `/update-order-status?orderId=${orderId}&productId=${productId}&newStatus=Cancelled&quantity=${quantity}&reason=${encodeURIComponent(cancelReason)}`;
-    }
-});
-    }  
-    
-    function downloadInvoice(button) {
-    const orderData = JSON.parse(button.dataset.order);
-    const doc = new jsPDF();
-
-    // Set document properties¹
-    doc.setProperties({
-        title: `Invoice-${orderData.customOrderId}`,
-        subject: 'Clicon Store Invoice',
-        author: 'Clicon Store',
-        keywords: 'invoice, order, purchase'
-    });
-
-    // Simple white background²
-    doc.setFillColor(255, 255, 255);
-    doc.rect(0, 0, 210, 297, 'F');
-    
-    // Simple header³
-    doc.setFillColor(41, 128, 185);
-    doc.rect(0, 0, 210, 20, 'F');
-    
-    // Title⁴
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(24);
-    doc.setTextColor(255, 255, 255);
-    doc.text("INVOICE", 105, 14, { align: "center" });
-    
-    // Reset text color⁵
-    doc.setTextColor(0, 0, 0);
-
-    // Company info⁶
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("Clicon Store", 15, 30);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.text("Main Street, Kerala, India", 15, 36);
-    
-    // Invoice info⁷
-    doc.setFont("helvetica", "bold");
-    doc.text("Invoice Number:", 140, 30);
-    doc.setFont("helvetica", "normal");
-    doc.text(`INV-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`, 180, 30);
-    
-    doc.setFont("helvetica", "bold");
-    doc.text("Date:", 140, 36);
-    doc.setFont("helvetica", "normal");
-    doc.text(new Date(orderData.orderDate).toLocaleDateString(), 180, 36);
-    
-    doc.setFont("helvetica", "bold");
-    doc.text("Payment Method:", 140, 42);
-    doc.setFont("helvetica", "normal");
-    doc.text(orderData.paymentMethod, 180, 42);
-
-    // Separator line⁸
-    doc.setDrawColor(200, 200, 200);
-    doc.line(15, 48, 195, 48);
-
-    // Customer info⁹
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.text("Bill To:", 15, 58);
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text(`${orderData.billingAddress?.name || ''}`, 15, 65);
-    doc.text(`${orderData.billingAddress?.street || ''}`, 15, 71);
-    doc.text(`${orderData.billingAddress?.city || ''}, ${orderData.billingAddress?.state || ''}`, 15, 77);
-    doc.text(`${orderData.billingAddress?.postcode || ''}`, 15, 83);
-    doc.text(`${orderData.billingAddress?.country || 'India'}`, 15, 89);
-    doc.text(`Phone: ${orderData.billingAddress?.phone || ''}`, 15, 95);
-    doc.text(`Email: ${orderData.billingAddress?.email || ''}`, 15, 101);
-
-    // Separator line¹⁰
-    doc.line(15, 108, 195, 108);
-
-    // Table Headers¹¹
-    let startY = 118;
-    doc.setFillColor(240, 240, 240);
-    doc.rect(15, startY - 6, 180, 10, 'F');
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-
-    doc.text("Product", 20, startY);
-    doc.text("Qty", 100, startY);
-    doc.text("Price", 120, startY);
-    doc.text("Discount", 145, startY);
-    doc.text("Total", 175, startY);
-    
-    // Table content¹²
-    doc.setFont("helvetica", "normal");
-    let y = startY + 10;
-    let subtotal = 0;
-
-    orderData.items.forEach((item) => {
-        const unitPrice = Math.floor(parseFloat(item.price)) || 0;
-        const discount = item.offer ? parseFloat(item.offer) : 0;
-        const discountAmount = Math.floor((unitPrice * discount) / 100);
-        const netPrice = Math.floor(unitPrice - discountAmount);
-        const total = Math.floor(netPrice * parseInt(item.quantity));
-        subtotal += total;
-
-        // Table Data¹³
-        doc.text(item.productName || '', 20, y, { maxWidth: 75 });
-        doc.text(item.quantity.toString(), 100, y);
-        doc.text("₹" + unitPrice.toString(), 120, y);
-        doc.text(Math.floor(discount).toString() + "%", 145, y);
-        doc.text("₹" + total.toString(), 175, y);
-
-        y += 10;
-        
-        // Add line between items¹⁴
-        doc.setDrawColor(230, 230, 230);
-        doc.line(15, y - 5, 195, y - 5);
-    });
-
-    // Total Section¹⁵
-    y += 10;
-    doc.setFont("helvetica", "bold");
-    doc.text("Total Amount:", 140, y);
-    doc.text("₹" + Math.floor(subtotal).toString(), 175, y);
-
-    // Footer¹⁶
-    doc.setDrawColor(41, 128, 185);
-    doc.setLineWidth(0.5);
-    doc.line(15, y + 15, 195, y + 15);
-    
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text("This is a computer-generated invoice. No signature required.", 105, y + 25, { align: "center" });
-    
-    doc.setFont("helvetica", "italic");
-    doc.setFontSize(10);
-    doc.setTextColor(41, 128, 185);
-    doc.text("Thank you for shopping with Clicon Store!", 105, y + 35, { align: "center" });
-
-    // Save PDF¹⁷
-    doc.save(`invoice-${orderData.customOrderId}.pdf`);
-}
-
-</script>
 </body>
 </html>

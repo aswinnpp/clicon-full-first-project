@@ -40,12 +40,11 @@ const searchProducts = async (req, res) => {
     const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : 1000000;
     const sortOrder = req.query.sort || "az";
 
-    // Build the pipeline for aggregation
     const pipeline = [
-      // Match non-deleted products
+     
       { $match: { isDeleted: false } },
       
-      // Add numeric price field
+
       {
         $addFields: {
           numericPrice: {
@@ -59,7 +58,6 @@ const searchProducts = async (req, res) => {
       }
     ];
 
-    // Add search filter if provided
     if (searchTerm) {
       pipeline.push({
         $match: {
@@ -68,7 +66,7 @@ const searchProducts = async (req, res) => {
       });
     }
 
-    // Add category filter if provided
+    
     if (selectedCategories.length > 0) {
       pipeline.push({
         $match: {
@@ -76,8 +74,7 @@ const searchProducts = async (req, res) => {
         }
       });
     }
-
-    // Add price filter
+ 
     pipeline.push({
       $match: {
         numericPrice: {
@@ -87,7 +84,6 @@ const searchProducts = async (req, res) => {
       }
     });
 
-    // Add sorting
     let sortStage = {};
     switch (sortOrder) {
       case "az":
@@ -107,10 +103,10 @@ const searchProducts = async (req, res) => {
     }
     pipeline.push(sortStage);
 
-    // Execute the pipeline
+ 
     const products = await Product.aggregate(pipeline);
 
-    // Calculate offer prices for each product
+ 
     const productsWithOfferPrices = products.map(product => {
       const offer = Number(product.offer?.slice(0, -1)) || 0;
       const price = product.numericPrice;
@@ -141,7 +137,7 @@ const productList = async (req, res) => {
   try {
     const message = req.flash("count");
     const page = parseInt(req.query.page) || 1;
-    const limit = 2;
+    const limit = 4;
     const searchQuery = req.query.q || "";
     const selectedCategories = req.query.category
       ? req.query.category.split(",")

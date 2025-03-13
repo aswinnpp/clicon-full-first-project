@@ -1,6 +1,6 @@
 <%- include('../partials/admin/header') %>
 
-<link rel="stylesheet" href="../../css/styles/categorymanage.css">
+<link rel="stylesheet" href="/css/styles/admin/categorymanage.css">
 <!-- Main Content -->
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 d-md-none">
@@ -60,32 +60,38 @@
               <!-- <td><%= order.paymentMethod %></td> -->
     
         
-    
               <td>
                 <form action="/admin/update-product-status/<%= order?._id %>/<%= item._id %>" method="POST">
-                  <% 
-                    // Check if the product is returned
-                    let isReturned = returns.some(returnItem => 
-                      returnItem.orderId.toString() === order?._id.toString() && 
-                      returnItem.productId.toString() === item.productId?._id.toString()
-                    );
-                  %>
-              
-                  <% if (item.shippingDetails.status === 'Cancelled') { %>
-                    <p style="color: red; font-weight: bold;">Cancelled</p>
-                  <% } else if (isReturned) { %>
-                    <p style="color: orange; font-weight: bold;">Returned</p>
-                  <% } else { %>
-                    <select name="status" onchange="showSwalAndSubmit(this)">
-                      <% ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].forEach(statusOption => { %>
-                        <option value="<%= statusOption %>" <%= item.shippingDetails.status === statusOption ? 'selected' : '' %> >
-                          <%= statusOption %>
-                        </option>
-                      <% }); %>
-                    </select>
-                  <% } %>
+                    <% 
+                        // Check if the product is returned
+                        let isReturned = returns.some(returnItem => 
+                            returnItem.orderId.toString() === order?._id.toString() && 
+                            returnItem.productId.toString() === item.productId?._id.toString()
+                        );
+            
+                        let isRazorpayPending = order.paymentMethod === "razorpay" && order.paymentStatus === "Pending";
+                    %>
+            
+                    <% if (item.shippingDetails.status === 'Cancelled') { %>
+                        <p style="color: red; font-weight: bold;">Cancelled</p>
+                    <% } else if (isReturned) { %>
+                        <p style="color: orange; font-weight: bold;">Returned</p>
+                    <% } else { %>
+                        <select name="status" onchange="showSwalAndSubmit(this)">
+                            <% if (isRazorpayPending) { %>
+                                <option value="Pending" selected>Pending</option>
+                            <% } else { %>
+                                <% ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].forEach(statusOption => { %>
+                                    <option value="<%= statusOption %>" <%= item.shippingDetails.status === statusOption ? 'selected' : '' %> >
+                                        <%= statusOption %>
+                                    </option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    <% } %>
                 </form>
-              </td>
+            </td>
+            
               
     
               <td>
