@@ -442,7 +442,7 @@
                         %>
                             <div class="product product-4 text-center" style="width: 250px; padding:;">
                                 <figure style="width: 100%;" class="product-media">
-                                    <a href="http://localhost:3000/productview/<%= product._id %>">
+                                    <a href="/productview/<%= product._id %>">
                                         <img src="/uploads/<%= product.image && product.image[0] ? product.image[0] : 'default.jpg' %>" 
                                              alt="Product image" class="product-image">
                                     </a>
@@ -479,7 +479,7 @@
                                     </div>
                         
                                     <h3 class="product-title">
-                                        <a href="http://localhost:3000/productview/<%= product._id %>">
+                                        <a href="/productview/<%= product._id %>">
                                             <%= product.productname || 'Product Name' %>
                                         </a>
                                     </h3>

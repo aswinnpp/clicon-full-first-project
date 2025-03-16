@@ -234,7 +234,7 @@
                                     <% if(user){%>
                                         <li><a href="/logout">Logout</a></li>
                                   <%  }else{%>
-                                    <li><a href="http://localhost:3000/signin">Sign in / Sign up</a></li>
+                                    <li><a href="/signin">Sign in / Sign up</a></li>
                                 <%  } %>
                                 
                                 </ul>
@@ -771,7 +771,7 @@
                             <div class="col-7 col-md-3 col-lg-2">
                                 <div class="product product-2">
                                     <figure class="product-media">
-                                        <a href="http://localhost:3000/productview/<%= product._id %>">
+                                        <a href="/productview/<%= product._id %>">
                                             <img src="/uploads/<%= product.image[0] %>" alt="Product image" class="product-image">
                                         </a>
                                         <div class="product-action-vertical">
@@ -800,7 +800,7 @@
                                         <div class="product-cat">
                                             <a href="#"><%= product.category %></a>
                                         </div><!-- End .product-cat -->
-                                        <h3 class="product-title"><a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
+                                        <h3 class="product-title"><a href="/productview/<%= product._id %>"><%= product.productname %></a></h3><!-- End .product-title -->
                                         <div class="product-price">
                                             <span style="text-decoration: line-through; color: red;">
                                                 <%= product.price %>

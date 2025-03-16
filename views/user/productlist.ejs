@@ -253,7 +253,7 @@
                                     <div class="col-6 col-md-4 col-lg-4 col-xl-3 product-card" data-category="<%= product.category %>" data-name="<%= product.productname.toLowerCase() %>">
                                         <div class="product product-7 text-center">
                                             <figure class="product-media">
-                                                <a href="http://localhost:3000/productview/<%= product._id %>">
+                                                <a href="/productview/<%= product._id %>">
                                                     <img src="/uploads/<%=product.image[0] %>" alt="Product image" class="product-image">
                                                 </a>
                                             </figure>
@@ -271,7 +271,7 @@
                                                     <a href="#"><%= product.category %></a>
                                                 </div>
                                                 <h3 class="product-title">
-                                                    <a href="http://localhost:3000/productview/<%= product._id %>"><%= product.productname %></a>
+                                                    <a href="/productview/<%= product._id %>"><%= product.productname %></a>
                                                 </h3>
                                                 <div>
                                                     <p><%= product.offer %></p>
