@@ -63,15 +63,15 @@
             <td>
               <% if (product.status === "Pending") { %>
                 <form action="/admin/productApprove" method="post" class="approve-form" id="approveForm">
-                  <input type="hidden" name="orderId" value="<%= product.orderId._id %>">
-                  <input type="hidden" name="productId" value="<%= product.productId._id %>">
+                  <input type="hidden" name="orderId" value="<%= product.orderId?._id %>">
+                  <input type="hidden" name="productId" value="<%= product.productId?._id %>">
                   <input type="hidden" name="userId" value="<%= product.userId?._id %>">
                   <button type="button" class="btn btn-success btn-sm approve-btn">Approve</button>
                 </form>
             
                 <form action="/admin/productRejected" method="post" class="reject-form" id="rejectForm">
-                  <input type="hidden" name="orderId" value="<%= product.orderId._id %>">
-                  <input type="hidden" name="productId" value="<%= product.productId._id %>">
+                  <input type="hidden" name="orderId" value="<%= product.orderId?._id %>">
+                  <input type="hidden" name="productId" value="<%= product.productId?._id %>">
                   <input type="hidden" name="userId" value="<%= product.userId?._id %>">
                   <button type="button" class="btn btn-danger btn-sm reject-btn">Reject</button>
                 </form>
