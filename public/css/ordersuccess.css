@@ -1,0 +1,115 @@
+.order-success-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    text-align: center;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: #4CAF50;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.success-icon i {
+    color: white;
+    font-size: 40px;
+}
+
+.success-title {
+    color: #2c3e50;
+    font-size: 24px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.success-message {
+    color: #7f8c8d;
+    font-size: 16px;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.order-details {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.order-id {
+    color: #34495e;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.action-button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.primary-button {
+    background: #3498db;
+    color: white;
+}
+
+.primary-button:hover {
+    background: #2980b9;
+}
+
+.secondary-button {
+    background: #95a5a6;
+    color: white;
+}
+
+.secondary-button:hover {
+    background: #7f8c8d;
+}
+
+.outline-button {
+    border: 2px solid #3498db;
+    color: #3498db;
+    background: transparent;
+}
+
+.outline-button:hover {
+    background: #3498db;
+    color: white;
+}
+
+@media (max-width: 480px) {
+    .order-success-container {
+        margin: 20px;
+        padding: 20px;
+    }
+    
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .action-button {
+        width: 100%;
+    }
+} 
