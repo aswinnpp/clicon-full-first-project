@@ -4,16 +4,17 @@ const loadCouponmanage = async (req, res) => {
   try {
     const coupons = await Coupon.find({});
     console.log("ssssssssss", coupons);
-    res.render("admin/couponmanage", { coupons });
+    res.status(200).render("admin/couponmanage", { coupons });
   } catch (error) {
     console.log(error);
+    res.status(500).send("Server error");
   }
 };
 
 const loadCouponCreate = async (req, res) => {
   try {
     const message = req.flash("message");
-    res.render("admin/couponcreate", { message });
+    res.status(200).render("admin/couponcreate", { message });
   } catch (error) {
     console.error("Error loading coupons:", error);
     res.status(500).send("Internal Server Error");
@@ -35,7 +36,7 @@ const couponCreate = async (req, res) => {
 
     if (existingCoupon) {
       req.flash("message", "Coupon code already exists.");
-      return res.redirect("/admin/couponcreate");
+      return res.status(400).redirect("/admin/couponcreate");
     }
 
     const newCoupon = new Coupon({
@@ -49,11 +50,11 @@ const couponCreate = async (req, res) => {
 
     await newCoupon.save();
 
-    res.redirect("/admin/couponmanage"); 
+    res.status(200).redirect("/admin/couponmanage"); 
   } catch (error) {
     console.error(error);
     req.flash("message", "Server error. Please try again.");
-    res.redirect("/admin/couponcreate");
+    res.status(500).redirect("/admin/couponcreate");
   }
 };
 
@@ -98,8 +99,15 @@ const couponEdit = async (req, res) => {
     console.log("hhhhhhhhhh", couponId);
     const coupon = await Coupon.findOne({ _id: couponId });
 
-    res.render("admin/couponedit", { coupon, message });
-  } catch (error) {}
+    if (!coupon) {
+      return res.status(404).send("Coupon not found");
+    }
+
+    res.status(200).render("admin/couponedit", { coupon, message });
+  } catch (error) {
+    console.error("Error editing coupon:", error);
+    res.status(500).send("Server error");
+  }
 };
 
 const updateCoupon = async (req, res) => {
@@ -141,7 +149,7 @@ const updateCoupon = async (req, res) => {
         .json({ success: false, message: "Coupon not found" });
     }
 
-    res.redirect("/admin/couponmanage");
+    res.status(200).redirect("/admin/couponmanage");
   } catch (error) {
     console.error("Error updating coupon:", error);
     return res

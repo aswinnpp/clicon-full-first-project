@@ -25,7 +25,7 @@ const loadWhishlist = async (req, res) => {
 
     console.log("kkkkkkkkkkkk", wishlist);
 
-    res.render("user/wishlist", { user, wishlist: wishlist || [] });
+    res.status(200).render("user/wishlist", { user, wishlist: wishlist || [] });
   } catch (error) {
     console.error("Error loading wishlist:", error);
     res.status(500).send("Internal server error");
@@ -38,19 +38,19 @@ const wishlist = async (req, res) => {
     const email = req.session?.details?.email;
 
     if (!email) {
-      res.redirect("/signin");
+      res.status(302).redirect("/signin");
       return;
     }
 
     const user = await userModel.findOne({ email });
 
     if (!user) {
-      res.redirect("/signin");
+      res.status(302).redirect("/signin");
       return;
     }
 
     if (!user._id) {
-      res.redirect("/signin");
+      res.status(302).redirect("/signin");
       return;
     }
 
@@ -67,13 +67,13 @@ const wishlist = async (req, res) => {
 
       if (productExists) {
         req.flash("cart", "Product is already in wishlist");
-        res.redirect("/");
+        res.status(302).redirect("/");
         return;
       }
 
       if (productIncart) {
         req.flash("cart", "Product is already in cart");
-        res.redirect("/");
+        res.status(302).redirect("/");
         return;
       }
 
@@ -90,7 +90,7 @@ const wishlist = async (req, res) => {
       console.log("New wishlist created and product added", wishlist);
     }
 
-    res.redirect("/wishlist");
+    res.status(302).redirect("/wishlist");
   } catch (error) {
     console.error("Error saving wishlist:", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -106,9 +106,10 @@ const removeProduct = async (req, res) => {
       { userId: userId },
       { $pull: { items: { productId: productId } } }
     );
-    res.redirect("/wishlist");
+    res.status(302).redirect("/wishlist");
   } catch (error) {
     console.log(error);
+    res.status(500).send("Internal server error");
   }
 };
 module.exports = {

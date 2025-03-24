@@ -5,7 +5,7 @@ const payments = require("../../models/paymentmodel");
 const { generateOTP, sendOtpEmail } = require("./helpers");
 
 const loadSignUp = (req, res) => {
-  res.render("user/usersignup", {
+  res.status(200).render("user/usersignup", {
     message: req.flash("success"),
     googleClientId: process.env.GOOGLE_CLIENT_ID,
   });
@@ -17,7 +17,7 @@ const signUp = async (req, res) => {
     const existingUser = await userSchema.findOne({ email });
     if (existingUser) {
       req.flash("success", "User already exists.");
-      return res.redirect("/signup");
+      return res.status(409).redirect("/signup");
     }
 
     const otp = generateOTP();
@@ -28,7 +28,7 @@ const signUp = async (req, res) => {
     req.session.referralCode = referralCode;
 
     sendOtpEmail(email, otp);
-    res.redirect("/otp");
+    res.status(302).redirect("/otp");
   } catch (error) {
     console.error("Signup error:", error);
     res.status(500).send("Server Error");
@@ -36,7 +36,7 @@ const signUp = async (req, res) => {
 };
 
 const loadSignIn = (req, res) => {
-  res.render("user/usersignin", {
+  res.status(200).render("user/usersignin", {
     error: req.flash("error"),
     googleClientId: process.env.GOOGLE_CLIENT_ID,
   });
@@ -49,22 +49,22 @@ const signIn = async (req, res) => {
 
     if (!user) {
       req.flash("error", "User not found!");
-      return res.redirect("/signin");
+      return res.status(404).redirect("/signin");
     }
 
     if (user.isBan) {
       req.flash("error", "User Banned By Admin!");
-      return res.redirect("/signin");
+      return res.status(403).redirect("/signin");
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
       req.flash("error", "Incorrect Password!");
-      return res.redirect("/signin");
+      return res.status(401).redirect("/signin");
     }
 
     req.session.details = { email };
     req.session.logged = true;
-    res.redirect("/");
+    res.status(302).redirect("/");
   } catch (error) {
     console.error("Signin error:", error);
     res.status(500).send("Server Error");
@@ -73,11 +73,11 @@ const signIn = async (req, res) => {
 
 const Logout = (req, res) => {
   req.session.destroy();
-  res.redirect("/");
+  res.status(302).redirect("/");
 };
 
 const loadOtp = (req, res) => {
-  res.render("user/otpverify", { OTP: req.flash("OTP") });
+  res.status(200).render("user/otpverify", { OTP: req.flash("OTP") });
 };
 
 const generateReferralCode = () =>
@@ -88,7 +88,7 @@ const verifyOTP = async (req, res) => {
 
   if (parseInt(otp) !== req.session.otp) {
     req.flash("OTP", "Invalid OTP. Please try again.");
-    return res.redirect("/otp");
+    return res.status(401).redirect("/otp");
   }
 
   if (req.session.type === "signup") {
@@ -152,9 +152,9 @@ const verifyOTP = async (req, res) => {
     }
 
     req.flash("success", "User registered successfully.");
-    res.redirect("/signin");
+    res.status(302).redirect("/signin");
   } else if (req.session.type === "forgot" || req.session.type === "change") {
-    res.render("user/resetpassword");
+    res.status(200).render("user/resetpassword");
   }
 };
 
@@ -163,7 +163,7 @@ const resendOtp = async (req, res) => {
   req.session.otp = newOtp;
   req.session.timestamp = Date.now();
   await sendOtpEmail(req.session.details?.email, newOtp);
-  res.redirect("/otp");
+  res.status(302).redirect("/otp");
 };
 
 const authsignup = async (req, res) => {
@@ -175,7 +175,7 @@ const authsignup = async (req, res) => {
   console.log(user);
 
   if (user) {
-    return res.json({ status: "not done" });
+    return res.status(409).json({ status: "not done" });
   } else {
     console.log(data);
     let userReferralCode = generateReferralCode();
@@ -197,7 +197,7 @@ const authsignup = async (req, res) => {
     req.session.logged = true;
     newUser.authuser = true;
     await newUser.save();
-    res.redirect(302, "/");
+    res.status(302).redirect("/");
   }
 };
 
@@ -223,7 +223,7 @@ const authsignin = async (req, res) => {
   req.session.details = { email };
   req.session.logged = true;
 
-  res.redirect(302, "/");
+  res.status(302).redirect("/");
 };
 
 module.exports = {

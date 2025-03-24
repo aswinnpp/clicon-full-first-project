@@ -29,7 +29,7 @@ const loadReturns = async (req, res) => {
     const totalReturns = await Returns.countDocuments();
     const totalPages = Math.ceil(totalReturns / limit);
 
-    res.render("admin/productreturns", {
+    res.status(200).render("admin/productreturns", {
       returns,
       currentPage: page,
       totalPages,
@@ -116,7 +116,7 @@ const productApprove = async (req, res) => {
       );
     }
 
-    res.redirect("/admin/returns");
+    res.status(200).redirect("/admin/returns");
   } catch (error) {
     console.error("Error in productApprove:", error);
     res.status(500).send("Server error");
@@ -134,10 +134,11 @@ const productRejected = async (req, res) => {
         returnItem.status = "Rejected";
         await returnItem.save();
       }
-      res.redirect("/admin/returns");
+      res.status(200).redirect("/admin/returns");
     }
   } catch (error) {
     console.log(error);
+    res.status(500).send("Server error");
   }
 };
 
@@ -147,7 +148,7 @@ const notification = async (req, res) => {
       createdAt: -1,
     });
 
-    res.json(newReturns);
+    res.status(200).json(newReturns);
   } catch (err) {
     console.error("Error fetching new returns:", err);
     res.status(500).json({ error: "Server error" });

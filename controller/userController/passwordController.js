@@ -4,7 +4,7 @@ const { generateOTP, sendOtpEmail } = require("./helpers");
 
 
 const loadForgot = (req, res) => {
-  res.render("user/forgotpassword", { message: req.flash("message") });
+  res.status(200).render("user/forgotpassword", { message: req.flash("message") });
 };
 
 
@@ -15,7 +15,7 @@ const forgot = async (req, res) => {
 
     if (!user) {
       req.flash("message", "User not found.");
-      return res.redirect("/forgot");
+      return res.status(404).redirect("/forgot");
     }
 
     const otp = generateOTP();
@@ -25,7 +25,7 @@ const forgot = async (req, res) => {
     req.session.forgot = email;
 
     sendOtpEmail(email, otp);
-    res.redirect("/otp");
+    res.status(302).redirect("/otp");
   } catch (error) {
     console.error("Forgot password error:", error);
     res.status(500).send("Server Error");
@@ -34,7 +34,7 @@ const forgot = async (req, res) => {
 
 
 const loadReset = (req, res) => {
-  res.render("user/resetpassword");
+  res.status(200).render("user/resetpassword");
 };
 
 const reset = async (req, res) => {
@@ -42,7 +42,7 @@ const reset = async (req, res) => {
     const { newpassword, newconfirmpassword } = req.body;
     if (newpassword !== newconfirmpassword) {
       req.flash("error", "Passwords do not match.");
-      return res.redirect("/reset");
+      return res.status(400).redirect("/reset");
     }
 
     const user = await userSchema.findOne({ email: req.session.forgot });
@@ -50,7 +50,7 @@ const reset = async (req, res) => {
     await user.save();
 
     req.flash("error", "Password reset successfully.");
-    res.redirect("/signin");
+    res.status(302).redirect("/signin");
   } catch (error) {
     console.error("Reset password error:", error);
     res.status(500).send("Server Error");

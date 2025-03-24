@@ -19,7 +19,7 @@ const loadHome = async (req, res) => {
 
     const userr = await userSchema.findOne({ email });
 
-    res.render("user/user_home", {
+    return res.status(200).render("user/user_home", {
       product: products,
       userr,
       message,
@@ -28,7 +28,7 @@ const loadHome = async (req, res) => {
     });
   } catch (error) {
     console.error("Home load error:", error);
-    res.status(500).send("Server Error");
+    return res.status(500).send("Server Error");
   }
 };
 
@@ -117,7 +117,7 @@ const searchProducts = async (req, res) => {
       };
     });
 
-    res.json({
+    return res.status(200).json({
       products: productsWithOfferPrices,
       totalProducts: productsWithOfferPrices.length,
       message: ""
@@ -125,7 +125,7 @@ const searchProducts = async (req, res) => {
 
   } catch (error) {
     console.error("Search error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       products: [],
       totalProducts: 0,
       message: "Error occurred while searching"
@@ -242,7 +242,7 @@ const productList = async (req, res) => {
       productsInPage: products.length
     });
 
-    res.render("user/productlist", {
+    return res.status(200).render("user/productlist", {
       product: products,
       currentPage: page,
       totalPages,
@@ -257,7 +257,7 @@ const productList = async (req, res) => {
     });
   } catch (error) {
     console.error("Product list error:", error);
-    res.status(500).send("Server Error");
+    return res.status(500).send("Server Error");
   }
 };
 
@@ -279,14 +279,15 @@ const productView = async (req, res) => {
       isDeleted: false,
     });
 
-    res.render("user/productview", { product, allproduct, category, user });
+    return res.status(200).render("user/productview", { product, allproduct, category, user });
   } catch (error) {
     console.log("user productView error:", error);
+    return res.status(500).send("Server Error");
   }
 };
 // Load Ban Page
 const banPage = (req, res) => {
-  res.render("user/banuser");
+  return res.status(200).render("user/banuser");
 };
 
 module.exports = {

@@ -13,7 +13,7 @@ const { log } = require("console");
 
 const loadLogin = async (req, res) => {
   try {
-    return res.render("admin/login");
+    return res.status(200).render("admin/login");
   } catch (error) {
     console.log("adminlogin page not found");
     res.status(500).send("server error");
@@ -29,20 +29,20 @@ const login = async (req, res) => {
     });
 
     if (!admin || admin.role !== "admin") {
-      return res.render("admin/login", { message: "Invalid credential" });
+      return res.status(401).render("admin/login", { message: "Invalid credential" });
     }
 
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
-      return res.render("admin/login", { message: "Invalid password" });
+      return res.status(401).render("admin/login", { message: "Invalid password" });
     }
 
     req.session.admin = true;
     req.session.userId = admin;
-    res.redirect("/admin/dashboard");
+    res.status(200).redirect("/admin/dashboard");
   } catch (error) {
     console.log(error);
-    res.render("admin/login", { message: "Login failed" });
+    res.status(500).render("admin/login", { message: "Login failed" });
   }
 };
 
@@ -412,7 +412,7 @@ const loadSales = async (req, res) => {
         totalPages: 0,
       };
 
-      return res.render("admin/saleseReport", {
+      return res.status(200).render("admin/saleseReport", {
         totalUsers: await User.countDocuments({ role: "user" }),
         totalOrders: 0,
         totalProducts: 0,
@@ -529,7 +529,7 @@ const loadSales = async (req, res) => {
       });
     });
 
-    return res.render("admin/saleseReport", {
+    return res.status(200).render("admin/saleseReport", {
       totalUsers,
       totalOrders: totalOrdersCount,
       totalProducts,
@@ -627,7 +627,7 @@ const loadDashboardGraph = async (req, res) => {
     const firstOrder = await Order.findOne().sort({ createdAt: 1 });
 
     if (!firstOrder) {
-      return res.render("admin/dashboardgraph", {
+      return res.status(200).render("admin/dashboardgraph", {
         totals: {},
         selectedDates: { startDate, endDate },
         graphData: { daily: {}, weekly: {}, monthly: {}, yearly: {} },
@@ -823,7 +823,7 @@ const loadDashboardGraph = async (req, res) => {
     };
     console.log("sortedProducts length", sortedProducts.length);
 
-    res.render("admin/dashboardgraph", {
+    res.status(200).render("admin/dashboardgraph", {
       sortedProducts,
       sortedCategories,
       sortedBrands,
@@ -839,7 +839,7 @@ const loadDashboardGraph = async (req, res) => {
 
 const adminLogout = async (req, res) => {
   req.session.destroy();
-  res.redirect("/admin/login");
+  res.status(200).redirect("/admin/login");
 };
 
 module.exports = {

@@ -16,7 +16,7 @@ const loadCategoryManage = async (req, res) => {
     const totalCategory = await Category.countDocuments();
     const totalPages = Math.ceil(totalCategory / limit);
 
-    res.render("admin/categorymanage", {
+    res.status(200).render("admin/categorymanage", {
       categories,
       currentPage: page,
       totalPages,
@@ -32,7 +32,7 @@ const loadCategoryManage = async (req, res) => {
 const loadCategoryCreate = async (req, res) => {
   try {
     const category = await Category.find({ isDeleted: false });
-    res.render("admin/categorycreate", { category });
+    res.status(200).render("admin/categorycreate", { category });
   } catch (error) {
     console.log("categorycreate page not found");
     res.status(500).send("server error");
@@ -46,7 +46,7 @@ const categoryCreate = async (req, res) => {
     const offerValue = parseInt(offer) || 0;
     if (offerValue < 0 || offerValue > 100) {
       req.flash("error", "Offer percentage must be between 0 and 100");
-      return res.redirect("/admin/categorycreate");
+      return res.status(400).redirect("/admin/categorycreate");
     }
 
     const checkExist = await Category.findOne({
@@ -55,7 +55,7 @@ const categoryCreate = async (req, res) => {
 
     if (checkExist) {
       req.flash("error", "Category already exists");
-      return res.redirect("/admin/categorycreate");
+      return res.status(409).redirect("/admin/categorycreate");
     }
 
     const newCategory = new Category({
@@ -66,11 +66,11 @@ const categoryCreate = async (req, res) => {
 
     await newCategory.save();
     req.flash("success", "Category created successfully");
-    res.redirect("/admin/categorymanage");
+    res.status(201).redirect("/admin/categorymanage");
   } catch (error) {
     console.log(error);
     req.flash("error", "Server error");
-    res.redirect("/admin/categorycreate");
+    res.status(500).redirect("/admin/categorycreate");
   }
 };
 
@@ -83,7 +83,7 @@ const loadCategoryUpdate = async (req, res) => {
     }
 
     const category = await Category.find({ _id: id, isDeleted: false });
-    res.render("admin/categoryupdate", { category });
+    res.status(200).render("admin/categoryupdate", { category });
   } catch (error) {
     console.log("categoryupdate page not found");
     res.status(500).send("server error");
@@ -97,7 +97,7 @@ const CategoryUpdate = async (req, res) => {
     const offerValue = parseInt(offer) || 0;
     if (offerValue < 0 || offerValue > 100) {
       req.flash("error", "Offer percentage must be between 0 and 100");
-      return res.redirect("/admin/categorymanage");
+      return res.status(400).redirect("/admin/categorymanage");
     }
 
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
@@ -111,7 +111,7 @@ const CategoryUpdate = async (req, res) => {
 
     if (exists) {
       req.flash("error", "Category name already exists");
-      return res.redirect("/admin/categorymanage");
+      return res.status(409).redirect("/admin/categorymanage");
     }
 
     const updatedCategory = await Category.findByIdAndUpdate(
@@ -126,7 +126,7 @@ const CategoryUpdate = async (req, res) => {
 
     if (!updatedCategory) {
       req.flash("error", "Category not found");
-      return res.redirect("/admin/categorymanage");
+      return res.status(404).redirect("/admin/categorymanage");
     }
 
     // Find all products in this category
@@ -155,11 +155,11 @@ const CategoryUpdate = async (req, res) => {
     }
 
     req.flash("success", "Category updated successfully.");
-    res.redirect("/admin/categorymanage");
+    res.status(200).redirect("/admin/categorymanage");
   } catch (error) {
     console.log(error);
     req.flash("error", "Server error");
-    res.redirect("/admin/categorymanage");
+    res.status(500).redirect("/admin/categorymanage");
   }
 };
 
@@ -172,9 +172,9 @@ const categoryDelete = async (req, res) => {
 
     await Category.findByIdAndUpdate(categoryId, { isDeleted: true });
     await Product.updateMany({ categoryId: categoryId }, { isDeleted: true });
-    res.json({ success: true });
+    res.status(200).json({ success: true });
   } catch (error) {
-    res.json({ success: false, message: "Failed to update category status." });
+    res.status(500).json({ success: false, message: "Failed to update category status." });
   }
 };
 

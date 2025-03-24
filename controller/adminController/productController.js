@@ -31,7 +31,7 @@ const loadProductManage = async (req, res) => {
     const totalProduct = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProduct / limit);
 
-    res.render("admin/productmanage", {
+    res.status(200).render("admin/productmanage", {
       products,
       currentPage: page,
       totalPages,
@@ -54,7 +54,7 @@ const loadProductUpdate = async (req, res) => {
     }
     const categories = await Category.find({ isDeleted: false });
     const products = await Product.findOne({ _id: id, isDeleted: false });
-    res.render("admin/productupdate", { products, categories });
+    res.status(200).render("admin/productupdate", { products, categories });
   } catch (error) {
     console.error("Error loading product:", error);
     res.status(500).json({ message: "Failed to load product" });
@@ -142,7 +142,7 @@ const ProductUpdate = async (req, res) => {
       return res.status(404).json({ error: "Failed to update product." });
     }
 
-    res.redirect("/admin/productmanage");
+    res.status(200).redirect("/admin/productmanage");
   } catch (err) {
     console.error("Error:", err);
     res.status(500).json({ message: "Server Error", error: err.message });
@@ -152,7 +152,7 @@ const ProductUpdate = async (req, res) => {
 const loadProductcreate = async (req, res) => {
   try {
     const categories = await Category.find({ isDeleted: false });
-    res.render("admin/productcreate", { categories });
+    res.status(200).render("admin/productcreate", { categories });
   } catch (error) {
     console.log("productcreate page not found");
     res.status(500).send("server error");
@@ -218,7 +218,7 @@ const ProductCreate = async (req, res) => {
     });
 
     await newProduct.save();
-    res.redirect("/admin/productmanage");
+    res.status(201).redirect("/admin/productmanage");
   } catch (err) {
     console.error(err);
     res.status(500).send("Error while creating the product");
@@ -234,7 +234,7 @@ const loadProductview = async (req, res) => {
     }
 
     const product = await Product.find({ _id: id, isDeleted: false });
-    res.render("admin/productview", { product });
+    res.status(200).render("admin/productview", { product });
   } catch (error) {
     console.log("productview page not found");
     res.status(404).render("admin/404");
@@ -248,10 +248,10 @@ const productDelete = async (req, res) => {
     await Product.findByIdAndUpdate(productId, {
       isDeleted: !product.isDeleted,
     });
-    res.json({ success: true });
+    res.status(200).json({ success: true });
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: "Failed to update product status." });
+    res.status(500).json({ success: false, message: "Failed to update product status." });
   }
 };
 

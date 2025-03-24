@@ -23,7 +23,7 @@ const loadOrdermanage = async (req, res) => {
       .populate("coupon")
       .sort({ createdAt: -1 });
 
-    res.render("admin/ordermanage", {
+    res.status(200).render("admin/ordermanage", {
       orders,
       returns,
       currentPage: page,
@@ -40,7 +40,7 @@ const OrderManage = async (req, res) => {
     const { status } = req.body;
     const orderId = req.params.id;
     await Order.findByIdAndUpdate(orderId, { status }, { new: true });
-    res.redirect("/admin/ordermanage");
+    res.status(200).redirect("/admin/ordermanage");
   } catch (error) {
     console.error("Error updating order status:", error);
     res.status(500).send("Server Error");
@@ -61,7 +61,7 @@ const orderView = async (req, res) => {
     );
     if (!item) return res.status(404).send("Product not found in order");
 
-    res.render("admin/orderview", { order, item });
+    res.status(200).render("admin/orderview", { order, item });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error fetching order details");
@@ -93,7 +93,7 @@ const statusUpdate = async (req, res) => {
 
     console.log("After update:", item);
 
-    res.redirect("/admin/ordermanage");
+    res.status(200).redirect("/admin/ordermanage");
   } catch (error) {
     console.error("Error updating status:", error);
     res.status(500).send("Error updating product status");

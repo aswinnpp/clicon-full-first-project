@@ -18,7 +18,7 @@ const loadProfile = async (req, res) => {
 
     console.log(req.session);
     const orders = await Order.find({ customerId: id }).populate({
-      path: "items.productId",
+      path: "items.productId", 
       select: "productname price offer",
     });
 
@@ -27,11 +27,16 @@ const loadProfile = async (req, res) => {
       .populate("orderId");
 
     const user = await userSchema.findOne({ _id: id });
+    if (!user) {
+      return res.status(404).render("user/404");
+    }
+
     const address = await Address.find({ userId: id });
 
-    res.render("user/profile", { user, id, address, orders, returns });
+    return res.status(200).render("user/profile", { user, id, address, orders, returns });
   } catch (error) {
     console.log(error);
+    return res.status(500).render("user/500");
   }
 };
 
@@ -42,7 +47,7 @@ const addAddress = async (req, res) => {
 
     const address = new Address({
       postalCode,
-      country,
+      country, 
       state,
       phone,
       city,
@@ -55,23 +60,23 @@ const addAddress = async (req, res) => {
     // If it's an AJAX request, send JSON response
     if (req.xhr || req.headers.accept.indexOf("json") > -1) {
       const savedAddress = await address.populate("userId");
-      res.json({
+      return res.status(201).json({
         success: true,
         address: savedAddress,
         message: "Address added successfully",
       });
     } else {
-      res.redirect(`/profile/${id}`);
+      return res.status(302).redirect(`/profile/${id}`);
     }
   } catch (error) {
     console.log(error);
     if (req.xhr || req.headers.accept.indexOf("json") > -1) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Failed to add address",
       });
     } else {
-      res.redirect(`/profile/${id}`);
+      return res.status(302).redirect(`/profile/${id}`);
     }
   }
 };
@@ -141,7 +146,7 @@ const editProfile = async (req, res) => {
       req.session.forgot = verifiedUser.email;
 
       sendOtpEmail(emailVerification, otp);
-      return res.redirect("/otp");
+      return res.status(302).redirect("/otp");
     }
 
     if (password) {
@@ -178,14 +183,14 @@ const editProfile = async (req, res) => {
 
     await user.save();
 
-    res.json({
+    return res.status(200).json({
       success: true,
       message: "Profile updated successfully.",
       redirectUrl: `/profile/${userId}`,
     });
   } catch (error) {
     console.error("Error updating profile:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -215,24 +220,31 @@ const editAddress = async (req, res) => {
       { new: true }
     );
 
+    if (!updatedAddress) {
+      return res.status(404).json({
+        success: false,
+        message: "Address not found"
+      });
+    }
+
     if (req.xhr || req.headers.accept.indexOf("json") > -1) {
-      res.json({
+      return res.status(200).json({
         success: true,
         address: updatedAddress,
         message: "Address updated successfully",
       });
     } else {
-      res.redirect(`/profile/${userId}`);
+      return res.status(302).redirect(`/profile/${userId}`);
     }
   } catch (error) {
     console.log(error);
     if (req.xhr || req.headers.accept.indexOf("json") > -1) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Failed to update address",
       });
     } else {
-      res.redirect(`/profile/${userId}`);
+      return res.status(302).redirect(`/profile/${userId}`);
     }
   }
 };

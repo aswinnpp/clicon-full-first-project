@@ -14,7 +14,7 @@ require("dotenv").config();
 const Razorpay = require("razorpay");
 
 const razorpayInstance = new Razorpay({
-  key_id: "rzp_test_tiBBaN9rBkAr9r",
+  key_id: "rzp_test_tiBBaN9rBkAr9r", 
   key_secret: "VCzNc72HUDmdOHK9Va1BkfpE",
 });
 
@@ -31,11 +31,11 @@ const buyNow = async (req, res) => {
     console.log("=============check", color);
 
     const email = req.session?.details?.email;
-    if (!email) return res.redirect("/signin");
+    if (!email) return res.status(401).redirect("/signin");
 
     const product = await Product.findById({ _id: id });
     const user = await userSchema.findOne({ email });
-    if (!user) return res.redirect("/signin");
+    if (!user) return res.status(401).redirect("/signin");
 
     const address = await Address.find({ userId: user._id });
 
@@ -82,7 +82,7 @@ const buyNow = async (req, res) => {
 
     const availableCoupons = await Coupon.find({});
 
-    res.render("user/checkout", {
+    res.status(200).render("user/checkout", {
       address,
       product,
       message,
@@ -108,13 +108,13 @@ const loadCheckout = async (req, res) => {
     const check = req.session?.buyCheck;
     const message = req.flash("count");
 
-    if (!check) return res.redirect("/");
+    if (!check) return res.status(400).redirect("/");
 
     const email = req.session?.details?.email;
-    if (!email) return res.redirect("/login");
+    if (!email) return res.status(401).redirect("/login");
 
     const user = await userSchema.findOne({ email });
-    if (!user) return res.redirect("/login");
+    if (!user) return res.status(401).redirect("/login");
 
     const address = await Address.find({ userId: user._id });
     const wallet = await Wallet.findOne({ userId: user._id });
@@ -126,7 +126,7 @@ const loadCheckout = async (req, res) => {
       });
 
       if (!cartItems || cartItems.items.length === 0) {
-        return res.redirect("/cart");
+        return res.status(404).redirect("/cart");
       }
 
       let color = req.query.color.split(",");
@@ -161,7 +161,7 @@ const loadCheckout = async (req, res) => {
 
       const availableCoupons = await Coupon.find({});
 
-      res.render("user/checkout", {
+      res.status(200).render("user/checkout", {
         totalItems: cartItems.items.length,
         cartItems,
         originalTotal,
@@ -179,10 +179,10 @@ const loadCheckout = async (req, res) => {
       const productId = req.session?.productId;
       const qty = req.session?.quantity || 1;
       console.log("buynow2", wallet);
-      if (!productId) return res.redirect("/");
+      if (!productId) return res.status(400).redirect("/");
 
       const product = await Product.findById(productId);
-      if (!product) return res.redirect("/");
+      if (!product) return res.status(404).redirect("/");
 
       const originalPrice = Math.floor(
         parseFloat(product.price.replace(/,/g, "")) || 0
@@ -201,7 +201,7 @@ const loadCheckout = async (req, res) => {
       );
       const finalTotal = Math.floor(discountedPrice * quantity);
 
-      res.render("user/checkout", {
+      res.status(200).render("user/checkout", {
         address,
         user,
         product,
@@ -351,7 +351,7 @@ const CheckOut = async (req, res) => {
             "count",
             `Not enough stock for this product ${product.productname}`
           );
-          return res.redirect("/productlist");
+          return res.status(400).redirect("/productlist");
         }
       } else {
         return res
@@ -392,7 +392,7 @@ const CheckOut = async (req, res) => {
     console.log("Order placed for customerId:", customerId);
     req.flash("userId", customerId.trim());
 
-    res.redirect("/ordersuccess");
+    res.status(302).redirect("/ordersuccess");
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -422,6 +422,7 @@ const OrderView = async (req, res) => {
 
     if (!order) {
       console.log("Order not found");
+      return res.status(404).json({ error: "Order not found" });
     }
 
     console.log("Order Found:", order.items);
@@ -439,9 +440,10 @@ const OrderView = async (req, res) => {
 
     if (!item) {
       console.log("Product not found in order");
+      return res.status(404).json({ error: "Product not found in order" });
     }
 
-    res.render("user/order-details", {
+    res.status(200).render("user/order-details", {
       order,
       item,
       user: order.customerId,
@@ -535,7 +537,7 @@ const cancellOrder = async (req, res) => {
 
     console.log("Updated status:", itemToUpdate);
 
-    res.redirect(`/orderview/${orderId}/${productId}`);
+    res.status(302).redirect(`/orderview/${orderId}/${productId}`);
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
@@ -545,7 +547,7 @@ const cancellOrder = async (req, res) => {
 const orderSuccess = async (req, res) => {
   const userid = req.flash("userId");
 
-  res.render("user/ordersuccess", { userid });
+  res.status(200).render("user/ordersuccess", { userid });
 };
 
 const razorpay = async (req, res) => {
@@ -566,7 +568,7 @@ const razorpay = async (req, res) => {
 
     console.log("Response Sent:", { order, key: process.env.RAZORPAY_KEY_ID });
 
-    res.json({ order, key: process.env.RAZORPAY_KEY_ID });
+    res.status(200).json({ order, key: process.env.RAZORPAY_KEY_ID });
   } catch (error) {
     console.error("Razorpay Order Creation Failed:", error.message);
     res.status(500).json({ error: "Failed to create order" });
@@ -583,10 +585,10 @@ const verifyPayment = async (req, res) => {
       { paymentStatus: "Paid", razorpayPaymentId: paymentId }
     );
 
-    res.json({ success: true, message: "Payment verified successfully" });
+    res.status(200).json({ success: true, message: "Payment verified successfully" });
   } catch (error) {
     console.error("Payment Verification Failed:", error.message);
-    res.json({ success: false, message: "Payment verification failed" });
+    res.status(500).json({ success: false, message: "Payment verification failed" });
   }
 };
 
@@ -597,7 +599,7 @@ const orderPlaced = async (req, res) => {
 
     await Order.findOneAndUpdate({ razorId: orderId }, { paymentStatus });
 
-    res.json({ success: true, message: "Order placed successfully" });
+    res.status(200).json({ success: true, message: "Order placed successfully" });
   } catch (error) {
     console.error("Error updating order:", error.message);
     res.status(500).json({ error: "Failed to update order status" });
@@ -614,7 +616,7 @@ const getOrderDetails = async (req, res) => {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    res.json({
+    res.status(200).json({
       order: {
         id: order.razorId,
         amount: order.totalAmount,
@@ -642,9 +644,10 @@ const productReturns = async (req, res) => {
       quantity: quantity,
     });
     returns.save();
-    res.redirect(`/orderview/${orderId}/${productId}`);
+    res.status(302).redirect(`/orderview/${orderId}/${productId}`);
   } catch (error) {
     console.log(error);
+    res.status(500).json({ error: "Failed to process return" });
   }
 };
 

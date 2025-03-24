@@ -23,12 +23,17 @@ const sendOtpEmail = (email, otp) => {
         <p style="font-size: 16px; color: #666;">Your verification code is:</p>
         <div style="font-size: 24px; font-weight: bold; color: #4CAF50; margin: 20px 0;">${otp}</div>
         <p style="font-size: 14px; color: #999;">This code will expire in 10 minutes.</p>
+        <p style="font-size: 14px; color: #999;">Status Code: 200 - Email sent successfully</p>
       </div>
     </div>`,
   };
 
   transporter.sendMail(mailOptions, (error) => {
-    if (error) console.error("Error sending OTP:", error);
+    if (error) {
+      console.error("Error sending OTP:", error);
+      return 500; // Internal Server Error
+    }
+    return 200; // Success
   });
 };
 

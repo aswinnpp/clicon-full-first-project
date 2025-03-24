@@ -6,10 +6,10 @@ const userSchema = require("../../models/usermodel");
 const loadCart = async (req, res) => {
   try {
     const email = req.session?.details?.email;
-    if (!email) return res.redirect("/login");
+    if (!email) return res.status(401).redirect("/login");
 
     const user = await userSchema.findOne({ email });
-    if (!user) return res.redirect("/login");
+    if (!user) return res.status(401).redirect("/login");
 
     const page = parseInt(req.query.page) || 1;
     const limit = 4;
@@ -21,7 +21,7 @@ const loadCart = async (req, res) => {
     });
 
     if (!cart || !cart.items.length) {
-      return res.render("user/cart", {
+      return res.status(200).render("user/cart", {
         items: [],
         currentPage: 0,
         totalPages: 0,
@@ -56,7 +56,7 @@ const loadCart = async (req, res) => {
       return sum + discountedPrice * (item.quantity || 1);
     }, 0);
 
-    res.render("user/cart", {
+    res.status(200).render("user/cart", {
       items: paginatedItems,
       user,
       currentPage: page,
@@ -73,7 +73,7 @@ const loadCart = async (req, res) => {
 const Carts = async (req, res) => {
   try {
     const email = req.session?.details?.email;
-    if (!email) return res.redirect("/login");
+    if (!email) return res.status(401).redirect("/login");
 
     const user = await userSchema.findOne({ email });
     const userId = user?._id;
@@ -99,7 +99,7 @@ const Carts = async (req, res) => {
         items: [{ productId, quantity: parsedQuantity, color: selectedColor }],
       });
       await cart.save();
-      return res.redirect("/cart");
+      return res.status(201).redirect("/cart");
     }
 
     let itemFound = false;
@@ -107,14 +107,14 @@ const Carts = async (req, res) => {
     for (let i = 0; i < cart.items.length; i++) {
       if (cart.items[i].productId.toString() === productId) {
         const newQuantity = cart.items[i].quantity + parsedQuantity;
-  console.log("newQuantity",stock);
+        console.log("newQuantity",stock);
   
         if (newQuantity > 5) {
           req.flash("cart", "You cannot add more than 5 items of one product.");
-          return res.redirect("/");
+          return res.status(400).redirect("/");
         } else if (newQuantity > stock) {
           req.flash("cart", `Available stock limit is ${stock}`);
-          return res.redirect("/");
+          return res.status(400).redirect("/");
         } else {
           cart.items[i].quantity = newQuantity;
           itemFound = true;
@@ -126,7 +126,7 @@ const Carts = async (req, res) => {
     if (!itemFound) {
       if (parsedQuantity > 5) {
         req.flash("cart", "You cannot add more than 5 items of this product.");
-        return res.redirect("/");
+        return res.status(400).redirect("/");
       }
       cart.items.push({
         productId,
@@ -148,7 +148,7 @@ const Carts = async (req, res) => {
 
     await cart.save();
     req.session.buyCheck = "Cart";
-    return res.redirect("/cart");
+    return res.status(200).redirect("/cart");
   } catch (error) {
     console.error(error);
     res.status(500).send("Server Error");
@@ -162,7 +162,7 @@ const cartDelete = async (req, res) => {
       { userId: userid },
       { $pull: { items: { productId: productid } } }
     );
-    res.redirect("/cart");
+    res.status(200).redirect("/cart");
   } catch (error) {
     console.error("Cart delete error:", error);
     res.status(500).send("Server Error");
@@ -266,7 +266,7 @@ const getSummery = async (req, res) => {
 
     console.log(originalTotal, totalDiscount, finalTotal, totalItems);
 
-    res.json({
+    res.status(200).json({
       originalTotal,
     });
   } catch (error) {

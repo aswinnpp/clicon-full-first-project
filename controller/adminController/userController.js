@@ -15,7 +15,7 @@ const loadUserManage = async (req, res) => {
     const totalUsers = await User.countDocuments({ role: "user" });
     const totalPages = Math.ceil(totalUsers / limit);
 
-    res.render("admin/usermanage", {
+    res.status(200).render("admin/usermanage", {
       users,
       currentPage: page,
       totalPages,
@@ -38,7 +38,7 @@ const loadUserUpdate = async (req, res) => {
 
     const user = await User.findById(id);
     if (!user) return res.status(404).send("User not found");
-    res.render("admin/userupdate", { user });
+    res.status(200).render("admin/userupdate", { user });
   } catch (error) {
     console.log("userupdate page not found");
     res.status(500).send("server error");
@@ -65,7 +65,7 @@ const updateUser = async (req, res) => {
     }
 
     await user.save();
-    res.redirect("/admin/usermanage");
+    res.status(200).redirect("/admin/usermanage");
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error updating user" });
@@ -77,7 +77,7 @@ const banUser = async (req, res) => {
     const userId = req.params.id;
     const { isBan } = req.body;
     await User.findByIdAndUpdate(userId, { isBan: !isBan });
-    res.json({ success: true });
+    res.status(200).json({ success: true });
   } catch (error) {
     console.log(error);
     res.status(500).send("Error banning user");
