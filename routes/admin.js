@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../controller/adminController/authController");
+const userAuthController = require("../controller/userController/authController");
 const userController = require("../controller/adminController/userController");
 const productController = require("../controller/adminController/productController");
 const categoryController = require("../controller/adminController/categoryController");
@@ -10,8 +11,8 @@ const returnController = require("../controller/adminController/returnsControlle
 const multer = require("../utils/multter");
 const adminauth = require("../middleware/adminauth");
 
-router.get("/login", adminauth.isLogin, authController.loadLogin);
-router.post("/login", authController.login);
+router.get("/login", (req, res) => res.redirect("/login"));
+router.post("/login", userAuthController.signIn);
 router.get("/adminlogout", authController.adminLogout);
 router.get("/dashboard", adminauth.checkSession, authController.loadSales);
 router.get(

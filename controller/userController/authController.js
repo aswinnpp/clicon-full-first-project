@@ -49,22 +49,28 @@ const signIn = async (req, res) => {
 
     if (!user) {
       req.flash("error", "User not found!");
-      return res.status(404).redirect("/signin");
+      return res.status(404).redirect("/login");
     }
 
     if (user.isBan) {
       req.flash("error", "User Banned By Admin!");
-      return res.status(403).redirect("/signin");
+      return res.status(403).redirect("/login");
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
       req.flash("error", "Incorrect Password!");
-      return res.status(401).redirect("/signin");
+      return res.status(401).redirect("/login");
     }
 
     req.session.details = { email };
     req.session.logged = true;
-    res.status(302).redirect("/");
+    if (user.role === "admin") {
+      req.session.admin = true;
+      req.session.userId = user;
+      return res.status(302).redirect("/admin/dashboard");
+    }
+
+    return res.status(302).redirect("/");
   } catch (error) {
     console.error("Signin error:", error);
     res.status(500).send("Server Error");
@@ -152,7 +158,7 @@ const verifyOTP = async (req, res) => {
     }
 
     req.flash("success", "User registered successfully.");
-    res.status(302).redirect("/signin");
+    res.status(302).redirect("/login");
   } else if (req.session.type === "forgot" || req.session.type === "change") {
     res.status(200).render("user/resetpassword");
   }

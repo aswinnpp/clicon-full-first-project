@@ -12,118 +12,55 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
     />
-    <link rel="stylesheet" href="/css/styles/userhome.css" />
+    <link rel="stylesheet" href="/css/styles/auth.css" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
     />
   </head>
-  <body>
-    <style>
-      body {
-        
-        background: linear-gradient(135deg, #6e8efb, #a777e3)
-       
-               
-      }
-    </style>
+  <body class="auth-page">
+    <main class="auth-shell">
+      <section class="auth-card">
+        <p class="auth-brand">Clicon</p>
+        <h1 class="auth-heading">Welcome Back</h1>
+        <p class="auth-subtext">Sign in to continue shopping and manage your account.</p>
 
-
-
-
-<div class="container3 " style="margin-top: 200px;">
-  <div class="auth-wrapper">
-    <ul class="nav nav-tabs mb-3" id="auth-tab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <form action="/signin">
-          <button
-            class="nav-link active"
-            id="sign-up-tab"
-            data-bs-toggle="tab"
-            type="submit"
-            role="tab"
-          >
-            Sign in
-          </button>
-        </form>
-      </li>
-      <li class="nav-item" role="presentation">
-        <form action="/signup" method="get">
-          <button class="nav-link" id="sign-in-tab" type="submit" role="tab">
-            Sign up
-          </button>
-        </form>
-      </li>
-    </ul>
-    <div class="tab-content" id="auth-tabContent">
-      <!-- Sign in Form -->
-      <div
-        class="tab-pane fade show active"
-        id="sign-up"
-        role="tabpanel"
-        aria-labelledby="sign-up-tab"
-      >
-        <p style="color: red" id="in">
-          <%= typeof error !== 'undefined' ? error : '' %>
-        </p>
-        <p style="color: red" id="in">
-          <%= typeof massage !== 'undefined' ? massage : '' %>
-        </p>
-
-        <form action="/signin" method="post">
-         
-          <div class="mb-3">
-            <label for="sign-up-email" class="form-label">Email address</label>
-            <input
-              type="email"
-              class="form-control"
-              id="sign-up-email"
-              placeholder="Enter your email"
-              name="email"
-            />
-          </div>
-         <div class="mb-3">
-    <label for="sign-up-password" class="form-label">Password</label>
-    <div class="input-group">
-      <input
-        type="password"
-        class="form-control"
-        id="sign-up-password"
-        placeholder="Enter your password"
-        name="password"
-      />
-      <button type="button" id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 18px; cursor: pointer;">
-        👁️
-      </button>
-    </div>
-  </div>
-
-          <a
-            href="/forgot"
-            style="
-              text-decoration: none;
-              display: flex;
-              justify-content: flex-end;
-            "
-          >
-            Forgot Password</a
-          >
-          <button type="submit" class="btn btn-primary mt-2">Sign In</button>
-        </form>
-        
-        <div class="container">
-          <button
-            class="google-btn d-flex align-items-center justify-content-center mt-3 ms-3"
-          >
-            <span class="text-secondary" id="google-signin-button"
-              >Sign in with Google</span
-            >
-          </button>
+        <div class="auth-tabs">
+          <a class="auth-tab active" href="/login">Sign In</a>
+          <a class="auth-tab" href="/signup">Sign Up</a>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
+
+        <p class="auth-error" id="in"><%= typeof error !== 'undefined' ? error : '' %></p>
+        <p class="auth-error"><%= typeof massage !== 'undefined' ? massage : '' %></p>
+
+        <form action="/login" method="post">
+          <div class="mb-3">
+            <label for="sign-up-email" class="auth-label">Email address</label>
+            <input type="email" class="auth-input" id="sign-up-email" placeholder="Enter your email" name="email" required />
+          </div>
+
+          <div class="mb-2">
+            <label for="sign-up-password" class="auth-label">Password</label>
+            <div class="auth-input-wrap">
+              <input type="password" class="auth-input" id="sign-up-password" placeholder="Enter your password" name="password" required />
+              <button type="button" id="togglePassword" class="auth-eye-btn">👁️</button>
+            </div>
+          </div>
+
+          <div class="auth-link-row">
+            <span></span>
+            <a href="/forgot" class="auth-link">Forgot Password?</a>
+          </div>
+
+          <button type="submit" class="auth-btn">Sign In</button>
+        </form>
+
+        <p class="auth-separator">or</p>
+        <div class="auth-google-wrap">
+          <div id="google-signin-button"></div>
+        </div>
+      </section>
+    </main>
 
 
 <script>
@@ -203,15 +140,7 @@ console.log(decoded)
       });
   }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-
-
-
-
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
-</footer>
 </body>
 </html>

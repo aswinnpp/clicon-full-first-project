@@ -31,8 +31,10 @@ router.get("/search-products", homeController.searchProducts);
 
 router.get("/signup", userauth.isLogin, authController.loadSignUp);
 router.post("/signup", authController.signUp);
-router.get("/signin", userauth.isLogin, authController.loadSignIn);
-router.post("/signin", authController.signIn);
+router.get("/login", userauth.isLogin, authController.loadSignIn);
+router.post("/login", authController.signIn);
+router.get("/signin", (req, res) => res.redirect("/login"));
+router.post("/signin", (req, res) => res.redirect(307, "/login"));
 router.get("/logout", authController.Logout);
 
 router.post("/authsignup", authController.authsignup);

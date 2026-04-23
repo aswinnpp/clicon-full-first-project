@@ -50,7 +50,7 @@ const reset = async (req, res) => {
     await user.save();
 
     req.flash("error", "Password reset successfully.");
-    res.status(302).redirect("/signin");
+    res.status(302).redirect("/login");
   } catch (error) {
     console.error("Reset password error:", error);
     res.status(500).send("Server Error");

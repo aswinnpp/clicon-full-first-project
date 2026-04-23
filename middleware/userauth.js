@@ -4,13 +4,16 @@ const checkSession = (req, res, next) => {
   if (req.session.details) {
     next();
   } else {
-    res.redirect("/signin");
+    res.redirect("/login");
   }
 };
 
 const isLogin = (req, res, next) => {
   if (req.session.logged) {
-    res.redirect("/");
+    if (req.session.admin) {
+      return res.redirect("/admin/dashboard");
+    }
+    return res.redirect("/");
   } else {
     next();
   }
